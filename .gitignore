@@ -30,3 +30,13 @@ proguard/
 
 # Android Studio captures folder
 captures/
+
+
+# Configuración de Intellij IDEA
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Ficheros temporales de gitk
+/.gitk*/
