@@ -3,6 +3,7 @@ package es.uam.eps.tfg.cas.android.examples.geoquiz.controller;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,9 +11,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import es.uam.eps.tfg.cas.android.examples.geoquiz.R;
 import es.uam.eps.tfg.cas.android.examples.geoquiz.model.Question;
@@ -25,6 +23,9 @@ public class QuizActivity extends AppCompatActivity {
     private ImageButton mNextButton;
     private TextView mQuestionTextView;
 
+    private static final String TAG = "QuizActivity";
+    private static final String KEY_INDEX = "index";
+
     private final Question[] mQuestionBank = new Question[]{
             new Question(R.string.question_africa, true),
             new Question(R.string.question_mom, false),
@@ -32,11 +33,6 @@ public class QuizActivity extends AppCompatActivity {
     };
 
     private int mCurrentIndex = 0;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient mClient;
 
 
     @Override
@@ -48,16 +44,9 @@ public class QuizActivity extends AppCompatActivity {
         wireTextView();
         setListeners();
         setToolBar();
-        randomQuestion();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        mClient = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-    }
+        restoreData(savedInstanceState);
+        setActualQuestion();
 
-    private void randomQuestion() {
-        mCurrentIndex = (Double.valueOf(Math.random()).intValue()) % mQuestionBank.length;
-        final int questionId = mQuestionBank[mCurrentIndex].getTextResId();
-        mQuestionTextView.setText(questionId);
     }
 
 
@@ -111,20 +100,20 @@ public class QuizActivity extends AppCompatActivity {
         });
     }
 
+    private int checkAnswer(final boolean userPressedValue) {
+        final boolean questionAnswer = mQuestionBank[mCurrentIndex].isAnswerTrue();
+        final int mResId = (userPressedValue == questionAnswer) ? R.string.correct_toast : R.string.incorrect_toast;
+        return mResId;
+    }
+
     private void showToast(final AppCompatActivity context, final int stringId) {
 
         Toast.makeText(QuizActivity.this, stringId, Toast.LENGTH_SHORT).show();
     }
 
-    private void setToolBar() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-    }
-
     private void nextQuestion() {
         mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
-        final int questionId = mQuestionBank[mCurrentIndex].getTextResId();
-        mQuestionTextView.setText(questionId);
+        setActualQuestion();
     }
 
     private void previousQuestion() {
@@ -132,14 +121,32 @@ public class QuizActivity extends AppCompatActivity {
         if (mCurrentIndex == -1) {
             mCurrentIndex = mQuestionBank.length - 1;
         }
-        final int questionId = mQuestionBank[mCurrentIndex].getTextResId();
-        mQuestionTextView.setText(questionId);
+        setActualQuestion();
     }
 
-    private int checkAnswer(final boolean userPressedValue) {
-        final boolean questionAnswer = mQuestionBank[mCurrentIndex].isAnswerTrue();
-        final int mResId = (userPressedValue == questionAnswer) ? R.string.correct_toast : R.string.incorrect_toast;
-        return mResId;
+    private void setToolBar() {
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+    }
+
+    private void restoreData(final Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            Log.d(TAG, "restoring instance: current index");
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX);
+        }
+    }
+
+    private void setActualQuestion() {
+        final int questionId = mQuestionBank[mCurrentIndex].getTextResId();
+        mQuestionTextView.setText(questionId);
+        Log.d(TAG, "Question #" + questionId + " setted");
+    }
+
+    @Override
+    protected void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "saving instance: current index");
+        outState.putInt(KEY_INDEX, mCurrentIndex);
     }
 
     @Override
@@ -163,6 +170,5 @@ public class QuizActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 
 }
