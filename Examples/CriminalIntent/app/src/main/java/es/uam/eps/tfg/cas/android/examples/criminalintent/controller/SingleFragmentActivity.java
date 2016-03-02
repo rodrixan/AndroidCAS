@@ -8,14 +8,15 @@ import android.support.v7.widget.Toolbar;
 
 import es.uam.eps.tfg.cas.android.examples.criminalintent.R;
 
-public class CrimeActivity extends FragmentActivity {
+public abstract class SingleFragmentActivity extends FragmentActivity {
+    protected abstract Fragment createFragment();
 
     private FragmentManager mFragmentManager;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_crime);
+        setContentView(R.layout.activity_fragment);
         setToolBar();
 
         mFragmentManager = getSupportFragmentManager();
@@ -34,10 +35,8 @@ public class CrimeActivity extends FragmentActivity {
         Fragment fragment = mFragmentManager.findFragmentById(fragmentId);
 
         if (fragment == null) {
-            fragment = new CrimeFragment();
+            fragment = createFragment();
             mFragmentManager.beginTransaction().add(fragmentId, fragment).commit();
         }
     }
-
-
 }
