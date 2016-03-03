@@ -1,7 +1,6 @@
 package es.uam.eps.tfg.cas.android.examples.criminalintent.controller.fragments;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,6 +12,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+
+import java.util.Date;
 
 import es.uam.eps.tfg.cas.android.examples.criminalintent.R;
 import es.uam.eps.tfg.cas.android.examples.criminalintent.model.Crime;
@@ -29,7 +30,6 @@ public class CrimeFragment extends Fragment {
         mCrime = new Crime();
     }
 
-    @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_crime, container, false);
@@ -48,11 +48,16 @@ public class CrimeFragment extends Fragment {
     }
 
     private void setDateButtonProperties() {
-        final DateFormat df = new DateFormat();
-        final String formattedDate = df.format("EEEE, MMM dd, yyyy", mCrime.getDate()).toString();
+
+        final String formattedDate = formatDateToString(mCrime.getDate());
 
         mDateButton.setText(formattedDate);
         mDateButton.setEnabled(false);
+    }
+
+    private String formatDateToString(final Date date) {
+        final DateFormat df = new DateFormat();
+        return df.format("EEEE, MMM dd, yyyy", date).toString();
     }
 
     private void setListeners() {

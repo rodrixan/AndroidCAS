@@ -2,6 +2,7 @@ package es.uam.eps.tfg.cas.android.examples.criminalintent.model.services;
 
 import android.content.Context;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ public class CrimeLabImp implements CrimeLab {
 
     private static CrimeLabImp sCrimeLab;
 
-    private List<Crime> mCrimeList;
+    private final List<Crime> mCrimeList;
     private final Context mContext;
 
     public static CrimeLab getCrimeLab(final Context context) {
@@ -24,8 +25,8 @@ public class CrimeLabImp implements CrimeLab {
 
     private CrimeLabImp(final Context context) {
         mContext = context;
-
-        createSampleCrimes(50);
+        mCrimeList = new ArrayList<>();
+        createSampleCrimes(100);
     }
 
     private void createSampleCrimes(final int n) {
