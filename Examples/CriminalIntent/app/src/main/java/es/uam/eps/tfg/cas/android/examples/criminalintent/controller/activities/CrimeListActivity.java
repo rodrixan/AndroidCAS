@@ -5,9 +5,7 @@ import android.support.v4.app.Fragment;
 import es.uam.eps.tfg.cas.android.examples.criminalintent.controller.SingleFragmentActivity;
 import es.uam.eps.tfg.cas.android.examples.criminalintent.controller.fragments.CrimeListFragment;
 
-/**
- * Created by Rodri on 02/03/2016.
- */
+
 public class CrimeListActivity extends SingleFragmentActivity {
     @Override
     protected Fragment createFragment() {
