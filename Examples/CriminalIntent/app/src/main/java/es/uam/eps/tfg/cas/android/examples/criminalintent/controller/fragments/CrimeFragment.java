@@ -1,11 +1,12 @@
 package es.uam.eps.tfg.cas.android.examples.criminalintent.controller.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import java.util.Date;
 import java.util.UUID;
 
 import es.uam.eps.tfg.cas.android.examples.criminalintent.R;
@@ -28,6 +30,8 @@ public class CrimeFragment extends Fragment {
     private CheckBox mSolvedCheckbox;
 
     private static final String ARG_CRIME_ID = "crime_id";
+    private static final String DIALOG_DATE = "DialogDate";
+    private static final int REQUEST_DATE = 0;
 
     public static CrimeFragment newInstance(final UUID crimeId) {
         final Bundle args = new Bundle();
@@ -46,13 +50,12 @@ public class CrimeFragment extends Fragment {
         final UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
 
         mCrime = CrimeLabImp.getCrimeLab(getActivity()).getCrime(crimeId);
-        Log.d("TEST", "OnCreate finalized");
     }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_crime, container, false);
-        Log.d("TEST", "OnCreateView called");
+
         wireWidgets(view);
         setData();
         setListeners();
@@ -68,7 +71,7 @@ public class CrimeFragment extends Fragment {
 
     private void setData() {
         setTitle();
-        setDate();
+        setDateListener();
         setSolved();
     }
 
@@ -76,12 +79,23 @@ public class CrimeFragment extends Fragment {
         mTitleText.setText(mCrime.getTitle());
     }
 
-    private void setDate() {
+    private void setDateListener() {
 
+        updateDate();
+        mDateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final FragmentManager manager = getActivity().getSupportFragmentManager();
+                final DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+                dialog.show(manager, DIALOG_DATE);
+            }
+        });
+    }
+
+    private void updateDate() {
         final String formattedDate = Utils.formatDateToString(mCrime.getDate());
-
         mDateButton.setText(formattedDate);
-        mDateButton.setEnabled(false);
     }
 
     private void setSolved() {
@@ -114,7 +128,20 @@ public class CrimeFragment extends Fragment {
             }
         });
     }
-    
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+
+        if (requestCode == REQUEST_DATE) {
+            final Date date = DatePickerFragment.getSetDate(data);
+            mCrime.setDate(date);
+            updateDate();
+        }
+    }
+
     public void returnResult() {
         getActivity().setResult(Activity.RESULT_OK, null);
     }

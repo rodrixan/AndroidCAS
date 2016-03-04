@@ -1,10 +1,9 @@
-package es.uam.eps.tfg.cas.android.examples.criminalintent.controller;
+package es.uam.eps.tfg.cas.android.examples.criminalintent.controller.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.Toolbar;
 
 import es.uam.eps.tfg.cas.android.examples.criminalintent.R;
 
@@ -17,16 +16,11 @@ public abstract class SingleFragmentActivity extends FragmentActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
-        setToolBar();
 
         mFragmentManager = getSupportFragmentManager();
 
         addFragmentToManager(R.id.fragment_container);
 
-    }
-
-    private void setToolBar() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     }
 
 
