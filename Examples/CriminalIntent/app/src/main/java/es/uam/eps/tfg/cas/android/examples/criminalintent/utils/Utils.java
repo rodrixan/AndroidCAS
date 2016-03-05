@@ -13,4 +13,5 @@ public class Utils {
     }
 
     public static final String APP_PATH = "es.uam.eps.tfg.cas.android.examples.criminalintent";
+    public static final String APP_LOG_TAG = "es.uam.eps.tfg.cas.android.examples.criminalintent";
 }

@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,11 +15,11 @@ import java.util.UUID;
 import es.uam.eps.tfg.cas.android.examples.criminalintent.R;
 import es.uam.eps.tfg.cas.android.examples.criminalintent.controller.fragments.CrimeFragment;
 import es.uam.eps.tfg.cas.android.examples.criminalintent.model.Crime;
-import es.uam.eps.tfg.cas.android.examples.criminalintent.model.services.CrimeLabImp;
+import es.uam.eps.tfg.cas.android.examples.criminalintent.model.services.CrimeLab;
 import es.uam.eps.tfg.cas.android.examples.criminalintent.utils.Utils;
 
 
-public class CrimePagerActivity extends FragmentActivity {
+public class CrimePagerActivity extends AppCompatActivity {
 
     private static final String EXTRA_CRIME_ID = Utils.APP_PATH + ".crime_id";
     private static final String EXTRA_CRIME_SHOWN = Utils.APP_PATH + ".crime_shown";
@@ -41,7 +41,7 @@ public class CrimePagerActivity extends FragmentActivity {
         final UUID crimeId = (UUID) getIntent().getSerializableExtra(EXTRA_CRIME_ID);
 
         wireComponents();
-        mCrimeList = CrimeLabImp.getCrimeLab(this).getCrimes();
+        mCrimeList = CrimeLab.getCrimeLab(this).getCrimes();
         setAdapter();
 
         setCurrentItem(crimeId);

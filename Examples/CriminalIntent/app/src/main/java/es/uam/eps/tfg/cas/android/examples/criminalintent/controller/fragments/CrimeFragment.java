@@ -20,7 +20,7 @@ import java.util.UUID;
 
 import es.uam.eps.tfg.cas.android.examples.criminalintent.R;
 import es.uam.eps.tfg.cas.android.examples.criminalintent.model.Crime;
-import es.uam.eps.tfg.cas.android.examples.criminalintent.model.services.CrimeLabImp;
+import es.uam.eps.tfg.cas.android.examples.criminalintent.model.services.CrimeLab;
 import es.uam.eps.tfg.cas.android.examples.criminalintent.utils.Utils;
 
 public class CrimeFragment extends Fragment {
@@ -49,7 +49,7 @@ public class CrimeFragment extends Fragment {
 
         final UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
 
-        mCrime = CrimeLabImp.getCrimeLab(getActivity()).getCrime(crimeId);
+        mCrime = CrimeLab.getCrimeLab(getActivity()).getCrime(crimeId);
     }
 
     @Override
