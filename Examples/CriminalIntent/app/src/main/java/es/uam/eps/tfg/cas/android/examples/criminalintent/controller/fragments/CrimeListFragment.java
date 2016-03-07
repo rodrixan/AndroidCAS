@@ -32,6 +32,7 @@ public class CrimeListFragment extends Fragment {
     private static final String SAVED_SUBTITLE_SHOWN = "subtitle";
 
     private RecyclerView mCrimeRecyclerView;
+    private TextView mEmptyView;
     private CrimeAdapter mAdapter;
     private boolean mShowSubtitle = false;
 
@@ -45,13 +46,16 @@ public class CrimeListFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_crime_list, container, false);
 
+
         mCrimeRecyclerView = (RecyclerView) v.findViewById(R.id.crime_recycler_view);
-        mCrimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mEmptyView = (TextView) v.findViewById(R.id.empty_list_text_view);
+
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        mCrimeRecyclerView.setLayoutManager(layoutManager);
+
 
         restoreData(savedInstanceState);
-
         updateUI();
-
         return v;
     }
 
@@ -64,6 +68,7 @@ public class CrimeListFragment extends Fragment {
     private void updateUI() {
         updateAdapter();
         updateSubtitle();
+        updateEmptyView();
     }
 
     private void updateAdapter() {
@@ -91,6 +96,16 @@ public class CrimeListFragment extends Fragment {
     private void setSubtitleText(final String subtitle) {
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setSubtitle(subtitle);
+    }
+
+    private void updateEmptyView() {
+        if (CrimeLab.getCrimeLab(getActivity()).getNumberOfCrimes() == 0) {
+            mEmptyView.setVisibility(View.VISIBLE);
+            mCrimeRecyclerView.setVisibility(View.GONE);
+        } else {
+            mEmptyView.setVisibility(View.GONE);
+            mCrimeRecyclerView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -166,7 +181,7 @@ public class CrimeListFragment extends Fragment {
     }
 
     //ViewHolder for Crime class
-    private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         private TextView mTitleTextView;
         private TextView mDateTextView;
         private CheckBox mSolvedCheckBox;
@@ -176,6 +191,7 @@ public class CrimeListFragment extends Fragment {
             super(itemView);
 
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
 
             wireComponents(itemView);
         }
@@ -208,6 +224,14 @@ public class CrimeListFragment extends Fragment {
         public void onClick(final View v) {
             final Intent i = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
             startActivityForResult(i, REQUEST_CRIME);
+        }
+
+
+        @Override
+        public boolean onLongClick(final View v) {
+            CrimeLab.getCrimeLab(getActivity()).removeCrime(mCrime.getId());
+            updateUI();
+            return true;
         }
     }//END_CrimeHolder
 

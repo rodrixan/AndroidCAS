@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:baselineAligned="true">
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:baselineAligned="true">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/crime_title_label"
-        style="?android:listSeparatorTextViewStyle" />
+        style="?android:listSeparatorTextViewStyle"/>
 
     <EditText
         android:id="@+id/crime_title"
@@ -17,15 +17,13 @@
         android:layout_height="wrap_content"
         android:hint="@string/crime_title_hint"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:backgroundTint="@android:color/tab_indicator_text"
-        android:textCursorDrawable="@null" />
+        android:layout_marginRight="16dp"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/crime_details_label"
-        style="?android:listSeparatorTextViewStyle" />
+        style="?android:listSeparatorTextViewStyle"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_weight="3" />
+            android:layout_weight="3"/>
 
         <CheckBox
             android:id="@+id/crime_solved"
@@ -49,7 +47,7 @@
             android:layout_marginRight="16dp"
             android:text="@string/crime_solved_label"
             android:layout_weight="1"
-            android:buttonTint="#00b0ff" />
+            android:checked="false"/>
     </LinearLayout>
 
 </LinearLayout>

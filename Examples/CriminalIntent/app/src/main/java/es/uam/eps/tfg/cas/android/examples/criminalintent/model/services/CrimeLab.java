@@ -2,12 +2,14 @@ package es.uam.eps.tfg.cas.android.examples.criminalintent.model.services;
 
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import es.uam.eps.tfg.cas.android.examples.criminalintent.model.Crime;
+import es.uam.eps.tfg.cas.android.examples.criminalintent.model.database.CrimeDBHelper;
 
 public class CrimeLab {
 
@@ -15,6 +17,7 @@ public class CrimeLab {
 
     private final List<Crime> mCrimeList;
     private final Context mContext;
+    private final SQLiteDatabase mDatabase;
 
     public static CrimeLab getCrimeLab(final Context context) {
         if (sCrimeLab == null) {
@@ -34,7 +37,8 @@ public class CrimeLab {
     }
 
     private CrimeLab(final Context context) {
-        mContext = context;
+        mContext = context.getApplicationContext();
+        mDatabase = new CrimeDBHelper(mContext).getWritableDatabase();
         mCrimeList = new ArrayList<>();
         //createSampleCrimes(100);
     }
@@ -60,5 +64,14 @@ public class CrimeLab {
 
     public boolean addCrime(final Crime c) {
         return mCrimeList.add(c);
+    }
+
+    public void removeCrime(final UUID crimeId) {
+        for (final Crime c : mCrimeList) {
+            if (c.getId().equals(crimeId)) {
+                mCrimeList.remove(c);
+                break;
+            }
+        }
     }
 }

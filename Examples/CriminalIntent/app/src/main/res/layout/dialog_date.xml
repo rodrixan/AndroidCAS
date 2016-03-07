@@ -4,7 +4,6 @@
     android:id="@+id/dialog_date_date_picker"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
-    android:calendarViewShown="false"
-    android:headerBackground="@color/colorPrimary">
+    android:calendarViewShown="false">
 
 </DatePicker>
