@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class CrimePagerActivity extends AppCompatActivity {
 
 
     public static Intent newIntent(final Context packageContext, final UUID crimeID) {
+        Log.d(Utils.APP_LOG_TAG, "intent de crime pager");
         final Intent i = new Intent(packageContext, CrimePagerActivity.class);
         i.putExtra(EXTRA_CRIME_ID, crimeID);
         return i;
@@ -41,6 +43,7 @@ public class CrimePagerActivity extends AppCompatActivity {
         final UUID crimeId = (UUID) getIntent().getSerializableExtra(EXTRA_CRIME_ID);
 
         wireComponents();
+        Log.d(Utils.APP_LOG_TAG, "creado Pager");
         mCrimeList = CrimeLab.getCrimeLab(this).getCrimes();
         setAdapter();
 

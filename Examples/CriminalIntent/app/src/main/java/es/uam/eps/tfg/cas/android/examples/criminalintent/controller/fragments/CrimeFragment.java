@@ -7,13 +7,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.Date;
 import java.util.UUID;
@@ -46,10 +51,12 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         final UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
 
         mCrime = CrimeLab.getCrimeLab(getActivity()).getCrime(crimeId);
+
     }
 
     @Override
@@ -130,6 +137,30 @@ public class CrimeFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_crime, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.menu_item_delete_crime: {
+                Log.d(Utils.APP_LOG_TAG, "Borrar crimen seleccionado");
+                CrimeLab.getCrimeLab(getActivity()).removeCrime(mCrime.getId());
+                getActivity().finish();
+                Toast.makeText(getContext(), R.string.deleted_crime, Toast.LENGTH_SHORT).show();
+                break;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+
+    @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (resultCode != Activity.RESULT_OK) {
             return;
@@ -144,5 +175,12 @@ public class CrimeFragment extends Fragment {
 
     public void returnResult() {
         getActivity().setResult(Activity.RESULT_OK, null);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        CrimeLab.getCrimeLab(getActivity()).updateCrime(mCrime);
     }
 }

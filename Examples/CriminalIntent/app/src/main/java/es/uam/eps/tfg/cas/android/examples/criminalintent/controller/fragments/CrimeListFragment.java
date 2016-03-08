@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -31,6 +31,7 @@ public class CrimeListFragment extends Fragment {
     private static final int REQUEST_CRIME = 1;
     private static final String SAVED_SUBTITLE_SHOWN = "subtitle";
 
+
     private RecyclerView mCrimeRecyclerView;
     private TextView mEmptyView;
     private CrimeAdapter mAdapter;
@@ -46,7 +47,7 @@ public class CrimeListFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_crime_list, container, false);
 
-
+        Log.d(Utils.APP_LOG_TAG, "lista fragmentos creada");
         mCrimeRecyclerView = (RecyclerView) v.findViewById(R.id.crime_recycler_view);
         mEmptyView = (TextView) v.findViewById(R.id.empty_list_text_view);
 
@@ -66,18 +67,23 @@ public class CrimeListFragment extends Fragment {
     }
 
     private void updateUI() {
+        Log.d(Utils.APP_LOG_TAG, "actualizando UI");
         updateAdapter();
         updateSubtitle();
         updateEmptyView();
     }
 
     private void updateAdapter() {
+        Log.d(Utils.APP_LOG_TAG, "actualizando adapter");
         final CrimeLab crimeLab = CrimeLab.getCrimeLab(getActivity());
         final List<Crime> crimes = crimeLab.getCrimes();
         if (mAdapter == null) {
+            Log.d(Utils.APP_LOG_TAG, "actualizando adapter desde 0");
             mAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
+            Log.d(Utils.APP_LOG_TAG, "actualizando adpter: setCrimes");
+            mAdapter.setCrimes(crimes);
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -89,8 +95,9 @@ public class CrimeListFragment extends Fragment {
     }
 
     private String createSubtitle() {
-        final int nCrimes = CrimeLab.getCrimeLab(getActivity()).getNumberOfCrimes();
-        return (!mShowSubtitle) ? null : getResources().getQuantityString(R.plurals.subtitle_plurals, nCrimes, nCrimes);
+        final long nCrimes = CrimeLab.getCrimeLab(getActivity()).getNumberOfCrimes();
+        final int nCrimesInt = Integer.valueOf(nCrimes + "");
+        return (!mShowSubtitle) ? null : getResources().getQuantityString(R.plurals.subtitle_plurals, nCrimesInt, nCrimesInt);
     }
 
     private void setSubtitleText(final String subtitle) {
@@ -142,7 +149,9 @@ public class CrimeListFragment extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.menu_item_new_crime: {
+                Log.d(Utils.APP_LOG_TAG, "Nuevo crimen seleccionado");
                 final UUID crimeId = createNewCrime();
+                Log.d(Utils.APP_LOG_TAG, "Crimen creado");
                 startCrimeActivity(crimeId);
                 break;
             }
@@ -159,12 +168,15 @@ public class CrimeListFragment extends Fragment {
     }
 
     private UUID createNewCrime() {
+
         final Crime crime = new Crime();
         CrimeLab.getCrimeLab(getActivity()).addCrime(crime);
+        Log.d(Utils.APP_LOG_TAG, "creando nuevo crimen con ID" + crime.getId().toString());
         return crime.getId();
     }
 
     private void startCrimeActivity(final UUID crimeId) {
+        Log.d(Utils.APP_LOG_TAG, "lanzando actividad CrimeActivity");
         final Intent i = new Intent(CrimePagerActivity.newIntent(getActivity(), crimeId));
         startActivity(i);
     }
@@ -211,12 +223,7 @@ public class CrimeListFragment extends Fragment {
             mDateTextView.setText(formattedDate);
 
             mSolvedCheckBox.setChecked(mCrime.isSolved());
-            mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-                    mCrime.setSolved(isChecked);
-                }
-            });
+            mSolvedCheckBox.setEnabled(false);
 
         }
 
@@ -239,7 +246,7 @@ public class CrimeListFragment extends Fragment {
     //Adapter for a Crime list
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
 
-        private final List<Crime> mCrimeList;
+        private List<Crime> mCrimeList;
 
         public CrimeAdapter(final List<Crime> crimes) {
             mCrimeList = crimes;
@@ -269,5 +276,8 @@ public class CrimeListFragment extends Fragment {
             return mCrimeList.size();
         }
 
+        public void setCrimes(final List<Crime> crimes) {
+            mCrimeList = crimes;
+        }
     }//END_CrimeAdapter
 }
