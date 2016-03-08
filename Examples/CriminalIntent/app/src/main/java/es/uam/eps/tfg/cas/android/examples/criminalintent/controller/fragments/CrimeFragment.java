@@ -183,4 +183,20 @@ public class CrimeFragment extends Fragment {
 
         CrimeLab.getCrimeLab(getActivity()).updateCrime(mCrime);
     }
+
+
+    private String getCrimeReport() {
+        final String solvedString = mCrime.isSolved() ? getString(R.string.crime_report_solved) : getString(R.string.crime_report_unsolved);
+        final String dateString = Utils.formatDateToString(mCrime.getDate());
+        String suspect = mCrime.getSuspect();
+        if (suspect == null) {
+            suspect = getString(R.string.crime_report_no_suspect);
+        } else {
+            suspect = getString(R.string.crime_report_suspect);
+        }
+
+        final String report = getString(R.string.crime_report, mCrime.getTitle(), dateString, solvedString, suspect);
+        
+        return report;
+    }
 }
