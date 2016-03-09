@@ -6,8 +6,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -142,4 +144,17 @@ public class CrimeLab {
 
         return code == 1;
     }
+
+    public File getPhotoFile(final Crime c) {
+        final File externalFilesDir = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (externalFilesDir != null) {
+            return new File(externalFilesDir, getCrimePhotoFileName(c));
+        }
+        return null;
+    }
+
+    public String getCrimePhotoFileName(final Crime c) {
+        return "IMG_" + c.getId().toString() + ".jpg";
+    }
+
 }
