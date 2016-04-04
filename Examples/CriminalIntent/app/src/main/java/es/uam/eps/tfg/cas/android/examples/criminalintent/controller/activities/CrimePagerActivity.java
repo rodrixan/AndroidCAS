@@ -20,7 +20,7 @@ import es.uam.eps.tfg.cas.android.examples.criminalintent.model.services.CrimeLa
 import es.uam.eps.tfg.cas.android.examples.criminalintent.utils.Utils;
 
 
-public class CrimePagerActivity extends AppCompatActivity {
+public class CrimePagerActivity extends AppCompatActivity implements CrimeFragment.CallBacks {
 
     private static final String EXTRA_CRIME_ID = Utils.APP_PATH + ".crime_id";
     private static final String EXTRA_CRIME_SHOWN = Utils.APP_PATH + ".crime_shown";
@@ -79,4 +79,8 @@ public class CrimePagerActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onCrimeUpdated(final UUID crimeId) {
+
+    }
 }

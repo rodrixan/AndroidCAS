@@ -1,6 +1,7 @@
 package es.uam.eps.tfg.cas.android.examples.criminalintent.controller.activities;
 
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -12,10 +13,15 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     private FragmentManager mFragmentManager;
 
+    @LayoutRes
+    protected int getLayoutResId() {
+        return R.layout.activity_fragment;
+    }
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fragment);
+        setContentView(getLayoutResId());
 
         mFragmentManager = getSupportFragmentManager();
 

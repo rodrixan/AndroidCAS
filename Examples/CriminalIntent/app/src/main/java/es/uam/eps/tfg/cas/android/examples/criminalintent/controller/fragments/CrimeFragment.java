@@ -1,6 +1,7 @@
 package es.uam.eps.tfg.cas.android.examples.criminalintent.controller.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -55,7 +56,17 @@ public class CrimeFragment extends Fragment {
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
     private File mPhotoFile;
+    private CallBacks mCallbacks;
 
+    public interface CallBacks {
+        void onCrimeUpdated(UUID crimeId);
+    }
+
+    @Override
+    public void onAttach(final Context context) {
+        super.onAttach(context);
+        mCallbacks = (CallBacks) context;
+    }
 
     public static CrimeFragment newInstance(final UUID crimeId) {
         final Bundle args = new Bundle();
@@ -131,6 +142,11 @@ public class CrimeFragment extends Fragment {
         mDateButton.setText(formattedDate);
     }
 
+    private void updateCrime() {
+        CrimeLab.getCrimeLab(getActivity()).updateCrime(mCrime);
+        mCallbacks.onCrimeUpdated(mCrime.getId());
+    }
+
     private void setSolved() {
         mSolvedCheckbox.setChecked(mCrime.isSolved());
     }
@@ -152,6 +168,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
                 mCrime.setTitle(s.toString());
+                updateCrime();
             }
 
             @Override
@@ -164,6 +181,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
                 mCrime.setSolved(isChecked);
+                updateCrime();
             }
         });
 
@@ -262,6 +280,7 @@ public class CrimeFragment extends Fragment {
             case R.id.menu_item_delete_crime: {
                 Log.d(Utils.APP_LOG_TAG, "Borrar crimen seleccionado");
                 CrimeLab.getCrimeLab(getActivity()).removeCrime(mCrime.getId());
+                updateCrime();
                 getActivity().finish();
                 Toast.makeText(getContext(), R.string.deleted_crime, Toast.LENGTH_SHORT).show();
                 break;
@@ -282,14 +301,17 @@ public class CrimeFragment extends Fragment {
         if (requestCode == REQUEST_DATE) {
             final Date date = DatePickerFragment.getSetDate(data);
             mCrime.setDate(date);
+            updateCrime();
             updateDate();
         } else if (requestCode == REQUEST_CONTACT && data != null) {
             final String suspectName = getSuspectName(data);
             mCrime.setSuspect(suspectName);
+            updateCrime();
             if (suspectName != null) {
                 setSuspectButtonText();
             }
         } else if (requestCode == REQUEST_PHOTO) {
+            updateCrime();
             updatePhotoView();
         }
     }
@@ -327,6 +349,12 @@ public class CrimeFragment extends Fragment {
         CrimeLab.getCrimeLab(getActivity()).updateCrime(mCrime);
     }
 
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
 
     private String getCrimeReport() {
         final String solvedString = mCrime.isSolved() ? getString(R.string.crime_report_solved) : getString(R.string.crime_report_unsolved);

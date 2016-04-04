@@ -1,6 +1,7 @@
 package es.uam.eps.tfg.cas.android.examples.criminalintent.controller.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,12 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.UUID;
 
 import es.uam.eps.tfg.cas.android.examples.criminalintent.R;
-import es.uam.eps.tfg.cas.android.examples.criminalintent.controller.activities.CrimePagerActivity;
 import es.uam.eps.tfg.cas.android.examples.criminalintent.model.Crime;
 import es.uam.eps.tfg.cas.android.examples.criminalintent.model.services.CrimeLab;
 import es.uam.eps.tfg.cas.android.examples.criminalintent.utils.Utils;
@@ -36,6 +37,17 @@ public class CrimeListFragment extends Fragment {
     private TextView mEmptyView;
     private CrimeAdapter mAdapter;
     private boolean mShowSubtitle = false;
+    private Callbacks mCallbacks;
+
+    public interface Callbacks {
+        void onCrimeSelected(UUID crimeId);
+    }
+
+    @Override
+    public void onAttach(final Context context) {
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
+    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -66,7 +78,7 @@ public class CrimeListFragment extends Fragment {
         }
     }
 
-    private void updateUI() {
+    public void updateUI() {
         Log.d(Utils.APP_LOG_TAG, "actualizando UI");
         updateAdapter();
         updateSubtitle();
@@ -128,6 +140,12 @@ public class CrimeListFragment extends Fragment {
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
+
+    @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_crime_list, menu);
@@ -177,8 +195,8 @@ public class CrimeListFragment extends Fragment {
 
     private void startCrimeActivity(final UUID crimeId) {
         Log.d(Utils.APP_LOG_TAG, "lanzando actividad CrimeActivity");
-        final Intent i = new Intent(CrimePagerActivity.newIntent(getActivity(), crimeId));
-        startActivity(i);
+        updateUI();
+        mCallbacks.onCrimeSelected(crimeId);
     }
 
 
@@ -229,8 +247,7 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(final View v) {
-            final Intent i = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
-            startActivityForResult(i, REQUEST_CRIME);
+            mCallbacks.onCrimeSelected(mCrime.getId());
         }
 
 
@@ -238,6 +255,7 @@ public class CrimeListFragment extends Fragment {
         public boolean onLongClick(final View v) {
             CrimeLab.getCrimeLab(getActivity()).removeCrime(mCrime.getId());
             updateUI();
+            Toast.makeText(getContext(), R.string.deleted_crime, Toast.LENGTH_SHORT).show();
             return true;
         }
     }//END_CrimeHolder
