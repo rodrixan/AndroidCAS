@@ -98,13 +98,13 @@ public class DatePickerFragment extends DialogFragment {
         return new GregorianCalendar(yearMonthDay[0], yearMonthDay[1], yearMonthDay[2]).getTime();
     }
 
-    private void sendResult(final int resultcode, final Date date) {
+    private void sendResult(final int resultCode, final Date date) {
         if (getTargetFragment() == null) {
             return;
         }
 
         final Intent i = new Intent();
         i.putExtra(EXTRA_DATE, date);
-        getTargetFragment().onActivityResult(getTargetRequestCode(), resultcode, i);
+        getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, i);
     }
 }

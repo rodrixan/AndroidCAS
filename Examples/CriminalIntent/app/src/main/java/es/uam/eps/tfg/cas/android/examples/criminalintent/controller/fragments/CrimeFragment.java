@@ -40,9 +40,11 @@ import es.uam.eps.tfg.cas.android.examples.criminalintent.utils.Utils;
 public class CrimeFragment extends Fragment {
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogDate";
+    private static final String DIALOG_IMG = "DialogImage";
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
     private static final int REQUEST_PHOTO = 2;
+    private static final int REQUEST_ZOOM = 3;
 
     private Crime mCrime;
     private EditText mTitleText;
@@ -175,6 +177,16 @@ public class CrimeFragment extends Fragment {
         setSuspectListener();
 
         setPhotoListener();
+
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final FragmentManager manager = getActivity().getSupportFragmentManager();
+                final ImageViewerFragment dialog = ImageViewerFragment.newInstance(mPhotoFile);
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_ZOOM);
+                dialog.show(manager, DIALOG_IMG);
+            }
+        });
     }
 
     private void startSendActivity() {
