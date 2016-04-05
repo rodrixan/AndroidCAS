@@ -3,12 +3,12 @@ package es.uam.eps.tfg.cas.android.examples.beatbox.controller.activities;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 
 import es.uam.eps.tfg.cas.android.examples.beatbox.R;
 
-public abstract class SingleFragmentActivity extends AppCompatActivity {
+public abstract class SingleFragmentActivity extends FragmentActivity {
     protected abstract Fragment createFragment();
 
     private FragmentManager mFragmentManager;
