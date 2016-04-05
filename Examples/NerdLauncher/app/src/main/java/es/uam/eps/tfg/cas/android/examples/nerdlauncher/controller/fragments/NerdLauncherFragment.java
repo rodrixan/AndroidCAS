@@ -1,6 +1,7 @@
 package es.uam.eps.tfg.cas.android.examples.nerdlauncher.controller.fragments;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
@@ -11,8 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import es.uam.eps.tfg.cas.android.examples.nerdlauncher.R;
@@ -49,17 +53,27 @@ public class NerdLauncherFragment extends Fragment {
 
         final PackageManager pm = getActivity().getPackageManager();
         final List<ResolveInfo> activities = pm.queryIntentActivities(startupIntent, 0);
-        Log.i(TAG, "Found " + activities.size() + " activites");
+        Collections.sort(activities, new Comparator<ResolveInfo>() {
+            @Override
+            public int compare(final ResolveInfo lhs, final ResolveInfo rhs) {
+                final PackageManager pm = getActivity().getPackageManager();
+                return String.CASE_INSENSITIVE_ORDER.compare(lhs.loadLabel(pm).toString(), rhs.loadLabel(pm).toString());
+            }
+        });
+        Log.i(TAG, "Found " + activities.size() + " activities");
         mRecyclerView.setAdapter(new ActivityAdapter(activities));
     }
 
-    private class ActivityHolder extends RecyclerView.ViewHolder {
+    private class ActivityHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ResolveInfo mResolveInfo;
         private final TextView mNameTextView;
+        private final ImageView mIconImageView;
 
         public ActivityHolder(final View itemView) {
             super(itemView);
-            mNameTextView = (TextView) itemView;
+            mNameTextView = (TextView) itemView.findViewById(R.id.list_item_app_name);
+            mIconImageView = (ImageView) itemView.findViewById(R.id.list_item_app_icon);
+            itemView.setOnClickListener(this);
         }
 
         public void bindActivity(final ResolveInfo resolveInfo) {
@@ -67,6 +81,15 @@ public class NerdLauncherFragment extends Fragment {
             final PackageManager pm = getActivity().getPackageManager();
             final String appName = mResolveInfo.loadLabel(pm).toString();
             mNameTextView.setText(appName);
+            mIconImageView.setImageDrawable(mResolveInfo.loadIcon(pm));
+        }
+
+        @Override
+        public void onClick(final View v) {
+            final ActivityInfo actInfo = mResolveInfo.activityInfo;
+
+            final Intent i = new Intent(Intent.ACTION_MAIN).setClassName(actInfo.applicationInfo.packageName, actInfo.name).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
         }
     }
 
@@ -80,7 +103,7 @@ public class NerdLauncherFragment extends Fragment {
         @Override
         public ActivityHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
             final LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            final View view = layoutInflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            final View view = layoutInflater.inflate(R.layout.list_item_app, parent, false);
             return new ActivityHolder(view);
         }
 
