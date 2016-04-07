@@ -24,11 +24,11 @@ import es.uam.eps.tfg.cas.android.examples.photogallery.model.GalleryItem;
 
 public class FlickrFetcher {
     private static final int BUFFER_MAX_SIZE = 1024;
-    private static final String TAG = "FlickrFetcher";
+    private static final String TAG = "APP_PRUEBA";
 
     private static final String FLICKR_REST_URL = "https://www.flickr.com/services/rest/";
     private static final String API_KEY = "3c9cd9a3e38a1af28808fa76e40ed76a";
-    private static final String USER_ID = "50304076@N04";
+    private static final String USER_ID = "49902059@N08";// 50304076@N04
 
 
     public byte[] getURLBites(final String urlSpec) throws IOException {
@@ -61,8 +61,8 @@ public class FlickrFetcher {
     }
 
 
-    public List<GalleryItem> fetchXanFlickrGalleryPhotos() {
-        final String url = createParsedUrl();
+    public List<GalleryItem> fetchXanFlickrGalleryPhotos(final int page) {
+        final String url = createParsedUrl(page);
         try {
             final String jsonString = getUrlString(url);
             Log.i(TAG, "Received JSON: " + jsonString);
@@ -76,13 +76,15 @@ public class FlickrFetcher {
         return null;
     }
 
-    private String createParsedUrl() {
+    private String createParsedUrl(final int page) {
+        Log.i(TAG, "Fetching page " + page);
         return Uri.parse(FLICKR_REST_URL)
                 .buildUpon()
                 .appendQueryParameter("method", "flickr.people.getPublicPhotos")
                 .appendQueryParameter("api_key", API_KEY)
                 .appendQueryParameter("user_id", USER_ID)
                 .appendQueryParameter("format", "json")
+                .appendQueryParameter("page", page + "")
                 .appendQueryParameter("nojsoncallback", "1")
                 .appendQueryParameter("extras", "url_s")
                 .build().toString();
