@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PhotoGallery</string>
+    <string name="toast_no_more_data">There is no more data to fetch</string>
 </resources>

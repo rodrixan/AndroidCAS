@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,11 +30,13 @@ public class PhotoGalleryFragment extends Fragment {
     private static final String TAG = "APP_PRUEBA";
     private static final String SAVED_CURRENT_PAGE = "current page";
     private static final String SAVED_DATA = "adapter data";
+    private static final String SAVED_NO_MORE_DATA = "no more data";
 
     private RecyclerView mPhotoRecyclerView;
     private PhotoAdapter mPhotoAdapter;
     private List<GalleryItem> mItems = new ArrayList<>();
     private int mCurrentPage = 1;
+    private boolean mNoMoreData = false;
 
     private interface OnLoadMoreListener {
         void onLoadMore();
@@ -53,6 +56,7 @@ public class PhotoGalleryFragment extends Fragment {
         if (savedInstanceState != null) {
             mCurrentPage = savedInstanceState.getInt(SAVED_CURRENT_PAGE);
             mItems = mPhotoAdapter.JSONStringToData(savedInstanceState.getString(SAVED_DATA));
+            mNoMoreData = savedInstanceState.getBoolean(SAVED_NO_MORE_DATA);
             Log.i(TAG, "data restored " + mItems.toString());
         }
     }
@@ -61,6 +65,7 @@ public class PhotoGalleryFragment extends Fragment {
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(SAVED_CURRENT_PAGE, mCurrentPage);
+        outState.putBoolean(SAVED_NO_MORE_DATA, mNoMoreData);
         outState.putString(SAVED_DATA, mPhotoAdapter.dataToJSONString());
     }
 
@@ -81,8 +86,11 @@ public class PhotoGalleryFragment extends Fragment {
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
 
         restoreData(savedInstanceState);
-        setupAdapter(mItems);
 
+        setupAdapter(mItems);
+        mPhotoRecyclerView.setAdapter(mPhotoAdapter);
+        mPhotoAdapter.setOnLoadMoreListener(createOnLoadMoreListener());
+        mPhotoRecyclerView.addOnScrollListener(createOnScrollListener());
 
         return v;
     }
@@ -97,14 +105,10 @@ public class PhotoGalleryFragment extends Fragment {
         if (isAdded()) {
             if (mPhotoAdapter == null) {
                 mPhotoAdapter = new PhotoAdapter(items);
-
             } else {
                 mPhotoAdapter.setGalleryItems(items);
                 mPhotoAdapter.notifyDataSetChanged();
             }
-            mPhotoRecyclerView.setAdapter(mPhotoAdapter);
-            mPhotoAdapter.setOnLoadMoreListener(createOnLoadMoreListener());
-            mPhotoRecyclerView.addOnScrollListener(createOnScrollListener());
         }
     }
 
@@ -113,28 +117,41 @@ public class PhotoGalleryFragment extends Fragment {
             @Override
             public void onLoadMore() {
                 Log.i(TAG, "on Load More called");
-                mItems.add(null);
-                mPhotoAdapter.notifyDataSetChanged();
-
-                mPhotoAdapter.setLoading(false);
-
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        mItems.remove(mItems.size() - 1);
-                        mPhotoAdapter.notifyDataSetChanged();
-
-                        //load data
-                        getDataFromFlickr();
-                    }
-                }, 2000);
-
-
+                if (mNoMoreData) {
+                    final Toast toast = Toast.makeText(getActivity(), R.string.toast_no_more_data, Toast.LENGTH_SHORT);
+                    toast.show();
+                    return;
+                }
+                showProgressBar();
+                launchItemLoaderHandler();
                 Log.i(TAG, "Loading = false");
             }
         };
+    }
+
+    private void showProgressBar() {
+        mItems.add(null);
+        mPhotoAdapter.notifyDataSetChanged();
+    }
+
+    private void launchItemLoaderHandler() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                hideProgressBar();
+
+                //load data
+                getDataFromFlickr();
+                mPhotoAdapter.setLoading(false);
+            }
+        }, 2000);
+    }
+
+    private void hideProgressBar() {
+        mItems.remove(mItems.size() - 1);
+        mPhotoAdapter.notifyDataSetChanged();
     }
 
     private RecyclerView.OnScrollListener createOnScrollListener() {
@@ -142,8 +159,8 @@ public class PhotoGalleryFragment extends Fragment {
 
             @Override
             public void onScrollStateChanged(final RecyclerView recyclerView, final int newState) {
-                super.onScrollStateChanged(recyclerView, newState
-                );
+                super.onScrollStateChanged(recyclerView, newState);
+
                 final RecyclerView.LayoutManager layoutManager = mPhotoRecyclerView.getLayoutManager();
                 if (layoutManager instanceof GridLayoutManager) {
                     final GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
@@ -287,6 +304,10 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         protected void onPostExecute(final List<GalleryItem> galleryItems) {
+            if (galleryItems.isEmpty()) {
+                mNoMoreData = true;
+                return;
+            }
             mItems.addAll(galleryItems);
             Log.i(TAG, "added new elements. new size is " + mItems.size());
             setupAdapter(mItems);
