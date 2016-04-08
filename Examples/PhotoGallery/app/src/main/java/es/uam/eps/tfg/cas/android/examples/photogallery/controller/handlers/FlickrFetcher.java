@@ -85,6 +85,7 @@ public class FlickrFetcher {
                 .appendQueryParameter("user_id", USER_ID)
                 .appendQueryParameter("format", "json")
                 .appendQueryParameter("page", page + "")
+                .appendQueryParameter("per_page", "5")
                 .appendQueryParameter("nojsoncallback", "1")
                 .appendQueryParameter("extras", "url_s")
                 .build().toString();
