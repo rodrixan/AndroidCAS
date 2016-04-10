@@ -1,5 +1,7 @@
 package es.uam.eps.tfg.cas.android.examples.photogallery.controller.fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -80,10 +82,23 @@ public class PhotoGalleryFragment extends Fragment {
         setRetainInstance(true);
         getDataFromFlickr();
 
-        mThumbnailDownloader = new ThumbnailDownloader<>();
+        configureHandler();
+
+        Log.i(TAG, "Background thread started");
+    }
+
+    private void configureHandler() {
+        final Handler responseHandler = new Handler();
+        mThumbnailDownloader = new ThumbnailDownloader<>(responseHandler);
+        mThumbnailDownloader.setThumbnailDownloadListener(new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
+            @Override
+            public void onThumbnailDownloaded(final PhotoHolder target, final Bitmap thumbnail) {
+                final Drawable drawable = new BitmapDrawable(getResources(), thumbnail);
+                target.bindGalleryItem(drawable);
+            }
+        });
         mThumbnailDownloader.start();
         mThumbnailDownloader.getLooper();
-        Log.i(TAG, "Background thread started");
     }
 
     @Override
@@ -115,6 +130,12 @@ public class PhotoGalleryFragment extends Fragment {
     public void onResume() {
         super.onResume();
         setupAdapter(mItems);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mThumbnailDownloader.clearQueue();
     }
 
     private void setupAdapter(final List<GalleryItem> items) {
@@ -152,7 +173,7 @@ public class PhotoGalleryFragment extends Fragment {
 
     private void launchItemLoaderHandler() {
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        handler.post(new Runnable() {
             @Override
             public void run() {
 
@@ -162,7 +183,7 @@ public class PhotoGalleryFragment extends Fragment {
                 getDataFromFlickr();
                 mPhotoAdapter.setLoading(false);
             }
-        }, 2000);
+        });
     }
 
     private void hideProgressBar() {
@@ -269,11 +290,9 @@ public class PhotoGalleryFragment extends Fragment {
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
             final GalleryItem galleryItem = mGalleryItems.get(position);
             if (holder instanceof PhotoHolder) {
-                final Drawable placeHolder = ResourcesCompat.getDrawable(getResources(), R.drawable.security, null);
+                final Drawable placeHolder = ResourcesCompat.getDrawable(getResources(), R.drawable.blank, null);
                 ((PhotoHolder) holder).bindGalleryItem(placeHolder);
                 mThumbnailDownloader.queueThumbnail((PhotoHolder) holder, galleryItem.getUrl());
-            } else {
-                ((LoadingHolder) holder).setIndeterminate(true);
             }
         }
 
@@ -317,7 +336,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         @Override
         protected List<GalleryItem> doInBackground(final Integer... params) {
-            return new FlickrFetcher().fetchXanFlickrGalleryPhotos(params[0]);
+            return FlickrFetcher.fetchXanFlickrGalleryPhotos(params[0]);
 
         }
 

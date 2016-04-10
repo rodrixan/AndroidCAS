@@ -28,10 +28,10 @@ public class FlickrFetcher {
 
     private static final String FLICKR_REST_URL = "https://www.flickr.com/services/rest/";
     private static final String API_KEY = "3c9cd9a3e38a1af28808fa76e40ed76a";
-    private static final String USER_ID = "49902059@N08";// 50304076@N04
+    private static final String USER_ID = "50304076@N04";
 
 
-    public byte[] getURLBites(final String urlSpec) throws IOException {
+    public static byte[] getURLBytes(final String urlSpec) throws IOException {
         final HttpURLConnection connection = (HttpURLConnection) new URL(urlSpec).openConnection();
 
         try {
@@ -56,12 +56,12 @@ public class FlickrFetcher {
         }
     }
 
-    public String getUrlString(final String urlSpec) throws IOException {
-        return new String(getURLBites(urlSpec));
+    public static String getUrlString(final String urlSpec) throws IOException {
+        return new String(getURLBytes(urlSpec));
     }
 
 
-    public List<GalleryItem> fetchXanFlickrGalleryPhotos(final int page) {
+    public static List<GalleryItem> fetchXanFlickrGalleryPhotos(final int page) {
         final String url = createParsedUrl(page);
         try {
             final String jsonString = getUrlString(url);
@@ -76,7 +76,7 @@ public class FlickrFetcher {
         return null;
     }
 
-    private String createParsedUrl(final int page) {
+    private static String createParsedUrl(final int page) {
         Log.i(TAG, "Fetching page " + page);
         return Uri.parse(FLICKR_REST_URL)
                 .buildUpon()
@@ -91,7 +91,7 @@ public class FlickrFetcher {
                 .build().toString();
     }
 
-    private List<GalleryItem> parseItems(final JSONObject jsonBody) throws JSONException {
+    private static List<GalleryItem> parseItems(final JSONObject jsonBody) throws JSONException {
         final List<GalleryItem> items = new ArrayList<>();
 
         final JSONObject photosJSONObject = jsonBody.getJSONObject("photos");
