@@ -1,7 +1,5 @@
 package es.uam.eps.tfg.cas.android.examples.photogallery.controller.fragments;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,16 +9,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -28,7 +31,7 @@ import java.util.List;
 
 import es.uam.eps.tfg.cas.android.examples.photogallery.R;
 import es.uam.eps.tfg.cas.android.examples.photogallery.controller.handlers.FlickrFetcher;
-import es.uam.eps.tfg.cas.android.examples.photogallery.controller.handlers.ThumbnailDownloader;
+import es.uam.eps.tfg.cas.android.examples.photogallery.controller.persistance.QueryPreferences;
 import es.uam.eps.tfg.cas.android.examples.photogallery.model.GalleryItem;
 
 public class PhotoGalleryFragment extends Fragment {
@@ -38,9 +41,10 @@ public class PhotoGalleryFragment extends Fragment {
     private static final String SAVED_NO_MORE_DATA = "no more data";
 
     private RecyclerView mPhotoRecyclerView;
+    private LinearLayout mEmptyView;
     private PhotoAdapter mPhotoAdapter;
     private List<GalleryItem> mItems = new ArrayList<>();
-    private ThumbnailDownloader<PhotoHolder> mThumbnailDownloader;
+    //private ThumbnailDownloader<PhotoHolder> mThumbnailDownloader;
     private int mCurrentPage = 1;
     private boolean mNoMoreData = false;
 
@@ -54,8 +58,8 @@ public class PhotoGalleryFragment extends Fragment {
 
     private void getDataFromFlickr() {
         Log.i(TAG, "Getting data from flickr: page " + mCurrentPage);
-        new FetchItemsTask().execute(mCurrentPage);
-        mCurrentPage++;
+        updateItems(true);
+
     }
 
     private void restoreData(final Bundle savedInstanceState) {
@@ -65,6 +69,7 @@ public class PhotoGalleryFragment extends Fragment {
             mNoMoreData = savedInstanceState.getBoolean(SAVED_NO_MORE_DATA);
             Log.i(TAG, "data restored " + mItems.toString());
         }
+
     }
 
     @Override
@@ -80,14 +85,15 @@ public class PhotoGalleryFragment extends Fragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        setHasOptionsMenu(true);
         getDataFromFlickr();
 
-        configureHandler();
+        //configureHandler();
 
         Log.i(TAG, "Background thread started");
     }
 
-    private void configureHandler() {
+    /*private void configureHandler() {
         final Handler responseHandler = new Handler();
         mThumbnailDownloader = new ThumbnailDownloader<>(responseHandler);
         mThumbnailDownloader.setThumbnailDownloadListener(new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
@@ -99,12 +105,12 @@ public class PhotoGalleryFragment extends Fragment {
         });
         mThumbnailDownloader.start();
         mThumbnailDownloader.getLooper();
-    }
+    }*/
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mThumbnailDownloader.quit();
+        //mThumbnailDownloader.quit();
         Log.i(TAG, "Background thread destroyed");
     }
 
@@ -115,8 +121,10 @@ public class PhotoGalleryFragment extends Fragment {
 
         mPhotoRecyclerView = (RecyclerView) v.findViewById(R.id.fragment_photo_gallery_recycler_view);
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        mEmptyView = (LinearLayout) v.findViewById(R.id.loading_list_view);
 
         restoreData(savedInstanceState);
+        updateUI();
 
         setupAdapter(mItems);
         mPhotoRecyclerView.setAdapter(mPhotoAdapter);
@@ -135,7 +143,73 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mThumbnailDownloader.clearQueue();
+        //mThumbnailDownloader.clearQueue();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_photo_gallery, menu);
+
+        final MenuItem searchItem = menu.findItem(R.id.menu_item_search);
+        final SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(final String query) {
+                Log.d(TAG, "Query submitted: " + query);
+                QueryPreferences.setStoredQuery(getActivity(), query);
+
+                resetData();
+
+                updateItems(false);
+                searchView.clearFocus();//hide keyboard when submitted
+
+                //MenuItemCompat.collapseActionView((menu.findItem(R.id.menu_item_search)));
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(final String newText) {
+                Log.d(TAG, "Query changed: " + newText);
+                return false;
+            }
+        });
+    }
+
+    private void resetData() {
+        mItems = new ArrayList<>();
+        mCurrentPage = 1;
+    }
+
+    private void updateItems(final boolean usePage) {
+        final String query = QueryPreferences.getStoredQuery(getActivity());
+        updateUI();
+        final FetchItemsTask task = new FetchItemsTask(query);
+        task.execute(mCurrentPage);
+        if (usePage) {
+            mCurrentPage++;
+        }
+    }
+
+    private void updateUI() {
+        if (mEmptyView != null && mPhotoRecyclerView != null) {
+            mEmptyView.setVisibility(View.VISIBLE);
+            mPhotoRecyclerView.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_clear:
+                QueryPreferences.setStoredQuery(getActivity(), null);
+                resetData();
+                updateItems(false);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void setupAdapter(final List<GalleryItem> items) {
@@ -159,26 +233,18 @@ public class PhotoGalleryFragment extends Fragment {
                     toast.show();
                     return;
                 }
-                showProgressBar();
                 launchItemLoaderHandler();
                 Log.i(TAG, "Loading = false");
             }
         };
     }
 
-    private void showProgressBar() {
-        mItems.add(null);
-        mPhotoAdapter.notifyDataSetChanged();
-    }
 
     private void launchItemLoaderHandler() {
         final Handler handler = new Handler();
         handler.post(new Runnable() {
             @Override
             public void run() {
-
-                hideProgressBar();
-
                 //load data
                 getDataFromFlickr();
                 mPhotoAdapter.setLoading(false);
@@ -186,10 +252,6 @@ public class PhotoGalleryFragment extends Fragment {
         });
     }
 
-    private void hideProgressBar() {
-        mItems.remove(mItems.size() - 1);
-        mPhotoAdapter.notifyDataSetChanged();
-    }
 
     private RecyclerView.OnScrollListener createOnScrollListener() {
         return new RecyclerView.OnScrollListener() {
@@ -205,16 +267,14 @@ public class PhotoGalleryFragment extends Fragment {
                     final int lastVisibleItemPosition = gridLayoutManager.findLastVisibleItemPosition();
 
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+
                         if (!mPhotoAdapter.isLoading() && totalItemCount <= (lastVisibleItemPosition + 5)) {
-
                             mPhotoAdapter.onLoadMore();
-                            Log.i(TAG, "Loading = true");
+                            Log.d(TAG, "Loading = true");
                             mPhotoAdapter.setLoading(true);
-
                         }
                     }
                 }
-
             }
         };
     }
@@ -227,27 +287,18 @@ public class PhotoGalleryFragment extends Fragment {
             mItemImageView = (ImageView) itemView.findViewById(R.id.fragment_photo_gallery_image_view);
         }
 
-        public void bindGalleryItem(final Drawable drawable) {
-            mItemImageView.setImageDrawable(drawable);
+        public void bindGalleryItem(final GalleryItem item) {
+
+            Picasso.with(getActivity())
+                    .load(item.getUrl())
+                    .placeholder(R.drawable.blank)
+                    .into(mItemImageView);
+
         }
     }
 
-    private class LoadingHolder extends RecyclerView.ViewHolder {
-        private final ProgressBar mProgressBar;
-
-        public LoadingHolder(final View itemView) {
-            super(itemView);
-            mProgressBar = (ProgressBar) itemView.findViewById(R.id.fragment_photo_gallery_progress_bar);
-        }
-
-        public void setIndeterminate(final boolean isIndeterminate) {
-            mProgressBar.setIndeterminate(isIndeterminate);
-        }
-    }
 
     private class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private final static int VIEW_ITEM = 1;
-        private final static int VIEW_PROG = 0;
 
         private List<GalleryItem> mGalleryItems;
         private OnLoadMoreListener mOnLoadMoreListener;
@@ -266,24 +317,14 @@ public class PhotoGalleryFragment extends Fragment {
             return mIsLoading;
         }
 
-        @Override
-        public int getItemViewType(final int position) {
-            return mGalleryItems.get(position) != null ? VIEW_ITEM : VIEW_PROG;
-        }
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-            if (viewType == VIEW_ITEM) {
-                final LayoutInflater inflater = LayoutInflater.from(getActivity());
-                final View view = inflater.inflate(R.layout.gallery_item, parent, false);
-                return new PhotoHolder(view);
-            } else {
-                final View v = LayoutInflater.from(getActivity()).inflate(
-                        R.layout.gallery_item_loading, parent, false);
 
-                return new LoadingHolder(v);
+            final LayoutInflater inflater = LayoutInflater.from(getActivity());
+            final View view = inflater.inflate(R.layout.gallery_item, parent, false);
+            return new PhotoHolder(view);
 
-            }
         }
 
         @Override
@@ -291,8 +332,8 @@ public class PhotoGalleryFragment extends Fragment {
             final GalleryItem galleryItem = mGalleryItems.get(position);
             if (holder instanceof PhotoHolder) {
                 final Drawable placeHolder = ResourcesCompat.getDrawable(getResources(), R.drawable.blank, null);
-                ((PhotoHolder) holder).bindGalleryItem(placeHolder);
-                mThumbnailDownloader.queueThumbnail((PhotoHolder) holder, galleryItem.getUrl());
+                ((PhotoHolder) holder).bindGalleryItem(galleryItem);
+                //mThumbnailDownloader.queueThumbnail((PhotoHolder) holder, galleryItem.getUrl());
             }
         }
 
@@ -333,10 +374,20 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
     private class FetchItemsTask extends AsyncTask<Integer, Void, List<GalleryItem>> {
+        private final String mQuery;
+
+        public FetchItemsTask(final String query) {
+            mQuery = query;
+        }
 
         @Override
         protected List<GalleryItem> doInBackground(final Integer... params) {
-            return FlickrFetcher.fetchXanFlickrGalleryPhotos(params[0]);
+
+            if (mQuery == null) {
+                return FlickrFetcher.fetchXanFlickrGalleryPhotos(params[0]);
+            } else {
+                return FlickrFetcher.searchPhotos(mQuery);
+            }
 
         }
 
@@ -349,6 +400,10 @@ public class PhotoGalleryFragment extends Fragment {
             mItems.addAll(galleryItems);
             Log.i(TAG, "added new elements. new size is " + mItems.size());
             setupAdapter(mItems);
+            if (mEmptyView != null && mPhotoRecyclerView != null) {
+                mEmptyView.setVisibility(View.GONE);
+                mPhotoRecyclerView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
