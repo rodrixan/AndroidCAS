@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">TestApp</string>
+    <string name="current_expression_title">Current expression</string>
+    <string name="selected_expression_title">Selected</string>
+    <string name="menu_item_history">History</string>
+    <string name="menu_draw_settings_title">Settings</string>
+    <string name="menu_draw_settings_color">Inverse color</string>
+</resources>
