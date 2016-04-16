@@ -6,10 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +27,7 @@ public class DragFragment extends Fragment {
     private static final String TAG = "APP_TEST";
 
     private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
     private NavigationView mNavigationView;
     private Toolbar mToolbar;
     private Callbacks mCallbacks;
@@ -36,6 +38,8 @@ public class DragFragment extends Fragment {
 
     public interface Callbacks {
         void setToolBar(Toolbar toolbar);
+
+        void setDrawerToggle();
     }
 
     @Override
@@ -65,19 +69,33 @@ public class DragFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_drag, container, false);
 
-        mToolbar = (Toolbar) v.findViewById(R.id.toolbar);
-        mCallbacks.setToolBar(mToolbar);
 
         wireComponents(v);
         setListeners();
 
+
         return v;
+    }
+
+    private void wireComponents(final View v) {
+        mDrawerLayout = (DrawerLayout) v.findViewById(R.id.fragment_drag_drawer_layout);
+        mNavigationView = (NavigationView) v.findViewById(R.id.fragment_drag_nav_view);
+        mToolbar = (Toolbar) v.findViewById(R.id.toolbar);
+        mCallbacks.setToolBar(mToolbar);
+        mDrawerToggle = new ActionBarDrawerToggle(
+                getActivity(),
+                mDrawerLayout,
+                mToolbar,
+                R.string.drawer_open,
+                R.string.drawer_close
+        );
     }
 
     private void setListeners() {
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(final MenuItem item) {
+
                 switch (item.getItemId()) {
                     case R.id.menu_draw_settings_color:
                         Toast.makeText(getActivity(), "Changed color", Toast.LENGTH_SHORT).show();
@@ -87,15 +105,16 @@ public class DragFragment extends Fragment {
                     default:
                         break;
                 }
+
                 return true;
             }
         });
-    }
 
 
-    private void wireComponents(final View v) {
-        mDrawerLayout = (DrawerLayout) v.findViewById(R.id.fragment_drag_drawer_layout);
-        mNavigationView = (NavigationView) v.findViewById(R.id.fragment_drag_nav_view);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mCallbacks.setDrawerToggle();
+
+        mDrawerToggle.syncState();
     }
 
     @Override
@@ -106,6 +125,9 @@ public class DragFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
         switch (item.getItemId()) {
             case R.id.menu_item_history:
                 Toast.makeText(getActivity(), "History not available", Toast.LENGTH_SHORT).show();
@@ -116,12 +138,12 @@ public class DragFragment extends Fragment {
     }
 
     public boolean isDrawerOpened() {
-        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(Gravity.START);
+        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START);
     }
 
     public void closeDrawer() {
         if (isDrawerOpened()) {
-            mDrawerLayout.closeDrawer(Gravity.START);
+            mDrawerLayout.closeDrawer(GravityCompat.START);
         }
     }
 }

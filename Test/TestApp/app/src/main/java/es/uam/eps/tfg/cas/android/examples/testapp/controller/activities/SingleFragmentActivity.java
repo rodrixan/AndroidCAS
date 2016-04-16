@@ -28,6 +28,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
         addFragmentToManager(R.id.fragment_container);
 
+
     }
 
 

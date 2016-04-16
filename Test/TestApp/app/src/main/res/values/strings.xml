@@ -5,4 +5,6 @@
     <string name="menu_item_history">History</string>
     <string name="menu_draw_settings_title">Settings</string>
     <string name="menu_draw_settings_color">Toggle color</string>
+    <string name="drawer_open">Draw open</string>
+    <string name="drawer_close">Draw close</string>
 </resources>

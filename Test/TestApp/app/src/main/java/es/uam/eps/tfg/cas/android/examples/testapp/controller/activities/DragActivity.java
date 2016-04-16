@@ -29,4 +29,10 @@ public class DragActivity extends SingleFragmentActivity implements DragFragment
     public void setToolBar(final Toolbar toolbar) {
         setSupportActionBar(toolbar);
     }
+
+    @Override
+    public void setDrawerToggle() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+    }
 }
