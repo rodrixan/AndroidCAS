@@ -1,22 +1,27 @@
 package es.uam.eps.tfg.cas.android.examples.testapp.view;
 
+import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.view.View;
+import android.widget.RelativeLayout;
 
-public class ExpressionView extends View {
+public class ExpressionView extends RelativeLayout {
 
     public ExpressionView(final Context context) {
-        this(context, null);
+        super(context);
     }
 
     public ExpressionView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    @Override
-    protected void onDraw(final Canvas canvas) {
-        super.onDraw(canvas);
+    public ExpressionView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
     }
+
+    @TargetApi(21)
+    public ExpressionView(final Context context, final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
 }

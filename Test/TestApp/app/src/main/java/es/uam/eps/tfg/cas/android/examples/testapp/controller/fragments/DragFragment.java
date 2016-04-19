@@ -20,11 +20,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import es.uam.eps.tfg.cas.android.examples.testapp.R;
+import es.uam.eps.tfg.cas.android.examples.testapp.view.ExpressionView;
 
 
 public class DragFragment extends Fragment {
@@ -38,10 +37,10 @@ public class DragFragment extends Fragment {
     private Toolbar mToolbar;
     private Callbacks mCallbacks;
 
-    private FrameLayout mCurrentExpLayout;
+    private ExpressionView mCurrentExpLayout;
     private Rect mDrawingRect;
 
-    private TextView mCurrentExpTextView;
+    //private TextView mCurrentExpTextView;
     private float mDX;
     private float mDY;
     private int mActivePointerId;
@@ -106,8 +105,8 @@ public class DragFragment extends Fragment {
         );
 
 
-        mCurrentExpTextView = (TextView) v.findViewById(R.id.current_exp);
-        mCurrentExpLayout = (FrameLayout) v.findViewById(R.id.current_exp_container);
+        //mCurrentExpTextView = (TextView) v.findViewById(R.id.current_exp);
+        mCurrentExpLayout = (ExpressionView) v.findViewById(R.id.current_exp_container);
         final ViewTreeObserver observer = mCurrentExpLayout.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
@@ -150,13 +149,13 @@ public class DragFragment extends Fragment {
 
         mDrawerToggle.syncState();
 
-        mCurrentExpTextView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(final View v, final MotionEvent event) {
-                dragTextView(v, event);
-                return true;
-            }
-        });
+        //mCurrentExpTextView.setOnTouchListener(new View.OnTouchListener() {
+        //    @Override
+        //    public boolean onTouch(final View v, final MotionEvent event) {
+        //        dragTextView(v, event);
+        //       return true;
+        //   }
+        //});
     }
 
     private void dragTextView(final View v, final MotionEvent event) {
