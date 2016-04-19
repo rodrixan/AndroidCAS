@@ -105,6 +105,7 @@ public class DragFragment extends Fragment {
                 R.string.drawer_close
         );
 
+
         mCurrentExpTextView = (TextView) v.findViewById(R.id.current_exp);
         mCurrentExpLayout = (FrameLayout) v.findViewById(R.id.current_exp_container);
         final ViewTreeObserver observer = mCurrentExpLayout.getViewTreeObserver();
