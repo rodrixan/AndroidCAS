@@ -2,9 +2,12 @@ package es.uam.eps.tfg.cas.android.examples.testapp.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -15,6 +18,7 @@ import es.uam.eps.tfg.cas.android.examples.testapp.R;
 
 public class ExpressionView extends View {
 
+    private static final String FONT_PATH = "fonts/lmromanslant10-regular-ExpView.otf";
     private final Context mContext;
     private final GestureDetector mGestureDetector;
     private final Paint mCircle;
@@ -25,6 +29,9 @@ public class ExpressionView extends View {
     private int mHeight;
     private int mWidth;
     private boolean mSelected = false;
+
+    private final Typeface mFont;
+
 
     public ExpressionView(final Context context) {
         this(context, null, 0);
@@ -37,6 +44,9 @@ public class ExpressionView extends View {
     public ExpressionView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
+
+        mFont = Typeface.createFromAsset(context.getAssets(), FONT_PATH);
+
         mGestureDetector = new GestureDetector(context, new MyGestureListener());
         mCoords = new PointF(0, 0);
         mCircleRect = new RectF(mCoords.x - 50, mCoords.y + 50, mCoords.x + 50, mCoords.y - 50);
@@ -82,6 +92,19 @@ public class ExpressionView extends View {
         canvas.drawCircle(mCoords.x, mCoords.y, 50f, mCircle);
         canvas.drawRect(mCircleRect, mSquare);
         canvas.drawRect(mSqareRect, mSquare);
+        final Paint textPaint = new Paint();
+        textPaint.setTypeface(mFont);
+        textPaint.setColor(Color.BLACK);
+        textPaint.setStyle(Paint.Style.FILL);
+        textPaint.setStrokeWidth(5f);
+        textPaint.setTextSize(100f);
+        final String exp = "(x+3)*5 / (a-b)= 2";
+        final Rect textBound = new Rect();
+        textPaint.getTextBounds(exp, 0, exp.length(), textBound);
+        canvas.drawText(exp, 100, 100, textPaint);
+        textBound.set(textBound.left + 100, textBound.top + 100, textBound.right + 100, textBound.bottom + 100);
+        textPaint.setStyle(Paint.Style.STROKE);
+        canvas.drawRect(textBound, textPaint);
     }
 
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
