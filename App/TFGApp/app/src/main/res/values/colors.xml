@@ -12,5 +12,6 @@
     <color name="dark_blue">#005A8A</color>
     <color name="white">@android:color/white</color>
     <color name="dark_orange">#FFC107</color>
+    <color name="medium_orange">#FFC107</color>
 
 </resources>
