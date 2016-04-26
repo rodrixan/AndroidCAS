@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,6 +9,7 @@
     tools:showIn="@layout/app_bar_expression"
     android:orientation="vertical">
 
+    <!--xmlns:card_view="http://schemas.android.com/apk/res-auto" for using card_view:background-->
     <android.support.v7.widget.CardView
         android:id="@+id/fragment_drag_content_main_exp"
         android:layout_width="match_parent"
@@ -27,12 +27,12 @@
                 android:layout_height="wrap_content"
                 style="?android:listSeparatorTextViewStyle"
                 android:textSize="@dimen/card_title_size"
-                android:text="@string/current_expression_title"/>
+                android:text="@string/current_expression_title" />
 
             <es.uam.eps.tfg.app.tfgapp.view.ExpressionView
                 android:id="@+id/current_exp_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
         </LinearLayout>
     </android.support.v7.widget.CardView>
@@ -55,7 +55,7 @@
                 android:layout_weight="1"
                 style="?android:listSeparatorTextViewStyle"
                 android:textSize="@dimen/card_title_size"
-                android:text="@string/selected_expression_title"/>
+                android:text="@string/selected_expression_title" />
 
 
             <TextView
@@ -64,7 +64,7 @@
                 android:layout_weight="3"
                 android:gravity="center"
                 android:textSize="20dp"
-                android:text="((x+34)*55)"/>
+                android:text="((x+34)*55)" />
 
         </LinearLayout>
 
