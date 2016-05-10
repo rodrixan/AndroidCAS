@@ -2,7 +2,6 @@ package es.uam.eps.tfg.app.tfgapp.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -20,7 +19,7 @@ import es.uam.eps.tfg.app.tfgapp.R;
 public class ExpressionView extends View {
 
     private static final String FONT_PATH = "fonts/lmromanslant10-regular-ExpView.otf";
-    private final Context mContext;
+
     private final GestureDetector mGestureDetector;
     private final Paint mCircle;
     private final RectF mCircleRect;
@@ -31,7 +30,7 @@ public class ExpressionView extends View {
     private int mWidth;
     private boolean mSelected = false;
 
-    private final Typeface mFont;
+    private final DrawableExpression mExp;
 
 
     public ExpressionView(final Context context) {
@@ -44,9 +43,8 @@ public class ExpressionView extends View {
 
     public ExpressionView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mContext = context;
 
-        mFont = Typeface.createFromAsset(context.getAssets(), FONT_PATH);
+        final Typeface font = Typeface.createFromAsset(context.getAssets(), FONT_PATH);
 
         mGestureDetector = new GestureDetector(context, new MyGestureListener());
         mCoords = new PointF(0, 0);
@@ -61,6 +59,8 @@ public class ExpressionView extends View {
         mSquare.setColor(getResources().getColor(R.color.colorPrimaryDark));
         mSquare.setStrokeWidth(5f);
         mSqareRect = new RectF(100, 100, 200, 200);
+
+        mExp = new DrawableExpression(font, new PointF(500, 200), "2+(3-x/2) = 45 * a");
     }
 
     @Override
@@ -93,19 +93,10 @@ public class ExpressionView extends View {
         canvas.drawCircle(mCoords.x, mCoords.y, 50f, mCircle);
         canvas.drawRect(mCircleRect, mSquare);
         canvas.drawRect(mSqareRect, mSquare);
-        final Paint textPaint = new Paint();
-        textPaint.setTypeface(mFont);
-        textPaint.setColor(Color.BLACK);
-        textPaint.setStyle(Paint.Style.FILL);
-        textPaint.setStrokeWidth(5f);
-        textPaint.setTextSize(100f);
-        final String exp = "(x+3)*5 / (a-b)= 2";
-        final Rect textBound = new Rect();
-        textPaint.getTextBounds(exp, 0, exp.length(), textBound);
-        canvas.drawText(exp, 100, 100, textPaint);
-        textBound.set(textBound.left + 100, textBound.top + 100, textBound.right + 100, textBound.bottom + 100);
-        textPaint.setStyle(Paint.Style.STROKE);
-        canvas.drawRect(textBound, textPaint);
+
+        mExp.onDraw(canvas);
+
+
     }
 
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -119,12 +110,22 @@ public class ExpressionView extends View {
             } else {
                 mSelected = true;
             }
+            if (!mExp.contains(event.getX(), event.getY())) {
+                Log.d("APP_TEST", "la posicion no esta dentro de " + mCircleRect);
+                mSelected = mSelected || false;
+            } else {
+                mSelected = mSelected || true;
+            }
             return true;
         }
 
         @Override
         public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
             Log.d("APP_TEST", "Posicion inicial: " + e1.getX() + "," + e1.getY() + " - Posicion actual: " + e2.getX() + "," + e2.getY());
+
+            if (mSelected && mExp.isValidPosition(e2.getX(), e2.getY(),new Rect(0, 0, mWidth, mHeight))) {
+                mExp.updateCoordinates(e2.getX(), e2.getY());
+            }
 
             if (mSelected && isCircleInside(new float[]{e2.getX(), e2.getY()})) {
                 mCoords.set(e2.getX(), e2.getY());
