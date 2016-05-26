@@ -2,10 +2,8 @@ package es.uam.eps.tfg.app.tfgapp.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -13,7 +11,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import es.uam.eps.tfg.app.tfgapp.R;
+import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 
 
 public class ExpressionView extends View {
@@ -21,11 +19,11 @@ public class ExpressionView extends View {
     private static final String FONT_PATH = "fonts/lmromanslant10-regular-ExpView.otf";
 
     private final GestureDetector mGestureDetector;
-    private final Paint mCircle;
-    private final RectF mCircleRect;
-    private final Paint mSquare;
-    private final RectF mSqareRect;
-    private final PointF mCoords;
+    //    private final Paint mCircle;
+//    private final RectF mCircleRect;
+//    private final Paint mSquare;
+//    private final RectF mSqareRect;
+//    private final PointF mCoords;
     private int mHeight;
     private int mWidth;
     private boolean mSelected = false;
@@ -47,31 +45,33 @@ public class ExpressionView extends View {
         final Typeface font = Typeface.createFromAsset(context.getAssets(), FONT_PATH);
 
         mGestureDetector = new GestureDetector(context, new MyGestureListener());
-        mCoords = new PointF(0, 0);
-        mCircleRect = new RectF(mCoords.x - 50, mCoords.y + 50, mCoords.x + 50, mCoords.y - 50);
-        Log.d("APP_TEST", "RectCirculo: " + mCircleRect);
-        mCircle = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mCircle.setColor(getResources().getColor(R.color.colorAccent));
-        mCircle.setStyle(Paint.Style.FILL);
+//        mCoords = new PointF(0, 0);
+//        mCircleRect = new RectF(mCoords.x - 50, mCoords.y + 50, mCoords.x + 50, mCoords.y - 50);
+//        Log.d("APP_TEST", "RectCirculo: " + mCircleRect);
+//        mCircle = new Paint(Paint.ANTI_ALIAS_FLAG);
+//        mCircle.setColor(getResources().getColor(R.color.colorAccent));
+//        mCircle.setStyle(Paint.Style.FILL);
+//
+//        mSquare = new Paint(Paint.ANTI_ALIAS_FLAG);
+//        mSquare.setStyle(Paint.Style.STROKE);
+//        mSquare.setColor(getResources().getColor(R.color.colorPrimaryDark));
+//        mSquare.setStrokeWidth(5f);
+//        mSqareRect = new RectF(100, 100, 200, 200);
 
-        mSquare = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mSquare.setStyle(Paint.Style.STROKE);
-        mSquare.setColor(getResources().getColor(R.color.colorPrimaryDark));
-        mSquare.setStrokeWidth(5f);
-        mSqareRect = new RectF(100, 100, 200, 200);
-
-        mExp = new DrawableExpression(font, new PointF(500, 200), "2+(3-x/2) = 45 * a");
+        mExp = new DrawableExpressionList(font, new PointF(500, 200), Utils.createSampleExpression());
     }
+
 
     @Override
     protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
         mWidth = w;
         mHeight = h;
-        mCoords.set(w / 2, h / 2);
-        mCircleRect.set(mCoords.x - 50, mCoords.y - 50, mCoords.x + 50, mCoords.y + 50);
-        Log.d("APP_TEST", "RectCirculo: " + mCircleRect);
-        Log.d("APP_TEST", "Anchura: " + w + ", Altura: " + h);
-        Log.d("APP_TEST", "Coordenadas iniciales: " + mCoords.x + " " + mCoords.y);
+        mExp.updateCoordinates(w / 2, h / 2);
+//        mCoords.set(w / 2, h / 2);
+//        mCircleRect.set(mCoords.x - 50, mCoords.y - 50, mCoords.x + 50, mCoords.y + 50);
+//        Log.d("APP_TEST", "RectCirculo: " + mCircleRect);
+//        Log.d("APP_TEST", "Anchura: " + w + ", Altura: " + h);
+//        Log.d("APP_TEST", "Coordenadas iniciales: " + mCoords.x + " " + mCoords.y);
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -90,9 +90,9 @@ public class ExpressionView extends View {
     @Override
     protected void onDraw(final Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawCircle(mCoords.x, mCoords.y, 50f, mCircle);
-        canvas.drawRect(mCircleRect, mSquare);
-        canvas.drawRect(mSqareRect, mSquare);
+//        canvas.drawCircle(mCoords.x, mCoords.y, 50f, mCircle);
+//        canvas.drawRect(mCircleRect, mSquare);
+//        canvas.drawRect(mSqareRect, mSquare);
 
         mExp.onDraw(canvas);
 
@@ -103,18 +103,18 @@ public class ExpressionView extends View {
         @Override
         public boolean onDown(final MotionEvent event) {
             Log.d("APP_TEST", "onDown");
-            Log.d("APP_TEST", "Click en:" + event.getX() + "," + event.getY() + "; circulo en " + mCoords.x + "," + mCoords.y);
-            if (!mCircleRect.contains(event.getX(), event.getY())) {
-                Log.d("APP_TEST", "la posicion no esta dentro de " + mCircleRect);
+//            Log.d("APP_TEST", "Click en:" + event.getX() + "," + event.getY() + "; circulo en " + mCoords.x + "," + mCoords.y);
+//            if (!mCircleRect.contains(event.getX(), event.getY())) {
+//                Log.d("APP_TEST", "la posicion no esta dentro de " + mCircleRect);
+//                mSelected = false;
+//            } else {
+//                mSelected = true;
+//            }
+            if (!mExp.contains(event.getX(), event.getY())) {
+//                Log.d("APP_TEST", "la posicion no esta dentro de " + mCircleRect);
                 mSelected = false;
             } else {
                 mSelected = true;
-            }
-            if (!mExp.contains(event.getX(), event.getY())) {
-                Log.d("APP_TEST", "la posicion no esta dentro de " + mCircleRect);
-                mSelected = mSelected || false;
-            } else {
-                mSelected = mSelected || true;
             }
             return true;
         }
@@ -123,14 +123,14 @@ public class ExpressionView extends View {
         public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
             Log.d("APP_TEST", "Posicion inicial: " + e1.getX() + "," + e1.getY() + " - Posicion actual: " + e2.getX() + "," + e2.getY());
 
-            if (mSelected && mExp.isValidPosition(e2.getX(), e2.getY(),new Rect(0, 0, mWidth, mHeight))) {
+            if (mSelected && mExp.isValidPosition(e2.getX(), e2.getY(), new Rect(0, 0, mWidth, mHeight))) {
                 mExp.updateCoordinates(e2.getX(), e2.getY());
             }
 
-            if (mSelected && isCircleInside(new float[]{e2.getX(), e2.getY()})) {
-                mCoords.set(e2.getX(), e2.getY());
-                mCircleRect.set(mCoords.x - 50, mCoords.y - 50, mCoords.x + 50, mCoords.y + 50);
-            }
+//            if (mSelected && isCircleInside(new float[]{e2.getX(), e2.getY()})) {
+//                mCoords.set(e2.getX(), e2.getY());
+//                mCircleRect.set(mCoords.x - 50, mCoords.y - 50, mCoords.x + 50, mCoords.y + 50);
+//            }
             return true;
         }
 

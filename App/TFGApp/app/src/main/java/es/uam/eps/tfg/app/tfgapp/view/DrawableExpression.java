@@ -1,76 +1,101 @@
 package es.uam.eps.tfg.app.tfgapp.view;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 
+import es.uam.eps.expressions.types.interfaces.Expression;
+
 /**
- *
+ * Each one of the elements that compose the ExpressionView
  */
-public class DrawableExpression extends DrawableElement {
+public abstract class DrawableExpression {
+    private static final float DEFAULT_TEXTSIZE = 50f;
 
-    private static final float DEFAULT_TEXTSIZE = 100f;
+    protected Rect mRectContainer;
+    protected float x, y;
+    protected Paint mPaint;
 
-    private String mText;
+    public abstract void onDraw(Canvas canvas);
+
+    public abstract Expression getExpression();
 
 
-    public DrawableExpression(final Typeface font, final float textSize, final String text) {
-        super();
-        mPaint.setTypeface(font);
-        mPaint.setTextSize(textSize);
+    protected DrawableExpression(final Typeface font) {
+        mRectContainer = new Rect();
+        x = 0;
+        y = 0;
+        mPaint = new Paint();
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setTextSize(DEFAULT_TEXTSIZE);
         mPaint.setTextAlign(Paint.Align.CENTER);
-        mText = text;
-        updateBounds();
+        mPaint.setTypeface(font);
     }
 
-    public DrawableExpression(final Typeface font, final float textSize, final PointF coordinates, final String text) {
-        this(font, textSize, text);
-        updateCoordinates(coordinates);
+    public Rect getContainer() {
+        return mRectContainer;
     }
 
-    public DrawableExpression(final String text) {
-        this(null, text);
+    public PointF getCoordinates() {
+        return new PointF(x, y);
     }
 
-    public DrawableExpression(final Typeface font, final String text) {
-        this(font, DEFAULT_TEXTSIZE, text);
+    public void updateCoordinates(final PointF newCoord) {
+        updateCoordinates(newCoord.x, newCoord.y);
     }
 
-    public DrawableExpression(final Typeface font, final PointF coordinates, final String text) {
-        this(font, DEFAULT_TEXTSIZE, coordinates, text);
+    public float width() {
+        return Math.abs(mRectContainer.right - mRectContainer.left);
     }
 
-    @Override
+    public float height() {
+        return Math.abs(mRectContainer.bottom - mRectContainer.top);
+    }
+
+    public boolean isValidPosition(final float newX, final float newY, final Rect outerContainer) {
+        if (newX - width() / 2 < outerContainer.left || newY - height() / 2 < outerContainer.top) {
+            return false;
+        }
+        if (newX + width() / 2 > outerContainer.right || newY + height() / 2 > outerContainer.bottom) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isInside(final Rect outerContainer) {
+        return outerContainer.contains(mRectContainer);
+    }
+
+    public void setColor(final int color) {
+        mPaint.setColor(color);
+    }
+
+    public int getColor() {
+        return mPaint.getColor();
+    }
+
+    public boolean contains(final float x, final float y) {
+        return mRectContainer.contains((int) x, (int) y);
+    }
+
     public void updateCoordinates(final float x, final float y) {
         this.x = x;
         this.y = y;
         updateBounds(x, y);
     }
 
-    private void updateBounds(final float x, final float y) {
+    protected void updateBounds(final float x, final float y) {
         updateBounds();
         mRectContainer.offset((int) (x - width() / 2), (int) y);
     }
 
-    private void updateBounds() {
-        mPaint.getTextBounds(mText, 0, mText.length(), mRectContainer);
+    protected void updateBounds() {
+        final String text = getExpression().symbolicExpression();
+        mPaint.getTextBounds(text, 0, text.length(), mRectContainer);
     }
 
-    @Override
-    public void onDraw(final Canvas canvas) {
-        canvas.drawText(mText, x, y, mPaint);
-        final Paint paint = new Paint();
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.BLACK);
-        canvas.drawRect(mRectContainer, paint);
-    }
-
-    public void setText(final String text) {
-        mText = text;
-        updateBounds();
-    }
 
     public void setTextSize(final float size) {
         mPaint.setTextSize(size);
@@ -81,4 +106,6 @@ public class DrawableExpression extends DrawableElement {
         mPaint.setTypeface(font);
         updateBounds();
     }
+
+
 }

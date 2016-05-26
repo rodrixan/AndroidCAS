@@ -3,9 +3,13 @@ package es.uam.eps.tfg.app.tfgapp.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.uam.eps.expressions.types.interfaces.Expression;
+import es.uam.eps.expressions.types.operations.SUMList;
+
 
 public class CASImplementation implements CASAdapter {
     List<String> expressions;
+    SUMList<Expression> exp;
 
     public CASImplementation() {
         expressions = new ArrayList<>();
