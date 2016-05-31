@@ -59,6 +59,7 @@ public class ExpressionView extends View {
 //        mSqareRect = new RectF(100, 100, 200, 200);
 
         mExp = new DrawableExpressionList(font, new PointF(500, 200), Utils.createSampleExpression());
+        Log.d("APP_TEST", "Main exp position: " + mExp.x + " " + mExp.y);
     }
 
 
@@ -67,6 +68,7 @@ public class ExpressionView extends View {
         mWidth = w;
         mHeight = h;
         mExp.updateCoordinates(w / 2, h / 2);
+        Log.d("APP_TEST", "Main exp position: " + mExp.x + " " + mExp.y);
 //        mCoords.set(w / 2, h / 2);
 //        mCircleRect.set(mCoords.x - 50, mCoords.y - 50, mCoords.x + 50, mCoords.y + 50);
 //        Log.d("APP_TEST", "RectCirculo: " + mCircleRect);
@@ -95,6 +97,8 @@ public class ExpressionView extends View {
 //        canvas.drawRect(mSqareRect, mSquare);
 
         mExp.onDraw(canvas);
+        Log.d("APP_TEST", "Main exp position: " + mExp.x + " " + mExp.y);
+        Log.d("APP_TEST", "Main exp left/right: " + mExp.mRectContainer.left + " " + mExp.mRectContainer.right);
 
 
     }
@@ -114,7 +118,7 @@ public class ExpressionView extends View {
 //                Log.d("APP_TEST", "la posicion no esta dentro de " + mCircleRect);
                 mSelected = false;
             } else {
-                mSelected = true;
+                mSelected = false;
             }
             return true;
         }
