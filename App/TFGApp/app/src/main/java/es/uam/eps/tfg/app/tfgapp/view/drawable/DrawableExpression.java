@@ -1,7 +1,8 @@
-package es.uam.eps.tfg.app.tfgapp.view;
+package es.uam.eps.tfg.app.tfgapp.view.drawable;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -12,7 +13,7 @@ import es.uam.eps.expressions.types.interfaces.Expression;
  * Each one of the elements that compose the ExpressionView
  */
 public abstract class DrawableExpression {
-    private static final float DEFAULT_TEXTSIZE = 50f;
+    private static final float DEFAULT_TEXTSIZE = 60f;
 
     protected Rect mRectContainer;
     protected float x, y;
@@ -42,15 +43,12 @@ public abstract class DrawableExpression {
         return new PointF(x, y);
     }
 
-    public void updateCoordinates(final PointF newCoord) {
-        updateCoordinates(newCoord.x, newCoord.y);
-    }
 
-    public float width() {
+    public int width() {
         return Math.abs(mRectContainer.right - mRectContainer.left);
     }
 
-    public float height() {
+    public int height() {
         return Math.abs(mRectContainer.bottom - mRectContainer.top);
     }
 
@@ -80,19 +78,23 @@ public abstract class DrawableExpression {
         return mRectContainer.contains((int) x, (int) y);
     }
 
-    public void updateCoordinates(final float x, final float y) {
+    public void updateCoordinates(final Point newCoord) {
+        updateCoordinates(newCoord.x, newCoord.y);
+    }
+
+    public void updateCoordinates(final int x, final int y) {
         this.x = x;
         this.y = y;
         updateBounds(x, y);
     }
 
-    protected void updateBounds(final float x, final float y) {
+    private void updateBounds(final int x, final int y) {
         updateBounds();
-        mRectContainer.offset((int) (x - width() / 2), (int) y);
+        mRectContainer.offset(x - width() / 2, y);
     }
 
-    protected void updateBounds() {
-        final String text = getExpression().symbolicExpression();
+    private void updateBounds() {
+        final String text = getExpression().symbolicExpression().replaceAll("\\s", "");
         mPaint.getTextBounds(text, 0, text.length(), mRectContainer);
     }
 
@@ -107,5 +109,27 @@ public abstract class DrawableExpression {
         updateBounds();
     }
 
+    public float x() {
+        return x;
+    }
 
+    public float y() {
+        return y;
+    }
+
+    public int left() {
+        return mRectContainer.left;
+    }
+
+    public int right() {
+        return mRectContainer.right;
+    }
+
+    public int top() {
+        return mRectContainer.top;
+    }
+
+    public int bottom() {
+        return mRectContainer.bottom;
+    }
 }

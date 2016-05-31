@@ -2,7 +2,7 @@ package es.uam.eps.tfg.app.tfgapp.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.PointF;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
@@ -12,6 +12,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
+import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpression;
+import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpressionList;
 
 
 public class ExpressionView extends View {
@@ -58,8 +60,8 @@ public class ExpressionView extends View {
 //        mSquare.setStrokeWidth(5f);
 //        mSqareRect = new RectF(100, 100, 200, 200);
 
-        mExp = new DrawableExpressionList(font, new PointF(500, 200), Utils.createSampleExpression());
-        Log.d("APP_TEST", "Main exp position: " + mExp.x + " " + mExp.y);
+        mExp = new DrawableExpressionList(font, new Point(500, 200), Utils.createMediumSampleExpression());
+        Log.d("APP_TEST", "Main exp position: " + mExp.x() + " " + mExp.y());
     }
 
 
@@ -67,13 +69,11 @@ public class ExpressionView extends View {
     protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
         mWidth = w;
         mHeight = h;
+        if (w / 2 == 952.0)
+            Log.d("APP_TEST", "Main exp position: " + mExp.x() + " " + mExp.y());
         mExp.updateCoordinates(w / 2, h / 2);
-        Log.d("APP_TEST", "Main exp position: " + mExp.x + " " + mExp.y);
-//        mCoords.set(w / 2, h / 2);
-//        mCircleRect.set(mCoords.x - 50, mCoords.y - 50, mCoords.x + 50, mCoords.y + 50);
-//        Log.d("APP_TEST", "RectCirculo: " + mCircleRect);
-//        Log.d("APP_TEST", "Anchura: " + w + ", Altura: " + h);
-//        Log.d("APP_TEST", "Coordenadas iniciales: " + mCoords.x + " " + mCoords.y);
+
+
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -97,8 +97,8 @@ public class ExpressionView extends View {
 //        canvas.drawRect(mSqareRect, mSquare);
 
         mExp.onDraw(canvas);
-        Log.d("APP_TEST", "Main exp position: " + mExp.x + " " + mExp.y);
-        Log.d("APP_TEST", "Main exp left/right: " + mExp.mRectContainer.left + " " + mExp.mRectContainer.right);
+        Log.d("APP_TEST", "Main exp position: " + mExp.x() + " " + mExp.y());
+        Log.d("APP_TEST", "Main exp left/right: " + mExp.left() + " " + mExp.right());
 
 
     }
@@ -128,7 +128,7 @@ public class ExpressionView extends View {
             Log.d("APP_TEST", "Posicion inicial: " + e1.getX() + "," + e1.getY() + " - Posicion actual: " + e2.getX() + "," + e2.getY());
 
             if (mSelected && mExp.isValidPosition(e2.getX(), e2.getY(), new Rect(0, 0, mWidth, mHeight))) {
-                mExp.updateCoordinates(e2.getX(), e2.getY());
+                mExp.updateCoordinates((int) e2.getX(), (int) e2.getY());
             }
 
 //            if (mSelected && isCircleInside(new float[]{e2.getX(), e2.getY()})) {
