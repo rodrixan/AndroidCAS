@@ -3,7 +3,6 @@ package es.uam.eps.tfg.app.tfgapp.view.drawable;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 
@@ -13,16 +12,13 @@ import es.uam.eps.expressions.types.interfaces.Expression;
  * Each one of the elements that compose the ExpressionView
  */
 public abstract class DrawableExpression {
-    private static final float DEFAULT_TEXTSIZE = 60f;
+    private static final float DEFAULT_TEXTSIZE = 70f;
 
     protected Rect mRectContainer;
-    protected float x, y;
+    protected int x, y;
+    protected int mWidth;
+    protected int mHeight;
     protected Paint mPaint;
-
-    public abstract void onDraw(Canvas canvas);
-
-    public abstract Expression getExpression();
-
 
     protected DrawableExpression(final Typeface font) {
         mRectContainer = new Rect();
@@ -35,21 +31,14 @@ public abstract class DrawableExpression {
         mPaint.setTypeface(font);
     }
 
+    public abstract void onDraw(Canvas canvas);
+
     public Rect getContainer() {
         return mRectContainer;
     }
 
-    public PointF getCoordinates() {
-        return new PointF(x, y);
-    }
-
-
-    public int width() {
-        return Math.abs(mRectContainer.right - mRectContainer.left);
-    }
-
-    public int height() {
-        return Math.abs(mRectContainer.bottom - mRectContainer.top);
+    public Point getCoordinates() {
+        return new Point(x, y);
     }
 
     public boolean isValidPosition(final float newX, final float newY, final Rect outerContainer) {
@@ -62,20 +51,28 @@ public abstract class DrawableExpression {
         return true;
     }
 
-    public boolean isInside(final Rect outerContainer) {
-        return outerContainer.contains(mRectContainer);
+    public int width() {
+        return mWidth;
     }
 
-    public void setColor(final int color) {
-        mPaint.setColor(color);
+    public int height() {
+        return mHeight;
+    }
+
+    public boolean isInside(final Rect outerContainer) {
+        return outerContainer.contains(mRectContainer);
     }
 
     public int getColor() {
         return mPaint.getColor();
     }
 
-    public boolean contains(final float x, final float y) {
-        return mRectContainer.contains((int) x, (int) y);
+    public void setColor(final int color) {
+        mPaint.setColor(color);
+    }
+
+    public boolean contains(final int x, final int y) {
+        return mRectContainer.contains(x, y);
     }
 
     public void updateCoordinates(final Point newCoord) {
@@ -85,35 +82,53 @@ public abstract class DrawableExpression {
     public void updateCoordinates(final int x, final int y) {
         this.x = x;
         this.y = y;
-        updateBounds(x, y);
+        mRectContainer = updateBounds();
     }
 
-    private void updateBounds(final int x, final int y) {
-        updateBounds();
-        mRectContainer.offset(x - width() / 2, y);
+    public Rect updateBounds() {
+
+        final Rect defaultBounds = getDefaultBounds();
+
+        mWidth = defaultBounds.width();
+        mHeight = defaultBounds.height();
+
+        return getCenteredBounds(defaultBounds);
     }
 
-    private void updateBounds() {
-        final String text = getExpression().symbolicExpression().replaceAll("\\s", "");
-        mPaint.getTextBounds(text, 0, text.length(), mRectContainer);
+    private Rect getDefaultBounds() {
+        final Rect rect = new Rect();
+        //final String text = getExpression().symbolicExpression().replaceAll("\\s", "");
+        final String text = getExpression().toString();
+        mPaint.getTextBounds(text, 0, text.length(), rect);
+        return rect;
     }
 
+    public abstract Expression getExpression();
+
+    private Rect getCenteredBounds(final Rect defaultBounds) {
+        final Rect container = new Rect();
+        container.left = x - defaultBounds.width() / 2;
+        container.right = x + defaultBounds.width() / 2;
+        container.top = y - defaultBounds.height();
+        container.bottom = y;
+        return container;
+    }
 
     public void setTextSize(final float size) {
         mPaint.setTextSize(size);
-        updateBounds();
+        mRectContainer = updateBounds();
     }
 
     public void setFont(final Typeface font) {
         mPaint.setTypeface(font);
-        updateBounds();
+        mRectContainer = updateBounds();
     }
 
-    public float x() {
+    public int x() {
         return x;
     }
 
-    public float y() {
+    public int y() {
         return y;
     }
 

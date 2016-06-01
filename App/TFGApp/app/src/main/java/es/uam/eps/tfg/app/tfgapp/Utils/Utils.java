@@ -1,6 +1,5 @@
 package es.uam.eps.tfg.app.tfgapp.Utils;
 
-
 import es.uam.eps.expressions.types.ExpressionList;
 import es.uam.eps.expressions.types.SingleExpression;
 import es.uam.eps.expressions.types.interfaces.Expression;
@@ -37,6 +36,7 @@ public final class Utils {
         subItem31.add(new SingleExpression("f"));
 
         item3.add(subItem31);
+        item3.add(new SingleExpression("a"));
 
         sumList.add(new SingleExpression("i"));
         sumList.add(item1);
@@ -44,7 +44,6 @@ public final class Utils {
         sumList.add(item2);
         sumList.add(item3);
         sumList.add(new SingleExpression("g"));
-
 
         return sumList;
     }
@@ -112,7 +111,6 @@ public final class Utils {
         sumList.add(new SingleExpression("g"));
         sumList.add(new SingleExpression("g"));
         sumList.add(new SingleExpression("g"));
-
 
         return sumList;
     }

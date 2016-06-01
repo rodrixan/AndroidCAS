@@ -2,7 +2,6 @@ package es.uam.eps.tfg.app.tfgapp.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
@@ -15,12 +14,12 @@ import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpression;
 import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpressionList;
 
-
 public class ExpressionView extends View {
 
     private static final String FONT_PATH = "fonts/lmromanslant10-regular-ExpView.otf";
 
     private final GestureDetector mGestureDetector;
+    private final DrawableExpression mExp;
     //    private final Paint mCircle;
 //    private final RectF mCircleRect;
 //    private final Paint mSquare;
@@ -30,15 +29,8 @@ public class ExpressionView extends View {
     private int mWidth;
     private boolean mSelected = false;
 
-    private final DrawableExpression mExp;
-
-
     public ExpressionView(final Context context) {
         this(context, null, 0);
-    }
-
-    public ExpressionView(final Context context, final AttributeSet attrs) {
-        this(context, attrs, 0);
     }
 
     public ExpressionView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
@@ -60,10 +52,13 @@ public class ExpressionView extends View {
 //        mSquare.setStrokeWidth(5f);
 //        mSqareRect = new RectF(100, 100, 200, 200);
 
-        mExp = new DrawableExpressionList(font, new Point(500, 200), Utils.createMediumSampleExpression());
+        mExp = new DrawableExpressionList(font, Utils.createUltraLongSampleExpression());
         Log.d("APP_TEST", "Main exp position: " + mExp.x() + " " + mExp.y());
     }
 
+    public ExpressionView(final Context context, final AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
 
     @Override
     protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
@@ -72,7 +67,6 @@ public class ExpressionView extends View {
         if (w / 2 == 952.0)
             Log.d("APP_TEST", "Main exp position: " + mExp.x() + " " + mExp.y());
         mExp.updateCoordinates(w / 2, h / 2);
-
 
         super.onSizeChanged(w, h, oldw, oldh);
     }
@@ -97,9 +91,28 @@ public class ExpressionView extends View {
 //        canvas.drawRect(mSqareRect, mSquare);
 
         mExp.onDraw(canvas);
-        Log.d("APP_TEST", "Main exp position: " + mExp.x() + " " + mExp.y());
-        Log.d("APP_TEST", "Main exp left/right: " + mExp.left() + " " + mExp.right());
 
+//        final Paint mPaint = new Paint();
+//        mPaint.setStyle(Paint.Style.FILL);
+//        mPaint.setTextSize(60);
+//        mPaint.setTextAlign(Paint.Align.CENTER);
+//        final Typeface font = Typeface.createFromAsset(getContext().getAssets(), FONT_PATH);
+//        mPaint.setTypeface(font);
+//        final int x = mWidth / 2;
+//        final int y = mHeight / 2;
+//        final String text = "j";
+//        canvas.drawText(text, x, y, mPaint);
+//        final Rect rect = new Rect();
+//        final Rect container = new Rect();
+//        mPaint.getTextBounds(text, 0, text.length(), rect);
+//        container.left = x - rect.width() / 2;
+//        container.right = x + rect.width() / 2;
+//        container.top = y - rect.height();
+//        container.bottom = y;
+//        mPaint.setStyle(Paint.Style.STROKE);
+//        canvas.drawRect(container, mPaint);
+//        Log.d("APP_TEST", "Main exp position: " + mExp.x() + " " + mExp.y());
+//        Log.d("APP_TEST", "Main exp left/right: " + mExp.left() + " " + mExp.right());
 
     }
 
@@ -114,7 +127,7 @@ public class ExpressionView extends View {
 //            } else {
 //                mSelected = true;
 //            }
-            if (!mExp.contains(event.getX(), event.getY())) {
+            if (!mExp.contains((int) event.getX(), (int) event.getY())) {
 //                Log.d("APP_TEST", "la posicion no esta dentro de " + mCircleRect);
                 mSelected = false;
             } else {
@@ -155,7 +168,6 @@ public class ExpressionView extends View {
             Log.d("APP_TEST", "onDoubleTap");
             return true;
         }
-
 
         @Override
         public boolean onFling(final MotionEvent event1, final MotionEvent event2,

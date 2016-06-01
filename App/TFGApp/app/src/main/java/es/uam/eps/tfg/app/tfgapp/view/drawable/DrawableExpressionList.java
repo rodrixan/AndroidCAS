@@ -15,13 +15,12 @@ import es.uam.eps.expressions.types.SingleExpression;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.expressions.types.interfaces.Operator;
 
-
 public class DrawableExpressionList extends DrawableExpression {
 
     private final ExpressionList<Expression> mExpressionList;
     private List<DrawableExpression> mDrawableExpList;
 
-    protected DrawableExpressionList(final Typeface font, final ExpressionList<Expression> expList) {
+    public DrawableExpressionList(final Typeface font, final ExpressionList<Expression> expList) {
         this(font, new Point(0, 0), expList);
     }
 
@@ -36,12 +35,10 @@ public class DrawableExpressionList extends DrawableExpression {
         this(null, expression);
     }
 
-
     @Override
     public Expression getExpression() {
         return mExpressionList;
     }
-
 
     @Override
     public void onDraw(final Canvas canvas) {
@@ -62,13 +59,11 @@ public class DrawableExpressionList extends DrawableExpression {
         canvas.drawRect(mRectContainer, paint);
     }
 
-
     public void createDrawableList() {
         mDrawableExpList = new ArrayList<>();
         final Operator op = mExpressionList.getOperator();
         for (final Expression exp : mExpressionList) {
-            final List<DrawableExpression> drawExp = getDrawableFromExpression(exp);
-
+            final List<DrawableExpression> drawExp = getDrawableExpressionFromExpression(exp);
             if (drawExp.size() != 0) {
                 mDrawableExpList.addAll(drawExp);
             }
@@ -78,63 +73,60 @@ public class DrawableExpressionList extends DrawableExpression {
         mDrawableExpList.remove(mDrawableExpList.size() - 1);
     }
 
-    private List<DrawableExpression> getDrawableFromExpression(final Expression exp) {
-        final List<DrawableExpression> drawExpList = new ArrayList<>();
+    private List<DrawableExpression> getDrawableExpressionFromExpression(final Expression exp) {
 
         if (exp instanceof ExpressionList) {
-
-            final DrawableExpressionList drawableExpressionList = new DrawableExpressionList(mPaint.getTypeface(), (ExpressionList) exp);
-            final Operator op = ((ExpressionList) exp).getOperator();
-
-            drawExpList.add(new DrawableSingleExpression(mPaint.getTypeface(), new SingleExpression("(")));
-
-            for (final Expression e : (ExpressionList<Expression>) exp) {
-                final List<DrawableExpression> subExpression = getDrawableFromExpression(e);
-                drawExpList.addAll(subExpression);
-                drawExpList.add(new DrawableSingleExpression(mPaint.getTypeface(), new SingleExpression(op.toString())));
-
-            }
-            //replace the last operator occurrence
-            drawExpList.set(drawExpList.size() - 1, new DrawableSingleExpression(mPaint.getTypeface(), new SingleExpression(")")));
-            drawableExpressionList.mDrawableExpList = drawExpList;
-            return Arrays.asList(new DrawableExpression[]{drawableExpressionList});
+            return expressionListAsDrawableExpressionList((ExpressionList<Expression>) exp);
 
         } else if (exp instanceof SingleExpression) {
-            drawExpList.add(new DrawableSingleExpression(mPaint.getTypeface(), (SingleExpression) exp));
+            return Arrays.asList(new DrawableExpression[]{new DrawableSingleExpression(mPaint.getTypeface(), (SingleExpression) exp)});
         }
-        return drawExpList;
+        return null;
+    }
+
+    private List<DrawableExpression> expressionListAsDrawableExpressionList(final ExpressionList<Expression> exp) {
+        final List<DrawableExpression> returnList = new ArrayList<>();
+
+        final DrawableExpressionList drawableExpressionList = new DrawableExpressionList(mPaint.getTypeface(), exp);
+
+        final Operator op = exp.getOperator();
+
+        returnList.add(new DrawableSingleExpression(mPaint.getTypeface(), new SingleExpression("(")));
+
+        for (final Expression e : exp) {
+            final List<DrawableExpression> subExpression = getDrawableExpressionFromExpression(e);
+            returnList.addAll(subExpression);
+            returnList.add(new DrawableSingleExpression(mPaint.getTypeface(), new SingleExpression(op.toString())));
+        }
+        //replace the last operator occurrence
+        returnList.set(returnList.size() - 1, new DrawableSingleExpression(mPaint.getTypeface(), new SingleExpression(")")));
+
+        drawableExpressionList.setDrawableExpList(returnList);
+
+        return Arrays.asList(new DrawableExpression[]{drawableExpressionList});
+    }
+
+    private void setDrawableExpList(final List<DrawableExpression> list) {
+        mDrawableExpList = list;
     }
 
     @Override
     public void updateCoordinates(final int x, final int y) {
         this.x = x;
         this.y = y;
-        updateBounds(x, y);
+        mRectContainer = updateBounds();
         updateSubExpressionsCoordinates();
     }
 
     private void updateSubExpressionsCoordinates() {
-        final int nextY = (int) y;
+        final int nextY = y;
         int leftBound = mRectContainer.left;
         for (final DrawableExpression exp : mDrawableExpList) {
             final int expWidth = exp.width();
             final float nextX = leftBound + expWidth / 2;
             exp.updateCoordinates((int) nextX, nextY);
-            exp.mRectContainer.left = leftBound;
-            exp.mRectContainer.right = leftBound + expWidth;
             leftBound = exp.mRectContainer.right;
         }
-    }
-
-    private void updateBounds(final int x, final int y) {
-        updateBounds();
-        mRectContainer.offset(x - width() / 2, y);
-
-    }
-
-    private void updateBounds() {
-        final String text = getExpression().symbolicExpression().replaceAll("\\s", "");
-        mPaint.getTextBounds(text, 0, text.length(), mRectContainer);
     }
 
 }
