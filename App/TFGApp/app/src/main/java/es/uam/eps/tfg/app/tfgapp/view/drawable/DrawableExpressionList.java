@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 
 import java.util.ArrayList;
@@ -42,21 +43,28 @@ public class DrawableExpressionList extends DrawableExpression {
 
     @Override
     public void onDraw(final Canvas canvas) {
-        //canvas.drawText(mExpressionList.symbolicExpression().replaceAll("\\s", ""), x, y, mPaint);
         for (final DrawableExpression element : mDrawableExpList) {
 
             element.onDraw(canvas);
+        }
+        drawExternalContainers(canvas);
+    }
+
+    private void drawExternalContainers(final Canvas canvas) {
+        for (final DrawableExpression element : mDrawableExpList) {
+
             if (element instanceof DrawableExpressionList) {
-                final Paint paint = new Paint();
-                paint.setStyle(Paint.Style.STROKE);
-                paint.setColor(Color.RED);
-                canvas.drawRect(element.mRectContainer, paint);
+                drawContainer(canvas, element, Color.RED);
             }
         }
+        drawContainer(canvas, this, Color.BLUE);
+    }
+
+    private void drawContainer(final Canvas canvas, final DrawableExpression element, final int color) {
         final Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.BLUE);
-        canvas.drawRect(mRectContainer, paint);
+        paint.setColor(color);
+        canvas.drawRect(element.mRectContainer, paint);
     }
 
     public void createDrawableList() {
@@ -112,21 +120,88 @@ public class DrawableExpressionList extends DrawableExpression {
 
     @Override
     public void updateCoordinates(final int x, final int y) {
-        this.x = x;
-        this.y = y;
-        mRectContainer = updateBounds();
+        super.updateCoordinates(x, y);
         updateSubExpressionsCoordinates();
     }
 
     private void updateSubExpressionsCoordinates() {
         final int nextY = y;
+        final int parentHeight = mHeight;
         int leftBound = mRectContainer.left;
         for (final DrawableExpression exp : mDrawableExpList) {
             final int expWidth = exp.width();
             final float nextX = leftBound + expWidth / 2;
             exp.updateCoordinates((int) nextX, nextY);
+            exp.setHeight(parentHeight);//all items with the same height
             leftBound = exp.mRectContainer.right;
         }
     }
 
+    @Override
+    public int width() {
+        int width = 0;
+        for (final DrawableExpression exp : mDrawableExpList) {
+            width += exp.width();
+        }
+        mWidth = width;
+        mRectContainer.right = mRectContainer.left + width;
+        return width;
+
+    }
+
+    @Override
+    protected Rect getDefaultBounds() {
+        final Rect rect = new Rect();
+        //used for height, width will be changed to better size
+        final String text = getExpression().toString();
+        mPaint.getTextBounds(text, 0, text.length(), rect);
+        rect.right = rect.left + width();
+        return rect;
+    }
+
+    @Override
+    public DrawableExpression getDrawableAtPosition(final int x, final int y) {
+        for (final DrawableExpression exp : mDrawableExpList) {
+            if (exp.contains(x, y)) {
+                if (exp.isOperator()) {
+                    return this;
+                }
+                return getDrawableSubExpressionAt(x, y, exp);
+            }
+        }
+        return null;
+    }
+
+    private DrawableExpression getDrawableSubExpressionAt(final int x, final int y, final DrawableExpression exp) {
+        final DrawableExpression selected = exp.getDrawableAtPosition(x, y);
+        if (selected.isOperator() || selected.isParenthesis()) {
+            return exp;
+        } else {
+            return selected;
+        }
+    }
+
+    @Override
+    public boolean isOperator() {
+        return false;
+    }
+
+    @Override
+    public boolean isParenthesis() {
+        return false;
+    }
+
+    @Override
+    public void clearSelection() {
+        for (final DrawableExpression exp : mDrawableExpList) {
+            exp.clearSelection();
+        }
+    }
+
+    @Override
+    public void setColor(final int color) {
+        for (final DrawableExpression exp : mDrawableExpList) {
+            exp.setColor(color);
+        }
+    }
 }

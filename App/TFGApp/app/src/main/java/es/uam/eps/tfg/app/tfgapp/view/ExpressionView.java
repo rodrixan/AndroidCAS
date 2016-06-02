@@ -1,8 +1,8 @@
 package es.uam.eps.tfg.app.tfgapp.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -10,6 +10,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpression;
 import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpressionList;
@@ -19,6 +20,7 @@ public class ExpressionView extends View {
     private static final String FONT_PATH = "fonts/lmromanslant10-regular-ExpView.otf";
 
     private final GestureDetector mGestureDetector;
+    private final Context mContext;
     private final DrawableExpression mExp;
     //    private final Paint mCircle;
 //    private final RectF mCircleRect;
@@ -27,7 +29,7 @@ public class ExpressionView extends View {
 //    private final PointF mCoords;
     private int mHeight;
     private int mWidth;
-    private boolean mSelected = false;
+    private final boolean mSelected = false;
 
     public ExpressionView(final Context context) {
         this(context, null, 0);
@@ -37,6 +39,7 @@ public class ExpressionView extends View {
         super(context, attrs, defStyleAttr);
 
         final Typeface font = Typeface.createFromAsset(context.getAssets(), FONT_PATH);
+        mContext = context;
 
         mGestureDetector = new GestureDetector(context, new MyGestureListener());
 //        mCoords = new PointF(0, 0);
@@ -120,6 +123,18 @@ public class ExpressionView extends View {
         @Override
         public boolean onDown(final MotionEvent event) {
             Log.d("APP_TEST", "onDown");
+
+            final DrawableExpression exp = mExp.getDrawableAtPosition((int) event.getX(), (int) event.getY());
+
+            if (exp != null) {
+                mExp.select((int) event.getX(), (int) event.getY());
+                Log.d("APP_TEST", "Clicked on expression: " + exp.getExpression().symbolicExpression());
+            } else {
+                Log.d("APP_TEST", "Clicked out of the exp");
+                mExp.clearSelection();
+            }
+            ((Activity) mContext).getFragmentManager().findFragmentById(R.id.fragment_container)
+
 //            Log.d("APP_TEST", "Click en:" + event.getX() + "," + event.getY() + "; circulo en " + mCoords.x + "," + mCoords.y);
 //            if (!mCircleRect.contains(event.getX(), event.getY())) {
 //                Log.d("APP_TEST", "la posicion no esta dentro de " + mCircleRect);
@@ -127,12 +142,12 @@ public class ExpressionView extends View {
 //            } else {
 //                mSelected = true;
 //            }
-            if (!mExp.contains((int) event.getX(), (int) event.getY())) {
-//                Log.d("APP_TEST", "la posicion no esta dentro de " + mCircleRect);
-                mSelected = false;
-            } else {
-                mSelected = false;
-            }
+//            if (!mExp.contains((int) event.getX(), (int) event.getY())) {
+////                Log.d("APP_TEST", "la posicion no esta dentro de " + mCircleRect);
+//                mSelected = false;
+//            } else {
+//                mSelected = false;
+//            }
             return true;
         }
 
@@ -140,9 +155,9 @@ public class ExpressionView extends View {
         public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
             Log.d("APP_TEST", "Posicion inicial: " + e1.getX() + "," + e1.getY() + " - Posicion actual: " + e2.getX() + "," + e2.getY());
 
-            if (mSelected && mExp.isValidPosition(e2.getX(), e2.getY(), new Rect(0, 0, mWidth, mHeight))) {
-                mExp.updateCoordinates((int) e2.getX(), (int) e2.getY());
-            }
+//            if (mSelected && mExp.isValidPosition(e2.getX(), e2.getY(), new Rect(0, 0, mWidth, mHeight))) {
+//                mExp.updateCoordinates((int) e2.getX(), (int) e2.getY());
+//            }
 
 //            if (mSelected && isCircleInside(new float[]{e2.getX(), e2.getY()})) {
 //                mCoords.set(e2.getX(), e2.getY());
@@ -176,4 +191,6 @@ public class ExpressionView extends View {
             return true;
         }
     }
+
+
 }

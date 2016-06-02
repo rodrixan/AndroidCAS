@@ -1,6 +1,7 @@
 package es.uam.eps.tfg.app.tfgapp.view.drawable;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -12,7 +13,7 @@ import es.uam.eps.expressions.types.interfaces.Expression;
  * Each one of the elements that compose the ExpressionView
  */
 public abstract class DrawableExpression {
-    private static final float DEFAULT_TEXTSIZE = 70f;
+    private static final float DEFAULT_TEXTSIZE = 100f;
 
     protected Rect mRectContainer;
     protected int x, y;
@@ -85,6 +86,11 @@ public abstract class DrawableExpression {
         mRectContainer = updateBounds();
     }
 
+    protected void setHeight(final int height) {
+        mHeight = height;
+        mRectContainer.top = mRectContainer.bottom - height;
+    }
+
     public Rect updateBounds() {
 
         final Rect defaultBounds = getDefaultBounds();
@@ -95,7 +101,7 @@ public abstract class DrawableExpression {
         return getCenteredBounds(defaultBounds);
     }
 
-    private Rect getDefaultBounds() {
+    protected Rect getDefaultBounds() {
         final Rect rect = new Rect();
         //final String text = getExpression().symbolicExpression().replaceAll("\\s", "");
         final String text = getExpression().toString();
@@ -108,7 +114,7 @@ public abstract class DrawableExpression {
     private Rect getCenteredBounds(final Rect defaultBounds) {
         final Rect container = new Rect();
         container.left = x - defaultBounds.width() / 2;
-        container.right = x + defaultBounds.width() / 2;
+        container.right = container.left + defaultBounds.width();
         container.top = y - defaultBounds.height();
         container.bottom = y;
         return container;
@@ -146,5 +152,20 @@ public abstract class DrawableExpression {
 
     public int bottom() {
         return mRectContainer.bottom;
+    }
+
+    public abstract DrawableExpression getDrawableAtPosition(final int x, final int y);
+
+    public abstract boolean isOperator();
+
+    public abstract boolean isParenthesis();
+
+    public void select(final int x, final int y) {
+        final DrawableExpression exp = getDrawableAtPosition(x, y);
+        exp.setColor(Color.CYAN);
+    }
+
+    public void clearSelection() {
+        mPaint.setColor(Color.BLACK);
     }
 }
