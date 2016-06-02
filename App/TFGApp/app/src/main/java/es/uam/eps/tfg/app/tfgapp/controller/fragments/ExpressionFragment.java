@@ -16,20 +16,40 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
+import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionSelectedListener;
+import es.uam.eps.tfg.app.tfgapp.view.ExpressionView;
 
+/**
+ * Main controller for the app
+ */
 public class ExpressionFragment extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
 
+    /**
+     * Used for the parent activity to do certain functionality
+     */
     public interface Callbacks {
+        /**
+         * Sets a custom toolbar in the activity
+         *
+         * @param toolbar
+         */
         void setToolBar(Toolbar toolbar);
     }
 
     private Callbacks mCallbacks;
     private DrawerLayout mDrawer;
     private ActionBarDrawerToggle mToggle;
+    private ExpressionView mExpressionView;
+    private TextView mSelectedExpView;
 
+    /**
+     * @return new instance of this fragment
+     */
     public static Fragment newInstance() {
         return new ExpressionFragment();
     }
@@ -67,26 +87,61 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
         return v;
     }
 
+    /**
+     * Links the view components with the local fields of the fragment
+     *
+     * @param v root view where the views are attached to
+     */
     private void wireComponents(final View v) {
         final Toolbar toolbar = wireToolbar(v);
 
         mDrawer = (DrawerLayout) v.findViewById(R.id.drawer_layout);
         mToggle = new ActionBarDrawerToggle(
                 getActivity(), mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mExpressionView = (ExpressionView) v.findViewById(R.id.current_exp_view);
+        mSelectedExpView = (TextView) v.findViewById(R.id.selected_exp_textview);
+        mSelectedExpView.setTypeface(mExpressionView.getFont());
+        mSelectedExpView.setText(R.string.selected_expression_empty);
+
     }
 
+    /**
+     * Links the toolbar to the parent activity
+     *
+     * @param v root view
+     * @return the toolbar linked
+     */
     private Toolbar wireToolbar(final View v) {
         final Toolbar toolbar = (Toolbar) v.findViewById(R.id.toolbar);
         mCallbacks.setToolBar(toolbar);
         return toolbar;
     }
 
+    /**
+     * Assigns the proper listeners of the views
+     *
+     * @param v root view
+     */
     private void setListeners(final View v) {
         mDrawer.addDrawerListener(mToggle);
         mToggle.syncState();
 
         final NavigationView navigationView = (NavigationView) v.findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mExpressionView.setOnExpressionSelectedListener(new OnExpressionSelectedListener() {
+            @Override
+            public void onExpressionSelected(final Expression exp) {
+
+                if (exp != null) {
+                    final String selectedExpSymbolicExpression = exp.symbolicExpression();
+                    mSelectedExpView.setText(selectedExpSymbolicExpression);
+                } else {
+                    mSelectedExpView.setText(R.string.selected_expression_empty);
+                }
+            }
+
+        });
     }
 
     @Override

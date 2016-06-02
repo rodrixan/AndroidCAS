@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.view.drawable;
+package es.uam.eps.tfg.app.tfgapp.model.drawable;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +10,9 @@ import es.uam.eps.expressions.types.SingleExpression;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.expressions.types.interfaces.Operator;
 
+/**
+ * Single drawable element (such as numbers or variables)
+ */
 public class DrawableSingleExpression extends DrawableExpression {
 
     SingleExpression mExpression;
@@ -18,7 +21,7 @@ public class DrawableSingleExpression extends DrawableExpression {
         this(null, expression);
     }
 
-    protected DrawableSingleExpression(final Typeface font, final SingleExpression expression) {
+    public DrawableSingleExpression(final Typeface font, final SingleExpression expression) {
         this(font, new Point(0, 0), expression);
     }
 

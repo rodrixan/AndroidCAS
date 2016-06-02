@@ -6,6 +6,9 @@ import android.support.v7.widget.Toolbar;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.ExpressionFragment;
 
+/**
+ * Activity that holds the fragment of the app
+ */
 public class ExpressionActivity extends SingleFragmentActivity
         implements ExpressionFragment.Callbacks {
 
@@ -25,7 +28,7 @@ public class ExpressionActivity extends SingleFragmentActivity
 
         super.onBackPressed();
     }
-    
+
     @Override
     public void setToolBar(final Toolbar toolbar) {
         setSupportActionBar(toolbar);

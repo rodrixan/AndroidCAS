@@ -1,6 +1,5 @@
 package es.uam.eps.tfg.app.tfgapp.view;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
@@ -10,26 +9,28 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
-import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpression;
-import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpressionList;
+import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionSelectedListener;
+import es.uam.eps.tfg.app.tfgapp.model.drawable.DrawableExpression;
+import es.uam.eps.tfg.app.tfgapp.model.drawable.DrawableExpressionList;
 
+/**
+ * View for an expression from the CAS
+ */
 public class ExpressionView extends View {
 
     private static final String FONT_PATH = "fonts/lmromanslant10-regular-ExpView.otf";
 
     private final GestureDetector mGestureDetector;
-    private final Context mContext;
+    private OnExpressionSelectedListener mOnExpressionSelectedListener;
     private final DrawableExpression mExp;
-    //    private final Paint mCircle;
-//    private final RectF mCircleRect;
-//    private final Paint mSquare;
-//    private final RectF mSqareRect;
-//    private final PointF mCoords;
+    private Expression mSelectedExp = null;
     private int mHeight;
     private int mWidth;
     private final boolean mSelected = false;
+    private final Typeface mFont;
 
     public ExpressionView(final Context context) {
         this(context, null, 0);
@@ -38,25 +39,16 @@ public class ExpressionView extends View {
     public ExpressionView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        final Typeface font = Typeface.createFromAsset(context.getAssets(), FONT_PATH);
-        mContext = context;
+        mFont = Typeface.createFromAsset(context.getAssets(), FONT_PATH);
 
         mGestureDetector = new GestureDetector(context, new MyGestureListener());
-//        mCoords = new PointF(0, 0);
-//        mCircleRect = new RectF(mCoords.x - 50, mCoords.y + 50, mCoords.x + 50, mCoords.y - 50);
-//        Log.d("APP_TEST", "RectCirculo: " + mCircleRect);
-//        mCircle = new Paint(Paint.ANTI_ALIAS_FLAG);
-//        mCircle.setColor(getResources().getColor(R.color.colorAccent));
-//        mCircle.setStyle(Paint.Style.FILL);
-//
-//        mSquare = new Paint(Paint.ANTI_ALIAS_FLAG);
-//        mSquare.setStyle(Paint.Style.STROKE);
-//        mSquare.setColor(getResources().getColor(R.color.colorPrimaryDark));
-//        mSquare.setStrokeWidth(5f);
-//        mSqareRect = new RectF(100, 100, 200, 200);
 
-        mExp = new DrawableExpressionList(font, Utils.createUltraLongSampleExpression());
-        Log.d("APP_TEST", "Main exp position: " + mExp.x() + " " + mExp.y());
+
+        mExp = new DrawableExpressionList(mFont, Utils.createUltraLongSampleExpression());
+        mExp.setNormalColor(getResources().getColor(R.color.colorExpression));
+        mExp.setSelectedColor(getResources().getColor(R.color.colorExpressionSelected));
+
+        Log.d(Utils.LOG_TAG, "Main exp position: " + mExp.x() + " " + mExp.y());
     }
 
     public ExpressionView(final Context context, final AttributeSet attrs) {
@@ -67,17 +59,28 @@ public class ExpressionView extends View {
     protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
         mWidth = w;
         mHeight = h;
+
+        //FOR DEBUGGING!!!!!!
         if (w / 2 == 952.0)
-            Log.d("APP_TEST", "Main exp position: " + mExp.x() + " " + mExp.y());
+            Log.d(Utils.LOG_TAG, "Main exp position: " + mExp.x() + " " + mExp.y());
+        //FOR DEBUGGING!!!!!!
+
         mExp.updateCoordinates(w / 2, h / 2);
 
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
+    /**
+     * @return the used font for the texts
+     */
+    public Typeface getFont() {
+        return mFont;
+    }
+
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            Log.d("APP_TEST", "Soltado en posicion: " + event.getX() + "," + event.getY());
+            Log.d(Utils.LOG_TAG, "Soltado en posicion: " + event.getX() + "," + event.getY());
             invalidate();
             return true;
         }
@@ -89,61 +92,48 @@ public class ExpressionView extends View {
     @Override
     protected void onDraw(final Canvas canvas) {
         super.onDraw(canvas);
-//        canvas.drawCircle(mCoords.x, mCoords.y, 50f, mCircle);
-//        canvas.drawRect(mCircleRect, mSquare);
-//        canvas.drawRect(mSqareRect, mSquare);
-
         mExp.onDraw(canvas);
-
-//        final Paint mPaint = new Paint();
-//        mPaint.setStyle(Paint.Style.FILL);
-//        mPaint.setTextSize(60);
-//        mPaint.setTextAlign(Paint.Align.CENTER);
-//        final Typeface font = Typeface.createFromAsset(getContext().getAssets(), FONT_PATH);
-//        mPaint.setTypeface(font);
-//        final int x = mWidth / 2;
-//        final int y = mHeight / 2;
-//        final String text = "j";
-//        canvas.drawText(text, x, y, mPaint);
-//        final Rect rect = new Rect();
-//        final Rect container = new Rect();
-//        mPaint.getTextBounds(text, 0, text.length(), rect);
-//        container.left = x - rect.width() / 2;
-//        container.right = x + rect.width() / 2;
-//        container.top = y - rect.height();
-//        container.bottom = y;
-//        mPaint.setStyle(Paint.Style.STROKE);
-//        canvas.drawRect(container, mPaint);
-//        Log.d("APP_TEST", "Main exp position: " + mExp.x() + " " + mExp.y());
-//        Log.d("APP_TEST", "Main exp left/right: " + mExp.left() + " " + mExp.right());
-
     }
 
+    /**
+     * Sets a listener for doing actions everytime an expression is selected
+     *
+     * @param onExpressionSelectedListener
+     */
+    public void setOnExpressionSelectedListener(final OnExpressionSelectedListener onExpressionSelectedListener) {
+        mOnExpressionSelectedListener = onExpressionSelectedListener;
+    }
+
+    /**
+     * GestureListener for perfoming actions whenever the user touches the view
+     */
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onDown(final MotionEvent event) {
-            Log.d("APP_TEST", "onDown");
+            Log.d(Utils.LOG_TAG, "onDown");
 
-            final DrawableExpression exp = mExp.getDrawableAtPosition((int) event.getX(), (int) event.getY());
+            mExp.clearSelection();
+            final DrawableExpression exp = mExp.select((int) event.getX(), (int) event.getY());
 
             if (exp != null) {
-                mExp.select((int) event.getX(), (int) event.getY());
-                Log.d("APP_TEST", "Clicked on expression: " + exp.getExpression().symbolicExpression());
+                Log.d(Utils.LOG_TAG, "Clicked on expression: " + exp.getExpression().symbolicExpression());
+                mSelectedExp = exp.getExpression();
             } else {
-                Log.d("APP_TEST", "Clicked out of the exp");
-                mExp.clearSelection();
+                Log.d(Utils.LOG_TAG, "Clicked out of the exp");
+                mSelectedExp = null;
             }
-            ((Activity) mContext).getFragmentManager().findFragmentById(R.id.fragment_container)
 
-//            Log.d("APP_TEST", "Click en:" + event.getX() + "," + event.getY() + "; circulo en " + mCoords.x + "," + mCoords.y);
+            mOnExpressionSelectedListener.onExpressionSelected(mSelectedExp);
+
+//            Log.d(Utils.LOG_TAG, "Click en:" + event.getX() + "," + event.getY() + "; circulo en " + mCoords.x + "," + mCoords.y);
 //            if (!mCircleRect.contains(event.getX(), event.getY())) {
-//                Log.d("APP_TEST", "la posicion no esta dentro de " + mCircleRect);
+//                Log.d(Utils.LOG_TAG, "la posicion no esta dentro de " + mCircleRect);
 //                mSelected = false;
 //            } else {
 //                mSelected = true;
 //            }
 //            if (!mExp.contains((int) event.getX(), (int) event.getY())) {
-////                Log.d("APP_TEST", "la posicion no esta dentro de " + mCircleRect);
+////                Log.d(Utils.LOG_TAG, "la posicion no esta dentro de " + mCircleRect);
 //                mSelected = false;
 //            } else {
 //                mSelected = false;
@@ -151,45 +141,18 @@ public class ExpressionView extends View {
             return true;
         }
 
+
         @Override
         public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
-            Log.d("APP_TEST", "Posicion inicial: " + e1.getX() + "," + e1.getY() + " - Posicion actual: " + e2.getX() + "," + e2.getY());
+            Log.d(Utils.LOG_TAG, "Posicion inicial: " + e1.getX() + "," + e1.getY() + " - Posicion actual: " + e2.getX() + "," + e2.getY());
 
 //            if (mSelected && mExp.isValidPosition(e2.getX(), e2.getY(), new Rect(0, 0, mWidth, mHeight))) {
 //                mExp.updateCoordinates((int) e2.getX(), (int) e2.getY());
 //            }
 
-//            if (mSelected && isCircleInside(new float[]{e2.getX(), e2.getY()})) {
-//                mCoords.set(e2.getX(), e2.getY());
-//                mCircleRect.set(mCoords.x - 50, mCoords.y - 50, mCoords.x + 50, mCoords.y + 50);
-//            }
             return true;
         }
 
-        private boolean isCircleInside(final float[] pos) {
-            final float x = pos[0];
-            final float y = pos[1];
-            if (x - 50 < 0 || y - 50 < 0) {
-                return false;
-            }
-            if (x + 50 > mWidth || y + 50 > mHeight) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        public boolean onDoubleTap(final MotionEvent event) {
-            Log.d("APP_TEST", "onDoubleTap");
-            return true;
-        }
-
-        @Override
-        public boolean onFling(final MotionEvent event1, final MotionEvent event2,
-                               final float velocityX, final float velocityY) {
-            Log.d("APP_TEST", "onFling");
-            return true;
-        }
     }
 
 

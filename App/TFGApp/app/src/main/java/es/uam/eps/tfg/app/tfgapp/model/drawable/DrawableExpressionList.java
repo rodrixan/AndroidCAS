@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.view.drawable;
+package es.uam.eps.tfg.app.tfgapp.model.drawable;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,6 +16,9 @@ import es.uam.eps.expressions.types.SingleExpression;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.expressions.types.interfaces.Operator;
 
+/**
+ * List of drawable elements (such as operations)
+ */
 public class DrawableExpressionList extends DrawableExpression {
 
     private final ExpressionList<Expression> mExpressionList;
@@ -67,7 +70,8 @@ public class DrawableExpressionList extends DrawableExpression {
         canvas.drawRect(element.mRectContainer, paint);
     }
 
-    public void createDrawableList() {
+
+    private void createDrawableList() {
         mDrawableExpList = new ArrayList<>();
         final Operator op = mExpressionList.getOperator();
         for (final Expression exp : mExpressionList) {
@@ -174,6 +178,9 @@ public class DrawableExpressionList extends DrawableExpression {
 
     private DrawableExpression getDrawableSubExpressionAt(final int x, final int y, final DrawableExpression exp) {
         final DrawableExpression selected = exp.getDrawableAtPosition(x, y);
+        if (selected == null) {
+            return null;
+        }
         if (selected.isOperator() || selected.isParenthesis()) {
             return exp;
         } else {

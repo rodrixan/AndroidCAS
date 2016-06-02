@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import es.uam.eps.tfg.app.tfgapp.R;
 
-
+/**
+ * Activity that implements a single fragment layout
+ */
 public abstract class SingleFragmentActivity extends AppCompatActivity {
     protected abstract Fragment createFragment();
 
@@ -30,7 +32,6 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
 
     }
-
 
     private void addFragmentToManager(final int fragmentId) {
         //Fragment transitions are used to add, remove, (de)attach, or replace fragments in the frag. list

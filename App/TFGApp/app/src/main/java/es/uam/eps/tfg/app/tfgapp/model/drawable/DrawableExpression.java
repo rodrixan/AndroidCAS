@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.view.drawable;
+package es.uam.eps.tfg.app.tfgapp.model.drawable;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,6 +14,8 @@ import es.uam.eps.expressions.types.interfaces.Expression;
  */
 public abstract class DrawableExpression {
     private static final float DEFAULT_TEXTSIZE = 100f;
+    private int mNormalColor = Color.BLACK;
+    private int mSelectedColor = Color.CYAN;
 
     protected Rect mRectContainer;
     protected int x, y;
@@ -32,16 +34,35 @@ public abstract class DrawableExpression {
         mPaint.setTypeface(font);
     }
 
+    /**
+     * Draws the element in a canvas
+     *
+     * @param canvas view where to draw the element
+     */
     public abstract void onDraw(Canvas canvas);
 
+    /**
+     * @return the rectangle where the element is contained (its bounds)
+     */
     public Rect getContainer() {
         return mRectContainer;
     }
 
+    /**
+     * @return point with the element coordinates
+     */
     public Point getCoordinates() {
         return new Point(x, y);
     }
 
+    /**
+     * Checks if the new position is valid. It doesn't assign the coordinates
+     *
+     * @param newX           new x position
+     * @param newY           new y position
+     * @param outerContainer rectangle to find if the coordinates are possible
+     * @return true if the element can be placed in the new coordinates, false otherwise
+     */
     public boolean isValidPosition(final float newX, final float newY, final Rect outerContainer) {
         if (newX - width() / 2 < outerContainer.left || newY - height() / 2 < outerContainer.top) {
             return false;
@@ -52,34 +73,76 @@ public abstract class DrawableExpression {
         return true;
     }
 
+    /**
+     * @return width of the bound rectangle
+     */
     public int width() {
         return mWidth;
     }
 
+    /**
+     * @return height of the bound rectangle
+     */
     public int height() {
         return mHeight;
     }
 
+    public void setNormalColor(final int color) {
+        mNormalColor = color;
+    }
+
+    public void setSelectedColor(final int color) {
+        mSelectedColor = color;
+    }
+
+    /**
+     * @param outerContainer external bounds
+     * @return true if the element is inside the external container, false otherwise
+     */
     public boolean isInside(final Rect outerContainer) {
         return outerContainer.contains(mRectContainer);
     }
 
+    /**
+     * @return color of the element
+     */
     public int getColor() {
         return mPaint.getColor();
     }
 
-    public void setColor(final int color) {
+    /**
+     * @param color color to set for the paint
+     */
+    protected void setColor(final int color) {
         mPaint.setColor(color);
     }
 
+    /**
+     * Checks if a position is inside the element bounds
+     *
+     * @param x
+     * @param y
+     * @return true if the element contains the coordinates, false otherwise
+     */
     public boolean contains(final int x, final int y) {
         return mRectContainer.contains(x, y);
     }
 
+    /**
+     * Same as the method updateCoordinates(x,y)
+     *
+     * @param newCoord point with new coordinates
+     */
     public void updateCoordinates(final Point newCoord) {
         updateCoordinates(newCoord.x, newCoord.y);
     }
 
+    /**
+     * Updates both the element position and its bound rectangle
+     *
+     * @param x
+     * @param y
+     */
     public void updateCoordinates(final int x, final int y) {
         this.x = x;
         this.y = y;
@@ -91,6 +154,11 @@ public abstract class DrawableExpression {
         mRectContainer.top = mRectContainer.bottom - height;
     }
 
+    /**
+     * Update the rectangle that contains the element
+     *
+     * @return the new bound rectangle
+     */
     public Rect updateBounds() {
 
         final Rect defaultBounds = getDefaultBounds();
@@ -101,14 +169,19 @@ public abstract class DrawableExpression {
         return getCenteredBounds(defaultBounds);
     }
 
+    /**
+     * @return the minimal rectangle that contains the element,centered at (0,0)
+     */
     protected Rect getDefaultBounds() {
         final Rect rect = new Rect();
-        //final String text = getExpression().symbolicExpression().replaceAll("\\s", "");
         final String text = getExpression().toString();
         mPaint.getTextBounds(text, 0, text.length(), rect);
         return rect;
     }
 
+    /**
+     * @return the expression that this element draws
+     */
     public abstract Expression getExpression();
 
     private Rect getCenteredBounds(final Rect defaultBounds) {
@@ -154,18 +227,41 @@ public abstract class DrawableExpression {
         return mRectContainer.bottom;
     }
 
-    public abstract DrawableExpression getDrawableAtPosition(final int x, final int y);
+    /**
+     * Given a position, returns the expression that matches it
+     *
+     * @param x
+     * @param y
+     * @return expression that matches the position. Can be single or a list
+     */
+    protected abstract DrawableExpression getDrawableAtPosition(final int x, final int y);
 
+    /**
+     * @return true if the element can be considered an operator for an expression, false if not
+     */
     public abstract boolean isOperator();
 
+    /**
+     * @return true if the element can be considered as a parenthesis for an expression, false if not
+     */
     public abstract boolean isParenthesis();
 
-    public void select(final int x, final int y) {
+    /**
+     * Make the expression in a given position selected, changing its color
+     *
+     * @param x
+     * @param y
+     * @return the expression selected, null if no one was found
+     */
+    public DrawableExpression select(final int x, final int y) {
         final DrawableExpression exp = getDrawableAtPosition(x, y);
-        exp.setColor(Color.CYAN);
+        if (exp != null) {
+            exp.setColor(mSelectedColor);
+        }
+        return exp;
     }
 
     public void clearSelection() {
-        mPaint.setColor(Color.BLACK);
+        mPaint.setColor(mNormalColor);
     }
 }
