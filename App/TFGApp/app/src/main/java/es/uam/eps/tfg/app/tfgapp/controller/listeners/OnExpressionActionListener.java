@@ -5,9 +5,10 @@ import es.uam.eps.expressions.types.interfaces.Expression;
 /**
  * Listener for doing actions when a expression is selected
  */
-public interface OnExpressionSelectedListener {
+public interface OnExpressionActionListener {
     /**
      * @param exp the expression which was selected
      */
     void onExpressionSelected(Expression exp);
+
 }

@@ -1,41 +1,31 @@
 package es.uam.eps.tfg.app.tfgapp.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import es.uam.eps.expressions.types.interfaces.Expression;
-import es.uam.eps.expressions.types.operations.SUMList;
 
 
 public class CASImplementation implements CASAdapter {
-    List<String> expressions;
-    SUMList<Expression> exp;
+    private static CASAdapter mCASInstance = null;
+    private Expression mExpression;
 
-    public CASImplementation() {
-        expressions = new ArrayList<>();
-        expressions.add("(x+3)");
-        expressions.add("(5-2)");
-        expressions.add("45-3*x=23");
+    private CASImplementation() {
+    }
+
+
+    public static CASAdapter getInstance() {
+        if (mCASInstance == null) {
+            mCASInstance = new CASImplementation();
+        }
+        return mCASInstance;
     }
 
 
     @Override
-    public List<String> getAllExpressions() {
-        return expressions;
+    public void initCAS(final Expression exp) {
+        mExpression = exp;
     }
 
     @Override
-    public String getExpression(final int i) {
-        return expressions.get(i);
-    }
-
-    @Override
-    public String getLeftSideOfEquation(final String exp) {
-        return exp.split("=")[0];
-    }
-
-    @Override
-    public String getRightSideOfEquation(final String exp) {
-        return exp.split("=")[1];
+    public Expression getCurrentExpression() {
+        return mExpression;
     }
 }

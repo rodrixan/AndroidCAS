@@ -15,6 +15,8 @@ import es.uam.eps.expressions.types.ExpressionList;
 import es.uam.eps.expressions.types.SingleExpression;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.expressions.types.interfaces.Operator;
+import es.uam.eps.tfg.app.tfgapp.model.CASAdapter;
+import es.uam.eps.tfg.app.tfgapp.model.CASImplementation;
 
 /**
  * List of drawable elements (such as operations)
@@ -23,20 +25,31 @@ public class DrawableExpressionList extends DrawableExpression {
 
     private final ExpressionList<Expression> mExpressionList;
     private List<DrawableExpression> mDrawableExpList;
+    private final CASAdapter CAS;
 
-    public DrawableExpressionList(final Typeface font, final ExpressionList<Expression> expList) {
-        this(font, new Point(0, 0), expList);
+    public DrawableExpressionList(final Typeface font) {
+        this(font, new Point(0, 0));
     }
 
-    public DrawableExpressionList(final Typeface font, final Point coordinates, final ExpressionList<Expression> expression) {
+    public DrawableExpressionList(final Typeface font, final Point coordinates) {
         super(font);
-        mExpressionList = expression;
+        CAS = CASImplementation.getInstance();
+        mExpressionList = (ExpressionList) CAS.getCurrentExpression();
         createDrawableList();
         updateCoordinates(coordinates);
     }
 
-    public DrawableExpressionList(final ExpressionList<Expression> expression) {
-        this(null, expression);
+    public DrawableExpressionList() {
+        this(null);
+    }
+
+    //only used for subexpressions. It does not use the CAS
+    private DrawableExpressionList(final Typeface font, final ExpressionList<Expression> exp) {
+        super(font);
+        CAS = CASImplementation.getInstance();
+        mExpressionList = exp;
+        createDrawableList();
+        updateCoordinates(new Point(0, 0));
     }
 
     @Override

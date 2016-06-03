@@ -1,14 +1,13 @@
 package es.uam.eps.tfg.app.tfgapp.model;
 
 
-import java.util.List;
+import es.uam.eps.expressions.types.interfaces.Expression;
 
 public interface CASAdapter {
-    List<String> getAllExpressions();
 
-    String getExpression(int i);
 
-    String getLeftSideOfEquation(final String exp);
+    void initCAS(Expression exp);
 
-    String getRightSideOfEquation(final String exp);
+    Expression getCurrentExpression();
+
 }

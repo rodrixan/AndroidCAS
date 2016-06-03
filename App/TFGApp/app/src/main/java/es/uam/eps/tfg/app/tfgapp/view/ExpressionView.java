@@ -12,7 +12,7 @@ import android.view.View;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
-import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionSelectedListener;
+import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
 import es.uam.eps.tfg.app.tfgapp.model.drawable.DrawableExpression;
 import es.uam.eps.tfg.app.tfgapp.model.drawable.DrawableExpressionList;
 
@@ -24,7 +24,7 @@ public class ExpressionView extends View {
     private static final String FONT_PATH = "fonts/lmromanslant10-regular-ExpView.otf";
 
     private final GestureDetector mGestureDetector;
-    private OnExpressionSelectedListener mOnExpressionSelectedListener;
+    private OnExpressionActionListener mOnExpressionActionListener;
     private final DrawableExpression mExp;
     private Expression mSelectedExp = null;
     private int mHeight;
@@ -44,7 +44,7 @@ public class ExpressionView extends View {
         mGestureDetector = new GestureDetector(context, new MyGestureListener());
 
 
-        mExp = new DrawableExpressionList(mFont, Utils.createUltraLongSampleExpression());
+        mExp = new DrawableExpressionList(mFont);
         mExp.setNormalColor(getResources().getColor(R.color.colorExpression));
         mExp.setSelectedColor(getResources().getColor(R.color.colorExpressionSelected));
 
@@ -98,10 +98,10 @@ public class ExpressionView extends View {
     /**
      * Sets a listener for doing actions everytime an expression is selected
      *
-     * @param onExpressionSelectedListener
+     * @param onExpressionActionListener
      */
-    public void setOnExpressionSelectedListener(final OnExpressionSelectedListener onExpressionSelectedListener) {
-        mOnExpressionSelectedListener = onExpressionSelectedListener;
+    public void setOnExpressionActionListener(final OnExpressionActionListener onExpressionActionListener) {
+        mOnExpressionActionListener = onExpressionActionListener;
     }
 
     /**
@@ -123,7 +123,7 @@ public class ExpressionView extends View {
                 mSelectedExp = null;
             }
 
-            mOnExpressionSelectedListener.onExpressionSelected(mSelectedExp);
+            mOnExpressionActionListener.onExpressionSelected(mSelectedExp);
 
 //            Log.d(Utils.LOG_TAG, "Click en:" + event.getX() + "," + event.getY() + "; circulo en " + mCoords.x + "," + mCoords.y);
 //            if (!mCircleRect.contains(event.getX(), event.getY())) {

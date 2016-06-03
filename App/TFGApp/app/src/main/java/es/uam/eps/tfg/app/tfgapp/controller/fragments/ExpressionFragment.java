@@ -21,7 +21,10 @@ import android.widget.Toast;
 
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
-import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionSelectedListener;
+import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
+import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
+import es.uam.eps.tfg.app.tfgapp.model.CASAdapter;
+import es.uam.eps.tfg.app.tfgapp.model.CASImplementation;
 import es.uam.eps.tfg.app.tfgapp.view.ExpressionView;
 
 /**
@@ -46,6 +49,7 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
     private ActionBarDrawerToggle mToggle;
     private ExpressionView mExpressionView;
     private TextView mSelectedExpView;
+    private CASAdapter CAS;
 
     /**
      * @return new instance of this fragment
@@ -72,19 +76,25 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        setupCAS();
     }
 
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+
+
         final View v = inflater.inflate(R.layout.fragment_expression, container, false);
-
-
         wireComponents(v);
         setListeners(v);
 
 
         return v;
+    }
+
+    private void setupCAS() {
+        CAS = CASImplementation.getInstance();
+        CAS.initCAS(Utils.createUltraLongSampleExpression());
     }
 
     /**
@@ -129,7 +139,7 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
         final NavigationView navigationView = (NavigationView) v.findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mExpressionView.setOnExpressionSelectedListener(new OnExpressionSelectedListener() {
+        mExpressionView.setOnExpressionActionListener(new OnExpressionActionListener() {
             @Override
             public void onExpressionSelected(final Expression exp) {
 
