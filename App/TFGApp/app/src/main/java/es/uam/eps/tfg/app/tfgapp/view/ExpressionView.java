@@ -2,6 +2,7 @@ package es.uam.eps.tfg.app.tfgapp.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -9,28 +10,30 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import es.uam.eps.expressions.types.ExpressionList;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
+import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionUpdateListener;
 import es.uam.eps.tfg.app.tfgapp.model.drawable.DrawableExpression;
 import es.uam.eps.tfg.app.tfgapp.model.drawable.DrawableExpressionList;
 
 /**
  * View for an expression from the CAS
  */
-public class ExpressionView extends View {
+public class ExpressionView extends View implements OnExpressionUpdateListener {
 
     private static final String FONT_PATH = "fonts/lmromanslant10-regular-ExpView.otf";
 
     private final GestureDetector mGestureDetector;
+    private final boolean mSelected = false;
+    private final Typeface mFont;
+    private DrawableExpression mExp;
     private OnExpressionActionListener mOnExpressionActionListener;
-    private final DrawableExpression mExp;
     private Expression mSelectedExp = null;
     private int mHeight;
     private int mWidth;
-    private final boolean mSelected = false;
-    private final Typeface mFont;
 
     public ExpressionView(final Context context) {
         this(context, null, 0);
@@ -43,12 +46,9 @@ public class ExpressionView extends View {
 
         mGestureDetector = new GestureDetector(context, new MyGestureListener());
 
+        mExp = null;
 
-        mExp = new DrawableExpressionList(mFont);
-        mExp.setNormalColor(getResources().getColor(R.color.colorExpression));
-        mExp.setSelectedColor(getResources().getColor(R.color.colorExpressionSelected));
-
-        Log.d(Utils.LOG_TAG, "Main exp position: " + mExp.x() + " " + mExp.y());
+        //Log.d(Utils.LOG_TAG, "Main exp position: " + mExp.x() + " " + mExp.y());
     }
 
     public ExpressionView(final Context context, final AttributeSet attrs) {
@@ -104,6 +104,19 @@ public class ExpressionView extends View {
         mOnExpressionActionListener = onExpressionActionListener;
     }
 
+    @Override
+    public void onExpressionUpdated(final Expression exp) {
+        Point coord = null;
+        if (mExp != null) {
+            coord = mExp.getCoordinates();
+        } else {
+            coord = new Point(0, 0);
+        }
+        mExp = new DrawableExpressionList(mFont, coord, (ExpressionList) exp);
+        mExp.setNormalColor(getResources().getColor(R.color.colorExpression));
+        mExp.setSelectedColor(getResources().getColor(R.color.colorExpressionSelected));
+    }
+
     /**
      * GestureListener for perfoming actions whenever the user touches the view
      */
@@ -141,7 +154,6 @@ public class ExpressionView extends View {
             return true;
         }
 
-
         @Override
         public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
             Log.d(Utils.LOG_TAG, "Posicion inicial: " + e1.getX() + "," + e1.getY() + " - Posicion actual: " + e2.getX() + "," + e2.getY());
@@ -154,6 +166,5 @@ public class ExpressionView extends View {
         }
 
     }
-
 
 }

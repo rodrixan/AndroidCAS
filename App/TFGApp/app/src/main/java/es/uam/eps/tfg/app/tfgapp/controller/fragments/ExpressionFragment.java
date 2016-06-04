@@ -30,19 +30,7 @@ import es.uam.eps.tfg.app.tfgapp.view.ExpressionView;
 /**
  * Main controller for the app
  */
-public class ExpressionFragment extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
-
-    /**
-     * Used for the parent activity to do certain functionality
-     */
-    public interface Callbacks {
-        /**
-         * Sets a custom toolbar in the activity
-         *
-         * @param toolbar
-         */
-        void setToolBar(Toolbar toolbar);
-    }
+public class ExpressionFragment extends Fragment implements NavigationView.OnNavigationItemSelectedListener, OnExpressionActionListener {
 
     private Callbacks mCallbacks;
     private DrawerLayout mDrawer;
@@ -79,22 +67,20 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
         setupCAS();
     }
 
+    private void setupCAS() {
+        CAS = CASImplementation.getInstance();
+        CAS.initCAS(Utils.createUltraLongSampleExpression());
+    }
+
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-
 
         final View v = inflater.inflate(R.layout.fragment_expression, container, false);
         wireComponents(v);
         setListeners(v);
 
-
         return v;
-    }
-
-    private void setupCAS() {
-        CAS = CASImplementation.getInstance();
-        CAS.initCAS(Utils.createUltraLongSampleExpression());
     }
 
     /**
@@ -109,10 +95,15 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
         mToggle = new ActionBarDrawerToggle(
                 getActivity(), mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mExpressionView = (ExpressionView) v.findViewById(R.id.current_exp_view);
+        updateExpressionView();
         mSelectedExpView = (TextView) v.findViewById(R.id.selected_exp_textview);
         mSelectedExpView.setTypeface(mExpressionView.getFont());
         mSelectedExpView.setText(R.string.selected_expression_empty);
 
+    }
+
+    private void updateExpressionView() {
+        mExpressionView.onExpressionUpdated(CAS.getCurrentExpression());
     }
 
     /**
@@ -139,19 +130,7 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
         final NavigationView navigationView = (NavigationView) v.findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mExpressionView.setOnExpressionActionListener(new OnExpressionActionListener() {
-            @Override
-            public void onExpressionSelected(final Expression exp) {
-
-                if (exp != null) {
-                    final String selectedExpSymbolicExpression = exp.symbolicExpression();
-                    mSelectedExpView.setText(selectedExpSymbolicExpression);
-                } else {
-                    mSelectedExpView.setText(R.string.selected_expression_empty);
-                }
-            }
-
-        });
+        mExpressionView.setOnExpressionActionListener(this);
     }
 
     @Override
@@ -194,18 +173,39 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
 
         }
 
-
         closeDrawer();
         return true;
-    }
-
-    public boolean isDrawerOpened() {
-        return mDrawer != null && mDrawer.isDrawerOpen(GravityCompat.START);
     }
 
     public void closeDrawer() {
         if (isDrawerOpened()) {
             mDrawer.closeDrawer(GravityCompat.START);
         }
+    }
+
+    public boolean isDrawerOpened() {
+        return mDrawer != null && mDrawer.isDrawerOpen(GravityCompat.START);
+    }
+
+    @Override
+    public void onExpressionSelected(final Expression exp) {
+        if (exp != null) {
+            final String selectedExpSymbolicExpression = exp.symbolicExpression();
+            mSelectedExpView.setText(selectedExpSymbolicExpression);
+        } else {
+            mSelectedExpView.setText(R.string.selected_expression_empty);
+        }
+    }
+
+    /**
+     * Used for the parent activity to do certain functionality
+     */
+    public interface Callbacks {
+        /**
+         * Sets a custom toolbar in the activity
+         *
+         * @param toolbar
+         */
+        void setToolBar(Toolbar toolbar);
     }
 }

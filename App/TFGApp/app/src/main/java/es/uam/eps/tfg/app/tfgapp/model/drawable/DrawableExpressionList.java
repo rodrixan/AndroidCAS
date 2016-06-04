@@ -25,31 +25,19 @@ public class DrawableExpressionList extends DrawableExpression {
 
     private final ExpressionList<Expression> mExpressionList;
     private List<DrawableExpression> mDrawableExpList;
-    private final CASAdapter CAS;
 
-    public DrawableExpressionList(final Typeface font) {
-        this(font, new Point(0, 0));
-    }
 
-    public DrawableExpressionList(final Typeface font, final Point coordinates) {
+    public DrawableExpressionList(final Typeface font, final Point coordinates,ExpressionList<Expression>exp) {
         super(font);
-        CAS = CASImplementation.getInstance();
-        mExpressionList = (ExpressionList) CAS.getCurrentExpression();
+        mExpressionList = exp;
         createDrawableList();
         updateCoordinates(coordinates);
     }
 
-    public DrawableExpressionList() {
-        this(null);
-    }
 
     //only used for subexpressions. It does not use the CAS
-    private DrawableExpressionList(final Typeface font, final ExpressionList<Expression> exp) {
-        super(font);
-        CAS = CASImplementation.getInstance();
-        mExpressionList = exp;
-        createDrawableList();
-        updateCoordinates(new Point(0, 0));
+    public DrawableExpressionList(final Typeface font, final ExpressionList<Expression> exp) {
+        this(font, new Point(0, 0),exp);
     }
 
     @Override
