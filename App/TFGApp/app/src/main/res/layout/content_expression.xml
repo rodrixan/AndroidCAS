@@ -7,6 +7,7 @@
               app:layout_behavior="@string/appbar_scrolling_view_behavior"
               tools:context=".controller.activities.ExpressionActivity"
               tools:showIn="@layout/app_bar_expression"
+              android:clipChildren="false"
               android:orientation="vertical">
 
     <!--xmlns:card_view="http://schemas.android.com/apk/res-auto" for using card_view:background-->
@@ -49,20 +50,11 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                style="?android:listSeparatorTextViewStyle"
-                android:textSize="@dimen/card_title_size"
-                android:text="@string/selected_expression_title"/>
-
 
             <TextView
                 android:id="@+id/selected_exp_textview"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
+                android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textSize="5dp"
                 tools:text="((x+34)*55)"
@@ -70,35 +62,87 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:gravity="center_horizontal">
+                android:gravity="center"
+                >
 
                 <android.support.design.widget.FloatingActionButton
-                    style="@style/ExpressionButtons"
-                    app:rippleColor=""/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:fabSize="mini"
+                    app:backgroundTint="@color/colorPrimary"
+                    android:src="@drawable/ic_exp_change_side"
+                    app:elevation="0dp"
+                    />
 
-                <at.markushi.ui.CircleButton
-                    style="@style/ExpressionButtons"
-                    app:cb_color="@color/colorPrimary"
-                    android:src="@drawable/ic_exp_change_side"/>
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:fabSize="mini"
+                    app:backgroundTint="@color/colorPrimary"
+                    android:src="@drawable/ic_exp_change_side"
+                    app:elevation="0dp"
+                    />
 
-                <at.markushi.ui.CircleButton
-                    style="@style/ExpressionButtons"
-                    app:cb_color="@color/colorPrimary"
-                    android:src="@drawable/ic_exp_move_right"/>
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:fabSize="mini"
+                    app:backgroundTint="@color/colorPrimary"
 
-                <at.markushi.ui.CircleButton
-                    style="@style/ExpressionButtons"
-                    app:cb_color="@color/colorPrimary"
-                    android:src="@drawable/ic_exp_move_left"/>
+                    android:src="@drawable/ic_exp_change_side"
+                    app:elevation="0dp"
+                    />
 
-                <at.markushi.ui.CircleButton
-                    style="@style/ExpressionButtons"
-                    app:cb_color="@color/colorPrimary"
-                    android:src="@drawable/ic_exp_operate"/>
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:fabSize="mini"
+                    app:backgroundTint="@color/colorPrimary"
 
+                    android:src="@drawable/ic_exp_change_side"
+                    app:elevation="0dp"
+                    />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:fabSize="mini"
+                    app:backgroundTint="@color/colorPrimary"
+
+                    android:src="@drawable/ic_exp_change_side"
+                    app:elevation="0dp"
+                    />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:fabSize="mini"
+                    app:backgroundTint="@color/colorPrimary"
+
+                    android:src="@drawable/ic_exp_change_side"
+                    app:elevation="0dp"
+                    />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:fabSize="normal"
+                    app:backgroundTint="@color/colorPrimary"
+
+                    android:src="@drawable/ic_exp_change_side"
+                    app:elevation="0dp"
+                    />
             </LinearLayout>
+
 
         </LinearLayout>
 
