@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".controller.activities.ExpressionActivity"
-    tools:showIn="@layout/app_bar_expression"
-    android:orientation="vertical">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              app:layout_behavior="@string/appbar_scrolling_view_behavior"
+              tools:context=".controller.activities.ExpressionActivity"
+              tools:showIn="@layout/app_bar_expression"
+              android:orientation="vertical">
 
     <!--xmlns:card_view="http://schemas.android.com/apk/res-auto" for using card_view:background-->
     <android.support.v7.widget.CardView
@@ -27,12 +27,12 @@
                 android:layout_height="wrap_content"
                 style="?android:listSeparatorTextViewStyle"
                 android:textSize="@dimen/card_title_size"
-                android:text="@string/current_expression_title" />
+                android:text="@string/current_expression_title"/>
 
             <es.uam.eps.tfg.app.tfgapp.view.ExpressionView
                 android:id="@+id/current_exp_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"/>
 
         </LinearLayout>
     </android.support.v7.widget.CardView>
@@ -41,7 +41,7 @@
         android:id="@+id/fragment_drag_content_selected_exp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="1.5"
         app:cardUseCompatPadding="true">
 
         <LinearLayout
@@ -55,7 +55,7 @@
                 android:layout_weight="1"
                 style="?android:listSeparatorTextViewStyle"
                 android:textSize="@dimen/card_title_size"
-                android:text="@string/selected_expression_title" />
+                android:text="@string/selected_expression_title"/>
 
 
             <TextView
@@ -64,8 +64,41 @@
                 android:layout_height="0dp"
                 android:layout_weight="3"
                 android:gravity="center"
-                android:textSize="20dp"
-                tools:text="((x+34)*55)" />
+                android:textSize="5dp"
+                tools:text="((x+34)*55)"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal">
+
+                <at.markushi.ui.CircleButton
+                    app:cb_color="@color/colorPrimary"
+                    android:layout_width="@dimen/exp_button_size"
+                    android:layout_height="@dimen/exp_button_size"
+                    android:src="@drawable/ic_exp_change_side"/>
+
+                <at.markushi.ui.CircleButton
+                    app:cb_color="@color/colorPrimary"
+                    android:layout_width="@dimen/exp_button_size"
+                    android:layout_height="@dimen/exp_button_size"
+                    android:src="@drawable/ic_exp_move_right"/>
+
+                <at.markushi.ui.CircleButton
+                    app:cb_color="@color/colorPrimary"
+                    android:layout_width="@dimen/exp_button_size"
+                    android:layout_height="@dimen/exp_button_size"
+                    android:src="@drawable/ic_exp_move_left"/>
+
+                <at.markushi.ui.CircleButton
+                    app:cb_color="@color/colorPrimary"
+                    android:layout_width="@dimen/exp_button_size"
+                    android:layout_height="@dimen/exp_button_size"
+                    android:src="@drawable/ic_exp_operate"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
