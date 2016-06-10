@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.model.drawable;
+package es.uam.eps.tfg.app.tfgapp.view.drawable;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,7 +13,7 @@ import es.uam.eps.expressions.types.interfaces.Expression;
  * Each one of the elements that compose the ExpressionView
  */
 public abstract class DrawableExpression {
-    private static final float DEFAULT_TEXTSIZE = 100f;
+    protected static final float DEFAULT_TEXTSIZE = 100f;
     private int mNormalColor = Color.BLACK;
     private int mSelectedColor = Color.CYAN;
 
@@ -24,12 +24,16 @@ public abstract class DrawableExpression {
     protected Paint mPaint;
 
     protected DrawableExpression(final Typeface font) {
+        this(font, DEFAULT_TEXTSIZE);
+    }
+
+    protected DrawableExpression(final Typeface font, final float textSize) {
         mRectContainer = new Rect();
         x = 0;
         y = 0;
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setTextSize(DEFAULT_TEXTSIZE);
+        mPaint.setTextSize(textSize);
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaint.setTypeface(font);
     }

@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.model.drawable;
+package es.uam.eps.tfg.app.tfgapp.view.drawable;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,15 +18,15 @@ public class DrawableSingleExpression extends DrawableExpression {
     SingleExpression mExpression;
 
     public DrawableSingleExpression(final SingleExpression expression) {
-        this(null, expression);
+        this(null, expression, DEFAULT_TEXTSIZE);
     }
 
-    public DrawableSingleExpression(final Typeface font, final SingleExpression expression) {
-        this(font, new Point(0, 0), expression);
+    public DrawableSingleExpression(final Typeface font, final SingleExpression expression, final float textSize) {
+        this(font, new Point(0, 0), expression, textSize);
     }
 
-    public DrawableSingleExpression(final Typeface font, final Point coordinates, final SingleExpression expression) {
-        super(font);
+    public DrawableSingleExpression(final Typeface font, final Point coordinates, final SingleExpression expression, final float textSize) {
+        super(font, textSize);
         mExpression = expression;
         updateCoordinates(coordinates);
     }

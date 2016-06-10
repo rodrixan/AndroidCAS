@@ -16,8 +16,8 @@ import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionUpdateListener;
-import es.uam.eps.tfg.app.tfgapp.model.drawable.DrawableExpression;
-import es.uam.eps.tfg.app.tfgapp.model.drawable.DrawableExpressionList;
+import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpression;
+import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpressionList;
 
 /**
  * View for an expression from the CAS
@@ -112,7 +112,9 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         } else {
             coord = new Point(0, 0);
         }
-        mExp = new DrawableExpressionList(mFont, coord, (ExpressionList) exp);
+        final int textSize = getResources().getDimensionPixelSize(R.dimen.exp_text_size);
+        mExp = new DrawableExpressionList(mFont, coord, (ExpressionList) exp, textSize);
+
         mExp.setNormalColor(getResources().getColor(R.color.colorExpression));
         mExp.setSelectedColor(getResources().getColor(R.color.colorExpressionSelected));
     }
@@ -138,33 +140,15 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
 
             mOnExpressionActionListener.onExpressionSelected(mSelectedExp);
 
-//            Log.d(Utils.LOG_TAG, "Click en:" + event.getX() + "," + event.getY() + "; circulo en " + mCoords.x + "," + mCoords.y);
-//            if (!mCircleRect.contains(event.getX(), event.getY())) {
-//                Log.d(Utils.LOG_TAG, "la posicion no esta dentro de " + mCircleRect);
-//                mSelected = false;
-//            } else {
-//                mSelected = true;
-//            }
-//            if (!mExp.contains((int) event.getX(), (int) event.getY())) {
-////                Log.d(Utils.LOG_TAG, "la posicion no esta dentro de " + mCircleRect);
-//                mSelected = false;
-//            } else {
-//                mSelected = false;
-//            }
+
             return true;
         }
 
         @Override
-        public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
-            Log.d(Utils.LOG_TAG, "Posicion inicial: " + e1.getX() + "," + e1.getY() + " - Posicion actual: " + e2.getX() + "," + e2.getY());
+        public void onLongPress(final MotionEvent e) {
+            Log.d(Utils.LOG_TAG, "onLongPress");
 
-//            if (mSelected && mExp.isValidPosition(e2.getX(), e2.getY(), new Rect(0, 0, mWidth, mHeight))) {
-//                mExp.updateCoordinates((int) e2.getX(), (int) e2.getY());
-//            }
-
-            return true;
         }
-
     }
 
 }

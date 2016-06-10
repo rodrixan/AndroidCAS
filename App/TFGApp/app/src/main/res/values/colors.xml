@@ -19,6 +19,8 @@
     <color name="medium_green">#4CAF50</color>
     <color name="dark_green">#2E7D32</color>
 
+    <color name="opaque">#aa000000</color>
+
 
     <color name="white">@android:color/white</color>
 

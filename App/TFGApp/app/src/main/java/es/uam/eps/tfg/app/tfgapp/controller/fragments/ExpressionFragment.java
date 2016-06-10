@@ -10,18 +10,19 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import es.uam.eps.expressions.types.ExpressionList;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
+import es.uam.eps.tfg.app.tfgapp.controller.ActionButtons;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
 import es.uam.eps.tfg.app.tfgapp.model.CASAdapter;
 import es.uam.eps.tfg.app.tfgapp.model.CASImplementation;
@@ -30,13 +31,13 @@ import es.uam.eps.tfg.app.tfgapp.view.ExpressionView;
 /**
  * Main controller for the app
  */
-public class ExpressionFragment extends Fragment implements NavigationView.OnNavigationItemSelectedListener, OnExpressionActionListener {
+public class ExpressionFragment extends Fragment implements NavigationView.OnNavigationItemSelectedListener, OnExpressionActionListener, View.OnClickListener {
 
     private Callbacks mCallbacks;
     private DrawerLayout mDrawer;
     private ActionBarDrawerToggle mToggle;
     private ExpressionView mExpressionView;
-    private TextView mSelectedExpView;
+    private ActionButtons mButtons;
     private CASAdapter CAS;
 
     /**
@@ -63,8 +64,8 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         setupCAS();
+        setHasOptionsMenu(true);
     }
 
     private void setupCAS() {
@@ -96,10 +97,8 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
                 getActivity(), mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mExpressionView = (ExpressionView) v.findViewById(R.id.current_exp_view);
         updateExpressionView();
-        mSelectedExpView = (TextView) v.findViewById(R.id.selected_exp_textview);
-        mSelectedExpView.setTypeface(mExpressionView.getFont());
-        mSelectedExpView.setText(R.string.selected_expression_empty);
 
+        mButtons = new ActionButtons(v, getContext());
     }
 
     private void updateExpressionView() {
@@ -131,12 +130,14 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
         navigationView.setNavigationItemSelectedListener(this);
 
         mExpressionView.setOnExpressionActionListener(this);
+
+        mButtons.setListeners(this);
     }
 
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.expression, menu);
+        inflater.inflate(R.menu.fragment_expression_toolbar, menu);
     }
 
     @Override
@@ -145,18 +146,20 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
             return true;
         }
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                Toast.makeText(getActivity(), "History not available", Toast.LENGTH_SHORT).show();
+            case R.id.menu_item_action_help:
+                //showHelp();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(final MenuItem item) {
         // Handle navigation view item clicks here.
+        //http://www.appsrox.com/android/tutorials/showcase/4/#11
         final int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
@@ -190,10 +193,19 @@ public class ExpressionFragment extends Fragment implements NavigationView.OnNav
     @Override
     public void onExpressionSelected(final Expression exp) {
         if (exp != null) {
+            final int index = ((ExpressionList) CAS.getCurrentExpression()).indexOf(exp);
             final String selectedExpSymbolicExpression = exp.symbolicExpression();
-            mSelectedExpView.setText(selectedExpSymbolicExpression);
+            Log.d(Utils.LOG_TAG, "Selected Exp: " + selectedExpSymbolicExpression);
         } else {
-            mSelectedExpView.setText(R.string.selected_expression_empty);
+            Log.d(Utils.LOG_TAG, "Selected Exp: none");
+        }
+    }
+
+    @Override
+    public void onClick(final View view) {
+        final CASAdapter.Actions action = mButtons.getAction(view.getId());
+        if (action != null) {
+
         }
     }
 
