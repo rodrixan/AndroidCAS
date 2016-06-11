@@ -32,8 +32,6 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
     private DrawableExpression mExp;
     private OnExpressionActionListener mOnExpressionActionListener;
     private Expression mSelectedExp = null;
-    private int mHeight;
-    private int mWidth;
 
     public ExpressionView(final Context context) {
         this(context, null, 0);
@@ -57,8 +55,6 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
 
     @Override
     protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
-        mWidth = w;
-        mHeight = h;
 
         //FOR DEBUGGING!!!!!!
         if (w / 2 == 952.0)
@@ -80,7 +76,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            Log.d(Utils.LOG_TAG, "Soltado en posicion: " + event.getX() + "," + event.getY());
+            Log.d(Utils.LOG_TAG, "Dropped at: " + event.getX() + "," + event.getY());
             invalidate();
             return true;
         }
@@ -119,6 +115,17 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         mExp.setSelectedColor(getResources().getColor(R.color.colorExpressionSelected));
     }
 
+    private Expression getSelectedExp(final int x, final int y) {
+        final DrawableExpression exp = mExp.select(x, y);
+        if (exp != null) {
+            Log.d(Utils.LOG_TAG, "Clicked on expression: " + exp.getExpression().symbolicExpression());
+            return exp.getExpression();
+        } else {
+            Log.d(Utils.LOG_TAG, "Clicked out of the exp");
+            return null;
+        }
+    }
+
     /**
      * GestureListener for perfoming actions whenever the user touches the view
      */
@@ -128,18 +135,10 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             Log.d(Utils.LOG_TAG, "onDown");
 
             mExp.clearSelection();
-            final DrawableExpression exp = mExp.select((int) event.getX(), (int) event.getY());
 
-            if (exp != null) {
-                Log.d(Utils.LOG_TAG, "Clicked on expression: " + exp.getExpression().symbolicExpression());
-                mSelectedExp = exp.getExpression();
-            } else {
-                Log.d(Utils.LOG_TAG, "Clicked out of the exp");
-                mSelectedExp = null;
-            }
+            mSelectedExp = getSelectedExp((int) event.getX(), (int) event.getY());
 
             mOnExpressionActionListener.onExpressionSelected(mSelectedExp);
-
 
             return true;
         }

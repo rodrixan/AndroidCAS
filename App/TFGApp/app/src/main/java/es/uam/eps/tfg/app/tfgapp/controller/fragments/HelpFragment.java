@@ -1,6 +1,7 @@
 package es.uam.eps.tfg.app.tfgapp.controller.fragments;
 
-
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -8,27 +9,43 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class HelpFragment extends Fragment {
+import es.uam.eps.tfg.app.tfgapp.R;
+import es.uam.eps.tfg.app.tfgapp.controller.Callbacks;
 
+public class HelpFragment extends Fragment {
+    public static final int HELP_FRAGMENT_ID = 1;
+    private static final int FRAGMENT_TITLE = R.string.help_fragment_title;
+    private Callbacks mCallbacks;
 
     /**
      * @return new instance of this fragment
      */
     public static Fragment newInstance() {
-        return null;
+        return new HelpFragment();
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public void onAttach(final Context context) {
+        super.onAttach(context);
+        if (context instanceof Activity) {
+            mCallbacks = (Callbacks) context;
+        }
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
 
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        final View v = inflater.inflate(R.layout.fragment_help, container, false);
 
-        return null;
+        mCallbacks.setTitle(FRAGMENT_TITLE);
+
+        return v;
     }
+
 }

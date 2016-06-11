@@ -52,7 +52,7 @@ public class DrawableExpressionList extends DrawableExpression {
 
             element.onDraw(canvas);
         }
-        drawExternalContainers(canvas);
+        //drawExternalContainers(canvas);
     }
 
     private void drawExternalContainers(final Canvas canvas) {
