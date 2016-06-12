@@ -19,10 +19,19 @@
 
     <string name="button_exp_title">Allowed Actions</string>
 
-    <string name="help_expression_text">Click on terms to select one. Double tap on them for multiple selection.\n
-    If an operator is selected, the whole expression will be too.</string>
-    <string name="help_button_text">Click on the buttons to perform an action. Long press to show action description.\n
-    Not-allowed actions will take no effect on the expression. If a button is disabled, it means that action can not be applied.</string>
+    <string name="help_expression_text">
+        Click on terms to select one.\n
+        Long press on any of them to activate multiple selection (starting from the pressed one).\n
+        If an operator is selected, the whole expression will be too.\n
+        Click on anywhere but the expression to cancel the current selection.
+    </string>
+
+    <string name="help_button_text">
+        Click on the buttons to perform an action. Long press to show action description.\n
+        Not-allowed actions will take no effect on the expression.\n
+        If a button appears as disabled, it means that action can not be applied.
+    </string>
+
     <string name="expression_fragment_title">Expressions</string>
     <string name="help_fragment_title">Help</string>
     <string name="menu_settings">Settings</string>

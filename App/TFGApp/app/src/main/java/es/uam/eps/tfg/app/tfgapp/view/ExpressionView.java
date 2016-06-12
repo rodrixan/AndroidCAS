@@ -10,6 +10,9 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import es.uam.eps.expressions.types.ExpressionList;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
@@ -24,14 +27,10 @@ import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpressionList;
  */
 public class ExpressionView extends View implements OnExpressionUpdateListener {
 
-
-
     private final GestureDetector mGestureDetector;
-    private final boolean mSelected = false;
     private final Typeface mFont;
     private DrawableExpression mExp;
     private OnExpressionActionListener mOnExpressionActionListener;
-    private Expression mSelectedExp = null;
 
     public ExpressionView(final Context context) {
         this(context, null, 0);
@@ -76,9 +75,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            Log.d(Utils.LOG_TAG, "Dropped at: " + event.getX() + "," + event.getY());
             invalidate();
-            return true;
         }
         mGestureDetector.onTouchEvent(event);
         invalidate();
@@ -127,25 +124,92 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
     }
 
     /**
-     * GestureListener for perfoming actions whenever the user touches the view
+     * GestureListener for performing actions whenever the user touches the view
      */
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        private boolean mMultiSelection = false;
+        private List<Expression> mSelectedExpressions = new ArrayList<>();
+
         @Override
-        public boolean onDown(final MotionEvent event) {
-            Log.d(Utils.LOG_TAG, "onDown");
+        public boolean onSingleTapUp(final MotionEvent e) {
 
-            mExp.clearSelection();
+            if (!mMultiSelection) {
 
-            mSelectedExp = getSelectedExp((int) event.getX(), (int) event.getY());
+                selectSingleExpression((int) e.getX(), (int) e.getY());
 
-            mOnExpressionActionListener.onExpressionSelected(mSelectedExp);
-
+            } else {
+                selectMultipleExpression((int) e.getX(), (int) e.getY());
+            }
             return true;
+        }
+
+        private void selectMultipleExpression(final int x, final int y) {
+            Log.d(Utils.LOG_TAG, "multi-selection expression: ");
+
+            final Expression selection = getSelectedExp(x, y);
+
+            if (selection != null) {
+                if (!mSelectedExpressions.contains(selection)) {
+                    Log.d(Utils.LOG_TAG, "Added expression: " + selection.symbolicExpression());
+
+                    mSelectedExpressions.add(selection);
+
+                } else {
+                    Log.d(Utils.LOG_TAG, "Already contained: " + selection.symbolicExpression());
+
+                    mExp.clearSelection(x, y);
+                    mSelectedExpressions.remove(selection);
+                }
+                Log.d(Utils.LOG_TAG, "Current multiple selection: " + mSelectedExpressions.toString());
+                mOnExpressionActionListener.onMultipleExpressionSelected(mExp.getExpression(), mSelectedExpressions);
+
+            } else {
+                cancelSelection();
+            }
+        }
+
+        private void selectSingleExpression(final int x, final int y) {
+            Log.d(Utils.LOG_TAG, "Single selection");
+            mExp.clearSelection();
+            final Expression selection = getSelectedExp(x, y);
+            if (selection != null) {
+                Log.d(Utils.LOG_TAG, "Selected Exp: " + selection.symbolicExpression());
+                mOnExpressionActionListener.onSingleExpressionSelected(mExp.getExpression(), selection);
+            } else {
+                Log.d(Utils.LOG_TAG, "Selected Exp: none");
+                cancelSelection();
+            }
+        }
+
+        private void cancelSelection() {
+            Log.d(Utils.LOG_TAG, "Selection cancelled");
+            mMultiSelection = false;
+            mExp.clearSelection();
+            mSelectedExpressions = null;
         }
 
         @Override
         public void onLongPress(final MotionEvent e) {
-            Log.d(Utils.LOG_TAG, "onLongPress");
+
+            Log.d(Utils.LOG_TAG, "Multiple selection started");
+            mMultiSelection = true;
+            mSelectedExpressions = new ArrayList<>();
+            mExp.clearSelection();
+            final Expression selection = getSelectedExp((int) e.getX(), (int) e.getY());
+            if (selection != null) {
+                if (!mSelectedExpressions.contains(selection)) {
+                    Log.d(Utils.LOG_TAG, "Added expression: " + selection.symbolicExpression());
+                    mSelectedExpressions.add(selection);
+                } else {
+                    Log.d(Utils.LOG_TAG, "Already contained: " + selection.symbolicExpression());
+                    mExp.clearSelection((int) e.getX(), (int) e.getY());
+                    mSelectedExpressions.remove(selection);
+                }
+            } else {
+
+                cancelSelection();
+            }
 
         }
     }

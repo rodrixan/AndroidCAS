@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import es.uam.eps.expressions.types.ExpressionList;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
@@ -42,8 +44,8 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
         return new ExpressionFragment();
     }
 
-    public static int getTagID(){
-        return  FRAGMENT_TITLE;
+    public static int getTagID() {
+        return FRAGMENT_TITLE;
     }
 
     @Override
@@ -74,7 +76,6 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        Log.d("TOOL", "Created view");
         final View v = inflater.inflate(R.layout.fragment_expression, container, false);
         wireComponents(v);
         setListeners(v);
@@ -112,13 +113,16 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
     }
 
     @Override
-    public void onExpressionSelected(final Expression exp) {
-        if (exp != null) {
-            final int index = ((ExpressionList) CAS.getCurrentExpression()).indexOf(exp);
-            final String selectedExpSymbolicExpression = exp.symbolicExpression();
-            Log.d(Utils.LOG_TAG, "Selected Exp: " + selectedExpSymbolicExpression);
-        } else {
-            Log.d(Utils.LOG_TAG, "Selected Exp: none");
+    public void onSingleExpressionSelected(final Expression global, final Expression selected) {
+        final int index = ((ExpressionList) global).indexOf(selected);
+        final String selectedExpSymbolicExpression = selected.symbolicExpression();
+    }
+
+    @Override
+    public void onMultipleExpressionSelected(final Expression global, final List<Expression> selection) {
+        final int[] indexes = new int[selection.size()];
+        for (int i = 0; i < selection.size(); i++) {
+            indexes[i] = ((ExpressionList) global).indexOf(selection.get(i));
         }
     }
 
@@ -126,13 +130,12 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
     public void onClick(final View view) {
         final CASAdapter.Actions action = mButtons.getAction(view.getId());
         if (action != null) {
-
+            Log.d(Utils.LOG_TAG, "Button " + action.toString() + " pressed");
         }
     }
 
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-        //menu.clear();
         inflater.inflate(R.menu.fragment_expression_toolbar, menu);
     }
 

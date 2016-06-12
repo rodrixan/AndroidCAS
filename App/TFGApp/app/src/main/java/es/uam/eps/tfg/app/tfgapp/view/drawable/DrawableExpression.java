@@ -14,14 +14,13 @@ import es.uam.eps.expressions.types.interfaces.Expression;
  */
 public abstract class DrawableExpression {
     protected static final float DEFAULT_TEXTSIZE = 100f;
-    private int mNormalColor = Color.BLACK;
-    private int mSelectedColor = Color.CYAN;
-
     protected Rect mRectContainer;
     protected int x, y;
     protected int mWidth;
     protected int mHeight;
     protected Paint mPaint;
+    private int mNormalColor = Color.BLACK;
+    private int mSelectedColor = Color.CYAN;
 
     protected DrawableExpression(final Typeface font) {
         this(font, DEFAULT_TEXTSIZE);
@@ -153,11 +152,6 @@ public abstract class DrawableExpression {
         mRectContainer = updateBounds();
     }
 
-    protected void setHeight(final int height) {
-        mHeight = height;
-        mRectContainer.top = mRectContainer.bottom - height;
-    }
-
     /**
      * Update the rectangle that contains the element
      *
@@ -197,6 +191,11 @@ public abstract class DrawableExpression {
         return container;
     }
 
+    protected void setHeight(final int height) {
+        mHeight = height;
+        mRectContainer.top = mRectContainer.bottom - height;
+    }
+
     public void setTextSize(final float size) {
         mPaint.setTextSize(size);
         mRectContainer = updateBounds();
@@ -232,15 +231,6 @@ public abstract class DrawableExpression {
     }
 
     /**
-     * Given a position, returns the expression that matches it
-     *
-     * @param x
-     * @param y
-     * @return expression that matches the position. Can be single or a list
-     */
-    protected abstract DrawableExpression getDrawableAtPosition(final int x, final int y);
-
-    /**
      * @return true if the element can be considered an operator for an expression, false if not
      */
     public abstract boolean isOperator();
@@ -263,6 +253,19 @@ public abstract class DrawableExpression {
             exp.setColor(mSelectedColor);
         }
         return exp;
+    }
+
+    /**
+     * Given a position, returns the expression that matches it
+     *
+     * @param x
+     * @param y
+     * @return expression that matches the position. Can be single or a list
+     */
+    protected abstract DrawableExpression getDrawableAtPosition(final int x, final int y);
+
+    public void clearSelection(final int x, final int y) {
+        clearSelection();
     }
 
     public void clearSelection() {

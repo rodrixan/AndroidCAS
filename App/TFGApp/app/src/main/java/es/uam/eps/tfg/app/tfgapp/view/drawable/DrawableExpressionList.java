@@ -24,7 +24,6 @@ public class DrawableExpressionList extends DrawableExpression {
     private final ExpressionList<Expression> mExpressionList;
     private List<DrawableExpression> mDrawableExpList;
 
-
     public DrawableExpressionList(final Typeface font, final Point coordinates, final ExpressionList<Expression> exp, final float textSize) {
         super(font, textSize);
         mExpressionList = exp;
@@ -38,12 +37,6 @@ public class DrawableExpressionList extends DrawableExpression {
 
     public DrawableExpressionList(final Typeface font, final ExpressionList<Expression> exp) {
         this(font, new Point(0, 0), exp, DEFAULT_TEXTSIZE);
-    }
-
-
-    @Override
-    public Expression getExpression() {
-        return mExpressionList;
     }
 
     @Override
@@ -71,7 +64,6 @@ public class DrawableExpressionList extends DrawableExpression {
         paint.setColor(color);
         canvas.drawRect(element.mRectContainer, paint);
     }
-
 
     private void createDrawableList() {
         mDrawableExpList = new ArrayList<>();
@@ -144,6 +136,21 @@ public class DrawableExpressionList extends DrawableExpression {
     }
 
     @Override
+    protected Rect getDefaultBounds() {
+        final Rect rect = new Rect();
+        //used for height, width will be changed to better size
+        final String text = getExpression().toString();
+        mPaint.getTextBounds(text, 0, text.length(), rect);
+        rect.right = rect.left + width();
+        return rect;
+    }
+
+    @Override
+    public Expression getExpression() {
+        return mExpressionList;
+    }
+
+    @Override
     public int width() {
         int width = 0;
         for (final DrawableExpression exp : mDrawableExpList) {
@@ -156,13 +163,28 @@ public class DrawableExpressionList extends DrawableExpression {
     }
 
     @Override
-    protected Rect getDefaultBounds() {
-        final Rect rect = new Rect();
-        //used for height, width will be changed to better size
-        final String text = getExpression().toString();
-        mPaint.getTextBounds(text, 0, text.length(), rect);
-        rect.right = rect.left + width();
-        return rect;
+    public boolean isOperator() {
+        return false;
+    }
+
+    @Override
+    public boolean isParenthesis() {
+        return false;
+    }
+
+    @Override
+    public void clearSelection() {
+        for (final DrawableExpression exp : mDrawableExpList) {
+            exp.clearSelection();
+        }
+    }
+
+    @Override
+    public void clearSelection(final int x, final int y) {
+        final DrawableExpression selected = getDrawableAtPosition(x, y);
+        if (selected != null) {
+            selected.clearSelection();
+        }
     }
 
     @Override
@@ -187,23 +209,6 @@ public class DrawableExpressionList extends DrawableExpression {
             return exp;
         } else {
             return selected;
-        }
-    }
-
-    @Override
-    public boolean isOperator() {
-        return false;
-    }
-
-    @Override
-    public boolean isParenthesis() {
-        return false;
-    }
-
-    @Override
-    public void clearSelection() {
-        for (final DrawableExpression exp : mDrawableExpList) {
-            exp.clearSelection();
         }
     }
 
