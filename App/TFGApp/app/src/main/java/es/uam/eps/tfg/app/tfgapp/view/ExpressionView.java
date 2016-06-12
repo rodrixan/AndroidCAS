@@ -24,7 +24,7 @@ import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpressionList;
  */
 public class ExpressionView extends View implements OnExpressionUpdateListener {
 
-    private static final String FONT_PATH = "fonts/lmromanslant10-regular-ExpView.otf";
+
 
     private final GestureDetector mGestureDetector;
     private final boolean mSelected = false;
@@ -40,7 +40,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
     public ExpressionView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        mFont = Typeface.createFromAsset(context.getAssets(), FONT_PATH);
+        mFont = Typeface.createFromAsset(context.getAssets(), Utils.FONT_PATH);
 
         mGestureDetector = new GestureDetector(context, new MyGestureListener());
 

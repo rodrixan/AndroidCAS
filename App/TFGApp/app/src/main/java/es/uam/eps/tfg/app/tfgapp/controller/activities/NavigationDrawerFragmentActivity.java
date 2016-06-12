@@ -4,13 +4,11 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 
 import es.uam.eps.tfg.app.tfgapp.R;
@@ -19,6 +17,7 @@ public abstract class NavigationDrawerFragmentActivity extends AppCompatActivity
     protected DrawerLayout mDrawerLayout;
     protected Toolbar mToolbar;
     protected ActionBar mActionBar;
+    protected NavigationView mNavigationView;
     protected ActionBarDrawerToggle mToggle;
 
     @Override
@@ -30,8 +29,9 @@ public abstract class NavigationDrawerFragmentActivity extends AppCompatActivity
 
         setNavigationDrawer();
 
-        //First start (Inbox Fragment)
+        //First start (Main Fragment)
         setFragment(getDefaultFragmentId(), true);
+        mNavigationView.getMenu().getItem(0).setChecked(true);
 
     }
 
@@ -49,12 +49,12 @@ public abstract class NavigationDrawerFragmentActivity extends AppCompatActivity
 
         setActionToggle();
 
-        final NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
+        if (mNavigationView != null) {
+            mNavigationView.setNavigationItemSelectedListener(this);
         }
 
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView.setNavigationItemSelectedListener(this);
     }
 
     private void setActionToggle() {
@@ -71,8 +71,6 @@ public abstract class NavigationDrawerFragmentActivity extends AppCompatActivity
             }
         });
     }
-
-
 
 //    @Override
 //    public boolean onCreateOptionsMenu(final Menu menu) {
@@ -93,7 +91,6 @@ public abstract class NavigationDrawerFragmentActivity extends AppCompatActivity
 //    }
 //
 //    protected abstract boolean onOptionsItemSelected(int id);
-
 
     private void setToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);

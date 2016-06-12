@@ -6,7 +6,7 @@
 
     <string name="action_help">Help</string>
     <string name="current_expression_title">Current expression</string>
-    <string name="selected_expression_empty">No expression selected</string>
+    <string name="empty_showcase">No expressions available</string>
 
     <!-- button description -->
     <string name="button_exp_change_side_desc">Change side of the term in the equation</string>
@@ -29,5 +29,7 @@
     <string name="menu_showcase">Showcase</string>
     <string name="menu_history">Exp. History</string>
     <string name="menu_board">Board</string>
+    <string name="showcase_fragment_title">Available Expressions</string>
+    <string name="showcase_fragment_subtitle">Tap on one to load it</string>
 
 </resources>

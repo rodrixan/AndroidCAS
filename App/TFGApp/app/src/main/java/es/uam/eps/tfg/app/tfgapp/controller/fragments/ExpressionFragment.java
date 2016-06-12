@@ -18,7 +18,6 @@ import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.controller.ActionButtons;
-import es.uam.eps.tfg.app.tfgapp.controller.Callbacks;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
 import es.uam.eps.tfg.app.tfgapp.model.CASAdapter;
 import es.uam.eps.tfg.app.tfgapp.model.CASImplementation;
@@ -41,6 +40,10 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
      */
     public static Fragment newInstance() {
         return new ExpressionFragment();
+    }
+
+    public static int getTagID(){
+        return  FRAGMENT_TITLE;
     }
 
     @Override
@@ -66,13 +69,12 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
 
     private void setupCAS() {
         CAS = CASImplementation.getInstance();
-        CAS.initCAS(Utils.createUltraLongSampleExpression());
     }
 
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-
+        Log.d("TOOL", "Created view");
         final View v = inflater.inflate(R.layout.fragment_expression, container, false);
         wireComponents(v);
         setListeners(v);
@@ -130,7 +132,7 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
 
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        //menu.clear();
         inflater.inflate(R.menu.fragment_expression_toolbar, menu);
     }
 

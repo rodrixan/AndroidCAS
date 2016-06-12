@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import es.uam.eps.tfg.app.tfgapp.R;
-import es.uam.eps.tfg.app.tfgapp.controller.Callbacks;
 
 public class HelpFragment extends Fragment {
     public static final int HELP_FRAGMENT_ID = 1;
@@ -22,6 +21,10 @@ public class HelpFragment extends Fragment {
      */
     public static Fragment newInstance() {
         return new HelpFragment();
+    }
+
+    public static int getTagID(){
+        return  FRAGMENT_TITLE;
     }
 
     @Override

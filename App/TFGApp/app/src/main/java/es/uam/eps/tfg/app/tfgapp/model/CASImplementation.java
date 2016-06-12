@@ -1,15 +1,27 @@
 package es.uam.eps.tfg.app.tfgapp.model;
 
-import es.uam.eps.expressions.types.interfaces.Expression;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
+import es.uam.eps.expressions.types.interfaces.Expression;
+import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 
 public class CASImplementation implements CASAdapter {
+    private static final List<Expression> mShowcaseExpressionList = new ArrayList<>();
     private static CASAdapter mCASInstance = null;
-    private Expression mExpression;
+
+    static {
+        mShowcaseExpressionList.add(Utils.createShortSampleExpression());
+        mShowcaseExpressionList.add(Utils.createMediumSampleExpression());
+        mShowcaseExpressionList.add(Utils.createLongSampleExpression());
+        mShowcaseExpressionList.add(Utils.createUltraLongSampleExpression());
+    }
+
+    private Expression mExpression = null;
 
     private CASImplementation() {
     }
-
 
     public static CASAdapter getInstance() {
         if (mCASInstance == null) {
@@ -25,6 +37,10 @@ public class CASImplementation implements CASAdapter {
 
     @Override
     public Expression getCurrentExpression() {
+        if (mExpression == null) {
+            final Random rand = new Random();
+            mExpression = mShowcaseExpressionList.get(rand.nextInt((mShowcaseExpressionList.size()-1 - 0) + 1) + 0);
+        }
         return mExpression;
     }
 
@@ -66,5 +82,10 @@ public class CASImplementation implements CASAdapter {
     @Override
     public Expression moveMember(final Expression equation, final int elemPos) {
         return null;
+    }
+
+    @Override
+    public List<Expression> getSampleExpressions() {
+        return mShowcaseExpressionList;
     }
 }

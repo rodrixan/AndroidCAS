@@ -1,6 +1,8 @@
 package es.uam.eps.tfg.app.tfgapp.model;
 
 
+import java.util.List;
+
 import es.uam.eps.expressions.types.interfaces.Expression;
 
 public interface CASAdapter {
@@ -25,5 +27,7 @@ public interface CASAdapter {
     Expression dropElement(Expression mainExp, int elemPos);
 
     Expression moveMember(Expression equation, int elemPos);
+
+    List<Expression> getSampleExpressions();
 
 }

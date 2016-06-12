@@ -8,6 +8,7 @@ import es.uam.eps.expressions.types.operations.SUMList;
 
 public final class Utils {
     public static final String LOG_TAG = "TFG-APP";
+    public static final String FONT_PATH = "fonts/lmromanslant10-regular-ExpView.otf";
 
     private Utils() {
     }
