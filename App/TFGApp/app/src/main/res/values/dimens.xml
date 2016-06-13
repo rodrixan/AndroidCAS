@@ -11,5 +11,7 @@
     <dimen name="exp_button_size">50dp</dimen>
     <dimen name="exp_text_size">35sp</dimen>
     <dimen name="exp_showcase_text_size">25sp</dimen>
+    <dimen name="exp_history_selected_exp_text_size">20sp</dimen>
+
     <dimen name="status_bar_margin_top">0dp</dimen>
 </resources>

@@ -21,8 +21,10 @@ import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.controller.ActionButtons;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
-import es.uam.eps.tfg.app.tfgapp.model.CASAdapter;
-import es.uam.eps.tfg.app.tfgapp.model.CASImplementation;
+import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
+import es.uam.eps.tfg.app.tfgapp.model.cas.CASImplementation;
+import es.uam.eps.tfg.app.tfgapp.model.history.ExpressionHistory;
+import es.uam.eps.tfg.app.tfgapp.model.history.ExpressionHistoryDB;
 import es.uam.eps.tfg.app.tfgapp.view.ExpressionView;
 
 /**
@@ -35,7 +37,8 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
     private Callbacks mCallbacks;
     private ExpressionView mExpressionView;
     private ActionButtons mButtons;
-    private CASAdapter CAS;
+    private CASAdapter mCAS;
+    private ExpressionHistory mHistory;
 
     /**
      * @return new instance of this fragment
@@ -67,10 +70,15 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         setupCAS();
+        setupHistory();
     }
 
     private void setupCAS() {
-        CAS = CASImplementation.getInstance();
+        mCAS = CASImplementation.getInstance();
+    }
+
+    private void setupHistory() {
+        mHistory = ExpressionHistoryDB.getInstance();
     }
 
     @Nullable
@@ -98,7 +106,7 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
     }
 
     private void updateExpressionView() {
-        mExpressionView.onExpressionUpdated(CAS.getCurrentExpression());
+        mExpressionView.onExpressionUpdated(mCAS.getCurrentExpression());
     }
 
     /**
@@ -113,16 +121,19 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
     }
 
     @Override
-    public void onSingleExpressionSelected(final Expression global, final Expression selected) {
-        final int index = ((ExpressionList) global).indexOf(selected);
+    public void onSingleExpressionSelected(final Expression selected) {
+        final int index = ((ExpressionList) mCAS.getCurrentExpression()).indexOf(selected);
+        Log.d(Utils.LOG_TAG, "Index of single selection: " + index);
         final String selectedExpSymbolicExpression = selected.symbolicExpression();
+        mHistory.addExpression(CASAdapter.Actions.SELECT_SINGLE, mCAS.getCurrentExpression(), selected);
     }
 
     @Override
-    public void onMultipleExpressionSelected(final Expression global, final List<Expression> selection) {
+    public void onMultipleExpressionSelected(final List<Expression> selection) {
         final int[] indexes = new int[selection.size()];
         for (int i = 0; i < selection.size(); i++) {
-            indexes[i] = ((ExpressionList) global).indexOf(selection.get(i));
+            indexes[i] = ((ExpressionList) mCAS.getCurrentExpression()).indexOf(selection.get(i));
+            Log.d(Utils.LOG_TAG, "Index of multiple selection: " + indexes[i]);
         }
     }
 

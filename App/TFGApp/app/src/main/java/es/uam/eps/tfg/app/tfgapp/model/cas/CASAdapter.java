@@ -1,13 +1,10 @@
-package es.uam.eps.tfg.app.tfgapp.model;
-
+package es.uam.eps.tfg.app.tfgapp.model.cas;
 
 import java.util.List;
 
 import es.uam.eps.expressions.types.interfaces.Expression;
 
 public interface CASAdapter {
-    enum Actions {CHANGE_SIDE, MOVE_LEFT, MOVE_RIGHT, DELETE, ASSOCIATE, DISASSOCIATE, OPERATE}
-
     void initCAS(Expression exp);
 
     Expression getCurrentExpression();
@@ -29,5 +26,7 @@ public interface CASAdapter {
     Expression moveMember(Expression equation, int elemPos);
 
     List<Expression> getSampleExpressions();
+
+    enum Actions {SELECT_SINGLE, SELECT_MULTIPLE, CHANGE_SIDE, MOVE_LEFT, MOVE_RIGHT, DELETE, ASSOCIATE, DISASSOCIATE, OPERATE}
 
 }

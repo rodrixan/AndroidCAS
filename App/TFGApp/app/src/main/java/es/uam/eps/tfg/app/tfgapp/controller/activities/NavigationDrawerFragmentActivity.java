@@ -40,7 +40,7 @@ public abstract class NavigationDrawerFragmentActivity extends AppCompatActivity
         return R.layout.activity_main;
     }
 
-    public abstract void setFragment(int id, boolean first);
+    public abstract int setFragment(int id, boolean first);
 
     protected abstract int getDefaultFragmentId();
 

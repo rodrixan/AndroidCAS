@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.model;
+package es.uam.eps.tfg.app.tfgapp.model.cas;
 
 import java.util.ArrayList;
 import java.util.List;

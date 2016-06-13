@@ -18,10 +18,10 @@ import java.util.List;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
-import es.uam.eps.tfg.app.tfgapp.model.CASAdapter;
-import es.uam.eps.tfg.app.tfgapp.model.CASImplementation;
+import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
+import es.uam.eps.tfg.app.tfgapp.model.cas.CASImplementation;
 
-public class ExpressionShowcaseFragment extends Fragment {
+public class ShowcaseFragment extends Fragment {
     public static final int SHOWCASE_FRAGMENT_ID = 2;
     private static final int FRAGMENT_TITLE = R.string.showcase_fragment_title;
     private static final int FRAGMENT_SUBTITLE = R.string.showcase_fragment_subtitle;
@@ -34,7 +34,7 @@ public class ExpressionShowcaseFragment extends Fragment {
      * @return new instance of this fragment
      */
     public static Fragment newInstance() {
-        return new ExpressionShowcaseFragment();
+        return new ShowcaseFragment();
     }
 
     public static int getTagID() {
@@ -113,11 +113,11 @@ public class ExpressionShowcaseFragment extends Fragment {
         public void onClick(final View v) {
             //just update the CAS and go back
             CASImplementation.getInstance().initCAS(mExpression);
-            getActivity().onBackPressed();
+            mCallbacks.navigateToFragment(ExpressionFragment.EXPRESSION_FRAGMENT_ID);
         }
     }//END_ExpressionHolder
 
-    //Adapter for a Crime list
+    //Adapter for an Expression list
     private class ExpressionAdapter extends RecyclerView.Adapter<ExpressionHolder> {
 
         private List<Expression> mExpressionList;
@@ -153,7 +153,7 @@ public class ExpressionShowcaseFragment extends Fragment {
         public void setData(final List<Expression> expList) {
             mExpressionList = expList;
         }
-    }//END_CrimeAdapter
+    }//END_ExpressionAdapter
 
 }
 

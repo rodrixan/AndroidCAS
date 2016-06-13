@@ -22,9 +22,4 @@ public interface Callbacks {
      */
     void navigateToFragment(int fragmentId);
 
-    /**
-     * Used when an expression was selected in the Showcase fragment
-     */
-    //void onShowcaseExpressionSelected();
-
 }

@@ -40,5 +40,10 @@
     <string name="menu_board">Board</string>
     <string name="showcase_fragment_title">Available Expressions</string>
     <string name="showcase_fragment_subtitle">Tap on one to load it</string>
+    <string name="history_fragment_title">History</string>
+    <string name="history_fragment_subtitle">Tap on one to go back to it</string>
+    <string name="history_empty_list">No history yet...</string>
+    <string name="popup_multiple_selection_enabled">Multiple selection enabled</string>
+
 
 </resources>

@@ -196,6 +196,10 @@ public abstract class DrawableExpression {
         mRectContainer.top = mRectContainer.bottom - height;
     }
 
+    public float getTextSize() {
+        return mPaint.getTextSize();
+    }
+
     public void setTextSize(final float size) {
         mPaint.setTextSize(size);
         mRectContainer = updateBounds();

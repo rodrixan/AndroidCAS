@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,8 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         //FOR DEBUGGING!!!!!!
 
         mExp.updateCoordinates(w / 2, h / 2);
+        final int textSize = getResources().getDimensionPixelSize(R.dimen.exp_text_size);
+        mExp.setTextSize(textSize);
 
         super.onSizeChanged(w, h, oldw, oldh);
     }
@@ -79,6 +82,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         }
         mGestureDetector.onTouchEvent(event);
         invalidate();
+
         return true;
     }
 
@@ -89,7 +93,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
     }
 
     /**
-     * Sets a listener for doing actions everytime an expression is selected
+     * Sets a listener for doing actions every time an expression is selected
      *
      * @param onExpressionActionListener
      */
@@ -139,12 +143,15 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
                 selectSingleExpression((int) e.getX(), (int) e.getY());
 
             } else {
-                selectMultipleExpression((int) e.getX(), (int) e.getY());
+                if (selectMultipleExpression((int) e.getX(), (int) e.getY())) {
+                    mOnExpressionActionListener.onMultipleExpressionSelected(mSelectedExpressions);
+                }
             }
+
             return true;
         }
 
-        private void selectMultipleExpression(final int x, final int y) {
+        private boolean selectMultipleExpression(final int x, final int y) {
             Log.d(Utils.LOG_TAG, "multi-selection expression: ");
 
             final Expression selection = getSelectedExp(x, y);
@@ -162,10 +169,10 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
                     mSelectedExpressions.remove(selection);
                 }
                 Log.d(Utils.LOG_TAG, "Current multiple selection: " + mSelectedExpressions.toString());
-                mOnExpressionActionListener.onMultipleExpressionSelected(mExp.getExpression(), mSelectedExpressions);
-
+                return true;
             } else {
                 cancelSelection();
+                return false;
             }
         }
 
@@ -175,7 +182,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             final Expression selection = getSelectedExp(x, y);
             if (selection != null) {
                 Log.d(Utils.LOG_TAG, "Selected Exp: " + selection.symbolicExpression());
-                mOnExpressionActionListener.onSingleExpressionSelected(mExp.getExpression(), selection);
+                mOnExpressionActionListener.onSingleExpressionSelected(selection);
             } else {
                 Log.d(Utils.LOG_TAG, "Selected Exp: none");
                 cancelSelection();
@@ -193,25 +200,17 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         public void onLongPress(final MotionEvent e) {
 
             Log.d(Utils.LOG_TAG, "Multiple selection started");
+            final int x = (int) e.getX();
+            final int y = (int) e.getY();
             mMultiSelection = true;
             mSelectedExpressions = new ArrayList<>();
             mExp.clearSelection();
-            final Expression selection = getSelectedExp((int) e.getX(), (int) e.getY());
-            if (selection != null) {
-                if (!mSelectedExpressions.contains(selection)) {
-                    Log.d(Utils.LOG_TAG, "Added expression: " + selection.symbolicExpression());
-                    mSelectedExpressions.add(selection);
-                } else {
-                    Log.d(Utils.LOG_TAG, "Already contained: " + selection.symbolicExpression());
-                    mExp.clearSelection((int) e.getX(), (int) e.getY());
-                    mSelectedExpressions.remove(selection);
-                }
-            } else {
 
-                cancelSelection();
+            if (selectMultipleExpression(x, y)) {
+                Toast.makeText(getContext(), R.string.popup_multiple_selection_enabled, Toast.LENGTH_SHORT).show();
             }
-
         }
+
     }
 
 }

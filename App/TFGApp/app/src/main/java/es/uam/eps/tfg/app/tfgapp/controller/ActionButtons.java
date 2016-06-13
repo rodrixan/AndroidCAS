@@ -8,7 +8,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import es.uam.eps.tfg.app.tfgapp.R;
-import es.uam.eps.tfg.app.tfgapp.model.CASAdapter;
+import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
 
 public class ActionButtons implements View.OnLongClickListener {
 

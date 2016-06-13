@@ -8,10 +8,12 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import es.uam.eps.tfg.app.tfgapp.R;
+import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.Callbacks;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.ExpressionFragment;
-import es.uam.eps.tfg.app.tfgapp.controller.fragments.ExpressionShowcaseFragment;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.HelpFragment;
+import es.uam.eps.tfg.app.tfgapp.controller.fragments.HistoryFragment;
+import es.uam.eps.tfg.app.tfgapp.controller.fragments.ShowcaseFragment;
 
 /**
  * Activity that holds the fragments of the app
@@ -27,7 +29,6 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
     public boolean onNavigationItemSelected(final MenuItem item) {
         // Handle navigation view item clicks here.
         //http://www.appsrox.com/android/tutorials/showcase/4/#11
-        item.setChecked(true);
         int fragmentId = -1;
 
         switch (item.getItemId()) {
@@ -35,7 +36,10 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
                 fragmentId = ExpressionFragment.EXPRESSION_FRAGMENT_ID;
                 break;
             case R.id.nav_showcase:
-                fragmentId = ExpressionShowcaseFragment.SHOWCASE_FRAGMENT_ID;
+                fragmentId = ShowcaseFragment.SHOWCASE_FRAGMENT_ID;
+                break;
+            case R.id.nav_history:
+                fragmentId = HistoryFragment.HISTORY_FRAGMENT_ID;
                 break;
             default:
                 fragmentId = ExpressionFragment.EXPRESSION_FRAGMENT_ID;
@@ -43,48 +47,68 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
         }
 
         navigateToFragment(fragmentId);
+
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
     @Override
     public void navigateToFragment(final int fragmentId) {
-        setFragment(fragmentId, false);
+
+        final int navItemPos = setFragment(fragmentId, false);
+        mNavigationView.getMenu().getItem(navItemPos).setChecked(true);
     }
 
     @Override
-    public void setFragment(final int id, final boolean first) {
-        Log.d("TOOL", "Called setFragment with id: " + id);
-        final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+    public int setFragment(final int id, final boolean first) {
+        Log.d(Utils.LOG_TAG, "Called setFragment with id: " + id);
+
         Fragment fragment = null;
         String tag = null;
         boolean main = false;
+        int navItemPos = 0;
 
         switch (id) {
             case ExpressionFragment.EXPRESSION_FRAGMENT_ID:
                 fragment = ExpressionFragment.newInstance();
+                navItemPos = 0;
                 main = true;
                 break;
             case HelpFragment.HELP_FRAGMENT_ID:
                 fragment = HelpFragment.newInstance();
                 setDrawerEnable(false);
                 tag = HelpFragment.getTagID() + "";
+                navItemPos = 0;
                 break;
-            case ExpressionShowcaseFragment.SHOWCASE_FRAGMENT_ID:
-                fragment = ExpressionShowcaseFragment.newInstance();
-                tag = ExpressionShowcaseFragment.getTagID() + "";
+            case ShowcaseFragment.SHOWCASE_FRAGMENT_ID:
+                fragment = ShowcaseFragment.newInstance();
+                tag = ShowcaseFragment.getTagID() + "";
+                navItemPos = 1;
+                break;
+            case HistoryFragment.HISTORY_FRAGMENT_ID:
+                fragment = HistoryFragment.newInstance();
+                tag = HistoryFragment.getTagID() + "";
+                navItemPos = 2;
                 break;
             default:
-                return;
+                return 0;
         }
         getSupportActionBar().setSubtitle(null);
+
+        doFragmentTransaction(first, fragment, tag, main);
+        return navItemPos;
+
+    }
+
+    private void doFragmentTransaction(final boolean first, final Fragment fragment, final String tag, final boolean main) {
+
+        final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        getSupportFragmentManager().popBackStack();//always go back to the first fragment
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         if (!first && !main) {
-            Log.d("TOOL", "Added stack");
             fragmentTransaction.addToBackStack(tag);
         }
         fragmentTransaction.commit();
-
     }
 
     private void setDrawerEnable(final boolean enable) {

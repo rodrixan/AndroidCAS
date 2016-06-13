@@ -9,8 +9,8 @@ import es.uam.eps.expressions.types.interfaces.Expression;
  */
 public interface OnExpressionActionListener {
 
-    void onSingleExpressionSelected(Expression global,Expression selected);
+    void onSingleExpressionSelected(Expression selected);
 
-    void onMultipleExpressionSelected(Expression global, List<Expression> selection);
+    void onMultipleExpressionSelected(List<Expression> selection);
 
 }
