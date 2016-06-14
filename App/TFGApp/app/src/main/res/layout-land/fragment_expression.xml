@@ -10,7 +10,7 @@
 
     <!--xmlns:card_view="http://schemas.android.com/apk/res-auto" for using card_view:background-->
     <android.support.v7.widget.CardView
-        android:id="@+id/fragment_drag_content_main_exp"
+        android:id="@+id/fragment_expression_board"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4"

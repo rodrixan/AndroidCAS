@@ -13,6 +13,7 @@ import es.uam.eps.tfg.app.tfgapp.controller.fragments.Callbacks;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.ExpressionFragment;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.HelpFragment;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.HistoryFragment;
+import es.uam.eps.tfg.app.tfgapp.controller.fragments.SettingsFragment;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.ShowcaseFragment;
 
 /**
@@ -40,6 +41,9 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
                 break;
             case R.id.nav_history:
                 fragmentId = HistoryFragment.HISTORY_FRAGMENT_ID;
+                break;
+            case R.id.nav_settings:
+                fragmentId = SettingsFragment.SETTINGS_FRAGMENT_ID;
                 break;
             default:
                 fragmentId = ExpressionFragment.EXPRESSION_FRAGMENT_ID;
@@ -90,25 +94,32 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
                 tag = HistoryFragment.getTagID() + "";
                 navItemPos = 2;
                 break;
+            case SettingsFragment.SETTINGS_FRAGMENT_ID:
+                fragment = SettingsFragment.newInstance();
+                tag = SettingsFragment.getTagID() + "";
+                break;
             default:
                 return 0;
         }
-        getSupportActionBar().setSubtitle(null);
 
         doFragmentTransaction(first, fragment, tag, main);
         return navItemPos;
 
     }
 
+
     private void doFragmentTransaction(final boolean first, final Fragment fragment, final String tag, final boolean main) {
 
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         getSupportFragmentManager().popBackStack();//always go back to the first fragment
         fragmentTransaction.replace(R.id.fragment_container, fragment);
+
         if (!first && !main) {
             fragmentTransaction.addToBackStack(tag);
         }
         fragmentTransaction.commit();
+
+
     }
 
     private void setDrawerEnable(final boolean enable) {

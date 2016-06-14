@@ -45,5 +45,15 @@
     <string name="history_empty_list">No history yet...</string>
     <string name="popup_multiple_selection_enabled">Multiple selection enabled</string>
 
+    <string name="settings_fragment_title">Settings</string>
+    <string name="settings_category_colors_title">Colors</string>
+    <string name="settings_category_colors_dark_board_title">Dark board</string>
+    <string name="default_dark_board_checkbox_preference">false</string>
+    <string name="settings_category_colors_selected_exp_color_list_title">Selected expression color</string>
+    <string name="settings_category_colors_selected_exp_color_list_summary">Color for expression highlighting when selecting one</string>
+    <string name="settings_category_colors_selected_exp_color_dialog_title">Color for selected expression</string>
 
+    <string name="entry_selected_exp_color_amber">Amber (default)</string>
+    <string name="entry_selected_exp_color_blue">Blue</string>
+    <string name="entry_selected_exp_color_red">Red</string>
 </resources>

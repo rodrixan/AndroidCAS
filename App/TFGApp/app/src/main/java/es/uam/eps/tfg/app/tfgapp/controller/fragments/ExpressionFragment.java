@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +19,7 @@ import java.util.List;
 import es.uam.eps.expressions.types.ExpressionList;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
+import es.uam.eps.tfg.app.tfgapp.Utils.PreferenceUtils;
 import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.controller.ActionButtons;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
@@ -36,6 +38,7 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
 
     private Callbacks mCallbacks;
     private ExpressionView mExpressionView;
+    private CardView mBoardCardView;
     private ActionButtons mButtons;
     private CASAdapter mCAS;
     private ExpressionHistory mHistory;
@@ -102,11 +105,19 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
         mExpressionView = (ExpressionView) v.findViewById(R.id.current_exp_view);
         updateExpressionView();
 
+        mBoardCardView = (CardView) v.findViewById(R.id.fragment_expression_board);
+        setBoardColor();
+
         mButtons = new ActionButtons(v, getContext());
     }
 
     private void updateExpressionView() {
         mExpressionView.onExpressionUpdated(mCAS.getCurrentExpression());
+    }
+
+    private void setBoardColor() {
+        final int boardColor = PreferenceUtils.getBoardColor(getActivity());
+        mBoardCardView.setCardBackgroundColor(boardColor);
     }
 
     /**

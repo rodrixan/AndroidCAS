@@ -17,6 +17,7 @@ import java.util.List;
 import es.uam.eps.expressions.types.ExpressionList;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
+import es.uam.eps.tfg.app.tfgapp.Utils.PreferenceUtils;
 import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionUpdateListener;
@@ -112,8 +113,10 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         final int textSize = getResources().getDimensionPixelSize(R.dimen.exp_text_size);
         mExp = new DrawableExpressionList(mFont, coord, (ExpressionList) exp, textSize);
 
-        mExp.setNormalColor(getResources().getColor(R.color.colorExpression));
-        mExp.setSelectedColor(getResources().getColor(R.color.colorExpressionSelected));
+        final int normalColor = PreferenceUtils.getExpressionColor(getContext());
+        final int selectedColor = PreferenceUtils.getExpressionHighlightColor(getContext());
+        mExp.setNormalColor(getContext().getResources().getColor(R.color.light_expression_color));
+        mExp.setSelectedColor(selectedColor);
     }
 
     private Expression getSelectedExp(final int x, final int y) {

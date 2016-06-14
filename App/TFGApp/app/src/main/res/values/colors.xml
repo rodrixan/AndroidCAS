@@ -15,9 +15,10 @@
     <color name="medium_amber">#FFC107</color>
     <color name="dark_amber">#FFA000</color>
 
-    <color name="light_green">#81C784</color>
-    <color name="medium_green">#4CAF50</color>
-    <color name="dark_green">#2E7D32</color>
+
+    <color name="light_red">#FF5252</color>
+    <color name="medium_red">#F44336</color>
+    <color name="dark_red">#D32F2F</color>
 
     <color name="opaque">#aa000000</color>
 
@@ -30,4 +31,13 @@
     <color name="colorAccent">@color/light_blue</color>
     <color name="colorExpression">@android:color/black</color>
     <color name="colorExpressionSelected">@color/medium_amber</color>
+    <color name="preference_accent">#148282</color>
+    <color name="preference_primary">#212121</color>
+    <color name="preference_primary_dark">#212121</color>
+
+    <color name="dark_cardview_background">#004D40</color>
+    <color name="light_cardview_background">#FFFFFF</color>
+
+    <color name="dark_expression_color">#000000</color>
+    <color name="light_expression_color">@color/white</color>
 </resources>
