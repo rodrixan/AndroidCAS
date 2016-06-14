@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -175,6 +176,9 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
             case R.id.menu_item_action_help:
                 showHelp();
                 return true;
+            case R.id.menu_item_action_undo:
+                undo();
+                return true;
             default:
                 return false;
         }
@@ -182,6 +186,16 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
 
     private void showHelp() {
         mCallbacks.navigateToFragment(HelpFragment.HELP_FRAGMENT_ID);
+    }
+
+    private void undo() {
+        if(mHistory.getRecordCount()<1){
+            Toast.makeText(getActivity(),R.string.unable_to_undo,Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final Expression current = mHistory.returnToPreviousExpression();
+        mCAS.initCAS(current);
+        updateExpressionView();
     }
 
 }

@@ -13,5 +13,8 @@ public interface ExpressionHistory {
     Expression getLastExpression();
     Expression getFirstExpression();
 
+    Expression returnToPreviousExpression();
+
+
     int getRecordCount();
 }

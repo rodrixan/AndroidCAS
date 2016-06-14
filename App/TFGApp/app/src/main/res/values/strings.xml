@@ -56,4 +56,7 @@
     <string name="entry_selected_exp_color_amber">Amber (default)</string>
     <string name="entry_selected_exp_color_blue">Blue</string>
     <string name="entry_selected_exp_color_red">Red</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_undo_help">Undo last action</string>
+    <string name="unable_to_undo">No previous expression yet</string>
 </resources>

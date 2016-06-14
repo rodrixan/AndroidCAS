@@ -41,12 +41,22 @@ public class ExpressionHistoryDB implements ExpressionHistory {
 
     @Override
     public Expression getLastExpression() {
-        return mRecords.get(mRecords.size()).getGlobalExp();
+        return mRecords.get(mRecords.size() - 1).getGlobalExp();
     }
 
     @Override
     public Expression getFirstExpression() {
         return mRecords.get(0).getGlobalExp();
+    }
+
+    @Override
+    public Expression returnToPreviousExpression() {
+
+        final Expression newCurrent = mRecords.get(0).getGlobalExp();
+        //delete the last and return the new last
+        mRecords.remove(0);
+
+        return newCurrent;
     }
 
     @Override

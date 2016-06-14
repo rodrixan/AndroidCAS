@@ -19,8 +19,8 @@ public abstract class DrawableExpression {
     protected int mWidth;
     protected int mHeight;
     protected Paint mPaint;
-    private int mNormalColor = Color.BLACK;
-    private int mSelectedColor = Color.CYAN;
+    protected int mNormalColor;
+    protected int mSelectedColor;
 
     protected DrawableExpression(final Typeface font) {
         this(font, DEFAULT_TEXTSIZE);
@@ -91,6 +91,7 @@ public abstract class DrawableExpression {
     }
 
     public void setNormalColor(final int color) {
+        setColor(color);
         mNormalColor = color;
     }
 

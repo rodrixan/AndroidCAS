@@ -115,8 +115,9 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
 
         final int normalColor = PreferenceUtils.getExpressionColor(getContext());
         final int selectedColor = PreferenceUtils.getExpressionHighlightColor(getContext());
-        mExp.setNormalColor(getContext().getResources().getColor(R.color.light_expression_color));
+        mExp.setNormalColor(normalColor);
         mExp.setSelectedColor(selectedColor);
+        invalidate();
     }
 
     private Expression getSelectedExp(final int x, final int y) {

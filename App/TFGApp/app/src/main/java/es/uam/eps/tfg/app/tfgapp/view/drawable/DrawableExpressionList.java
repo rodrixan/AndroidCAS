@@ -175,7 +175,7 @@ public class DrawableExpressionList extends DrawableExpression {
     @Override
     public void clearSelection() {
         for (final DrawableExpression exp : mDrawableExpList) {
-            exp.clearSelection();
+            exp.setNormalColor(mNormalColor);
         }
     }
 

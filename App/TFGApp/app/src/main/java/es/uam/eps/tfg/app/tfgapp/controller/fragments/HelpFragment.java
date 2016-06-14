@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,8 +25,8 @@ public class HelpFragment extends Fragment {
         return new HelpFragment();
     }
 
-    public static int getTagID(){
-        return  FRAGMENT_TITLE;
+    public static int getTagID() {
+        return FRAGMENT_TITLE;
     }
 
     @Override
@@ -33,6 +35,17 @@ public class HelpFragment extends Fragment {
         if (context instanceof Activity) {
             mCallbacks = (Callbacks) context;
         }
+    }
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_help_toolbar, menu);
     }
 
     @Override
