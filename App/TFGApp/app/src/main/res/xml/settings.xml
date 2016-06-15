@@ -15,7 +15,8 @@
             android:entries="@array/entries_selected_exp_color"
             android:entryValues="@array/values_selected_exp_color"
             android:summary="@string/settings_category_colors_selected_exp_color_list_summary"
-            android:defaultValue="#FFC107"/>
+            android:defaultValue="AMBER"/>
 
     </PreferenceCategory>
+
 </PreferenceScreen>

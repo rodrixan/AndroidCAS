@@ -85,7 +85,8 @@ public class DrawableExpressionList extends DrawableExpression {
             return expressionListAsDrawableExpressionList((ExpressionList<Expression>) exp);
 
         } else if (exp instanceof SingleExpression) {
-            return Arrays.asList(new DrawableExpression[]{new DrawableSingleExpression(mPaint.getTypeface(), (SingleExpression) exp, mPaint.getTextSize())});
+            DrawableSingleExpression singleExp = new DrawableSingleExpression(mPaint.getTypeface(), (SingleExpression) exp, mPaint.getTextSize());
+            return Arrays.asList(new DrawableExpression[]{singleExp});
         }
         return null;
     }
@@ -163,12 +164,17 @@ public class DrawableExpressionList extends DrawableExpression {
     }
 
     @Override
-    public boolean isOperator() {
+    public boolean isDrawableOperator() {
         return false;
     }
 
     @Override
-    public boolean isParenthesis() {
+    public boolean isDrawableParenthesis() {
+        return false;
+    }
+
+    @Override
+    public boolean isDrawableSingleExpression() {
         return false;
     }
 
@@ -181,33 +187,45 @@ public class DrawableExpressionList extends DrawableExpression {
 
     @Override
     public void clearSelection(final int x, final int y) {
-        final DrawableExpression selected = getDrawableAtPosition(x, y);
+        final int[] depth = {0};
+        final DrawableExpression selected = getDrawableAtPosition(x, y, depth);
+        selected.setNormalColor(mNormalColor);
         if (selected != null) {
             selected.clearSelection();
         }
     }
 
     @Override
-    public DrawableExpression getDrawableAtPosition(final int x, final int y) {
+    public DrawableExpression getDrawableAtPosition(final int x, final int y, int[] depth) {
         for (final DrawableExpression exp : mDrawableExpList) {
             if (exp.contains(x, y)) {
-                if (exp.isOperator()) {
+                if (exp.isDrawableOperator()) {
+                    if (depth[0] > 0) {
+                        depth[0] -= 1;
+                    }
                     return this;
+                } else if (exp.isDrawableSingleExpression()) {
+                    return exp;
                 }
-                return getDrawableSubExpressionAt(x, y, exp);
+                depth[0] += 1;
+                return getDrawableSubExpressionAt(x, y, exp, depth);
             }
         }
         return null;
     }
 
-    private DrawableExpression getDrawableSubExpressionAt(final int x, final int y, final DrawableExpression exp) {
-        final DrawableExpression selected = exp.getDrawableAtPosition(x, y);
+    private DrawableExpression getDrawableSubExpressionAt(final int x, final int y, final DrawableExpression exp, int[] depth) {
+
+        final DrawableExpression selected = exp.getDrawableAtPosition(x, y, depth);
         if (selected == null) {
             return null;
         }
-        if (selected.isOperator() || selected.isParenthesis()) {
+
+        if (selected.isDrawableOperator() || selected.isDrawableParenthesis()) {
+            depth[0] -= 1;
             return exp;
         } else {
+
             return selected;
         }
     }

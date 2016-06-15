@@ -108,10 +108,9 @@ public final class Utils {
         sumList.add(new SingleExpression("h"));
         sumList.add(item2);
         sumList.add(item3);
-        sumList.add(new SingleExpression("g"));
-        sumList.add(new SingleExpression("g"));
-        sumList.add(new SingleExpression("g"));
-        sumList.add(new SingleExpression("g"));
+
+        sumList.add(item3);
+
 
         return sumList;
     }

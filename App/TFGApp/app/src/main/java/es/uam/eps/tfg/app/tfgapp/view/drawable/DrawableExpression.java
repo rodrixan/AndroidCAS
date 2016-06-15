@@ -1,7 +1,6 @@
 package es.uam.eps.tfg.app.tfgapp.view.drawable;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -21,6 +20,8 @@ public abstract class DrawableExpression {
     protected Paint mPaint;
     protected int mNormalColor;
     protected int mSelectedColor;
+
+    protected int depth;
 
     protected DrawableExpression(final Typeface font) {
         this(font, DEFAULT_TEXTSIZE);
@@ -238,22 +239,28 @@ public abstract class DrawableExpression {
     /**
      * @return true if the element can be considered an operator for an expression, false if not
      */
-    public abstract boolean isOperator();
+    public abstract boolean isDrawableOperator();
 
     /**
      * @return true if the element can be considered as a parenthesis for an expression, false if not
      */
-    public abstract boolean isParenthesis();
+    public abstract boolean isDrawableParenthesis();
+
+    /**
+     * @return true if the element can be considered as a single expression, false if not
+     */
+    public abstract boolean isDrawableSingleExpression();
 
     /**
      * Make the expression in a given position selected, changing its color
      *
      * @param x
      * @param y
+     * @param depth level of the expression. Each subexpression has a +1 level
      * @return the expression selected, null if no one was found
      */
-    public DrawableExpression select(final int x, final int y) {
-        final DrawableExpression exp = getDrawableAtPosition(x, y);
+    public DrawableExpression select(final int x, final int y, int[] depth) {
+        final DrawableExpression exp = getDrawableAtPosition(x, y, depth);
         if (exp != null) {
             exp.setColor(mSelectedColor);
         }
@@ -265,9 +272,10 @@ public abstract class DrawableExpression {
      *
      * @param x
      * @param y
+     * @param depth level of the expression. Each subexpression has a +1 level
      * @return expression that matches the position. Can be single or a list
      */
-    protected abstract DrawableExpression getDrawableAtPosition(final int x, final int y);
+    protected abstract DrawableExpression getDrawableAtPosition(final int x, final int y, int[] depth);
 
     public void clearSelection(final int x, final int y) {
         clearSelection();

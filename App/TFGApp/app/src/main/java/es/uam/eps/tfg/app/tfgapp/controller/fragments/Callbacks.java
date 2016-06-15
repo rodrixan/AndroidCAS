@@ -16,6 +16,13 @@ public interface Callbacks {
     void setSubtitle(int subtitle);
 
     /**
+     * Sets the subtitle in the activity
+     *
+     * @param subtitle string for the subtitle
+     */
+    void setSubtitle(String subtitle);
+
+    /**
      * Replaces the current fragment for another one
      *
      * @param fragmentId id of the fragment which to switch

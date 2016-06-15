@@ -50,7 +50,7 @@ public class DrawableSingleExpression extends DrawableExpression {
     }
 
     @Override
-    public DrawableExpression getDrawableAtPosition(final int x, final int y) {
+    public DrawableExpression getDrawableAtPosition(final int x, final int y, int[] depth) {
         if (contains(x, y)) {
             return this;
         }
@@ -58,7 +58,7 @@ public class DrawableSingleExpression extends DrawableExpression {
     }
 
     @Override
-    public boolean isOperator() {
+    public boolean isDrawableOperator() {
         for (final Operator op : Operator.values()) {
             if (op.toString().equals(mExpression.toString())) {
                 return true;
@@ -68,10 +68,15 @@ public class DrawableSingleExpression extends DrawableExpression {
     }
 
     @Override
-    public boolean isParenthesis() {
+    public boolean isDrawableParenthesis() {
         if (mExpression.toString().equals("(") || mExpression.toString().equals(")")) {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isDrawableSingleExpression() {
+        return true;
     }
 }

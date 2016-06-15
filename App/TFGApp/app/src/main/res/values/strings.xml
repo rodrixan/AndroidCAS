@@ -20,25 +20,25 @@
     <string name="button_exp_title">Allowed Actions</string>
 
     <string name="help_expression_text">
-        Click on terms to select one.\n
-        Long press on any of them to activate multiple selection (starting from the pressed one).\n
-        If an operator is selected, the whole expression will be too.\n
-        Click on anywhere but the expression to cancel the current selection.
+        Click on terms to select one\n
+        Long press on any of them to activate multiple selection (starting from the pressed one)\n
+        If an operator or a parenthesis is selected, the whole expression will be too\n
+        Click on anywhere but the expression to cancel the current selection
     </string>
 
     <string name="help_button_text">
-        Click on the buttons to perform an action. Long press to show action description.\n
-        Not-allowed actions will take no effect on the expression.\n
-        If a button appears as disabled, it means that action can not be applied.
+        Click on the buttons to perform an action. Long press to show action description\n
+        Not-allowed actions will take no effect on the expression\n
+        If a button appears as disabled, it means that action can not be applied
     </string>
 
-    <string name="expression_fragment_title">Expressions</string>
+    <string name="expression_fragment_title">Expression Board</string>
     <string name="help_fragment_title">Help</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_showcase">Showcase</string>
     <string name="menu_history">Exp. History</string>
     <string name="menu_board">Board</string>
-    <string name="showcase_fragment_title">Available Expressions</string>
+    <string name="showcase_fragment_title">Expression Showcase</string>
     <string name="showcase_fragment_subtitle">Tap on one to load it</string>
     <string name="history_fragment_title">History</string>
     <string name="history_fragment_subtitle">Tap on one to go back to it</string>
@@ -48,15 +48,18 @@
     <string name="settings_fragment_title">Settings</string>
     <string name="settings_category_colors_title">Colors</string>
     <string name="settings_category_colors_dark_board_title">Dark board</string>
-    <string name="default_dark_board_checkbox_preference">false</string>
+    <string name="default_dark_board_checkbox_preference" translatable="false">false</string>
     <string name="settings_category_colors_selected_exp_color_list_title">Selected expression color</string>
-    <string name="settings_category_colors_selected_exp_color_list_summary">Color for expression highlighting when selecting one</string>
-    <string name="settings_category_colors_selected_exp_color_dialog_title">Color for selected expression</string>
+    <string name="settings_category_colors_selected_exp_color_list_summary">Used for current expression highlighting</string>
+    <string name="settings_category_colors_selected_exp_color_dialog_title">Select one color</string>
 
     <string name="entry_selected_exp_color_amber">Amber (default)</string>
     <string name="entry_selected_exp_color_blue">Blue</string>
     <string name="entry_selected_exp_color_red">Red</string>
     <string name="action_undo">Undo</string>
     <string name="action_undo_help">Undo last action</string>
-    <string name="unable_to_undo">No previous expression yet</string>
+    <string name="popup_unable_to_undo">No previous expression yet</string>
+    <string name="popup_multiple_selection_depth_error">Selection at different level</string>
+
+
 </resources>

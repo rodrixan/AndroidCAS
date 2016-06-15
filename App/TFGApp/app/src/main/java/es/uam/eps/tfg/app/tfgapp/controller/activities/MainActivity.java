@@ -35,6 +35,7 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
         switch (item.getItemId()) {
             case R.id.nav_board:
                 fragmentId = ExpressionFragment.EXPRESSION_FRAGMENT_ID;
+
                 break;
             case R.id.nav_showcase:
                 fragmentId = ShowcaseFragment.SHOWCASE_FRAGMENT_ID;
@@ -77,6 +78,7 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
                 fragment = ExpressionFragment.newInstance();
                 navItemPos = 0;
                 main = true;
+
                 break;
             case HelpFragment.HELP_FRAGMENT_ID:
                 fragment = HelpFragment.newInstance();
@@ -135,6 +137,11 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
     }
 
     @Override
+    public void setSubtitle(String subtitle) {
+        getSupportActionBar().setSubtitle(null);
+    }
+
+    @Override
     public void setTitle(final int title) {
         getSupportActionBar().setTitle(title);
     }
@@ -148,7 +155,6 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
         super.onBackPressed();
 
         setDrawerEnable(true);
-        getSupportActionBar().setSubtitle(null);
         //always going to te main screen
         mNavigationView.getMenu().getItem(0).setChecked(true);
     }

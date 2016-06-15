@@ -92,6 +92,8 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
         wireComponents(v);
         setListeners(v);
 
+        mCallbacks.setSubtitle(null);
+
         return v;
     }
 
@@ -189,8 +191,8 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
     }
 
     private void undo() {
-        if(mHistory.getRecordCount()<1){
-            Toast.makeText(getActivity(),R.string.unable_to_undo,Toast.LENGTH_SHORT).show();
+        if (mHistory.getRecordCount() < 1) {
+            Toast.makeText(getActivity(), R.string.popup_unable_to_undo, Toast.LENGTH_SHORT).show();
             return;
         }
         final Expression current = mHistory.returnToPreviousExpression();

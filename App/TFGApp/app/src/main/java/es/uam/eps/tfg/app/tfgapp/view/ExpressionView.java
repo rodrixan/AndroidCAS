@@ -33,6 +33,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
     private final Typeface mFont;
     private DrawableExpression mExp;
     private OnExpressionActionListener mOnExpressionActionListener;
+    private int mSelectedDepth;
 
     public ExpressionView(final Context context) {
         this(context, null, 0);
@@ -120,10 +121,13 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         invalidate();
     }
 
-    private Expression getSelectedExp(final int x, final int y) {
-        final DrawableExpression exp = mExp.select(x, y);
+    private Expression getSelectedExp(final int x, final int y, int[] depth) {
+
+        final DrawableExpression exp = mExp.select(x, y, depth);
+
         if (exp != null) {
-            Log.d(Utils.LOG_TAG, "Clicked on expression: " + exp.getExpression().symbolicExpression());
+            Log.d(Utils.LOG_TAG, "Clicked on expression: " + exp.getExpression().symbolicExpression() + " DEPTH: " + depth[0]);
+
             return exp.getExpression();
         } else {
             Log.d(Utils.LOG_TAG, "Clicked out of the exp");
@@ -147,7 +151,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
                 selectSingleExpression((int) e.getX(), (int) e.getY());
 
             } else {
-                if (selectMultipleExpression((int) e.getX(), (int) e.getY())) {
+                if (selectMultipleExpression((int) e.getX(), (int) e.getY(), false)) {
                     mOnExpressionActionListener.onMultipleExpressionSelected(mSelectedExpressions);
                 }
             }
@@ -155,10 +159,20 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             return true;
         }
 
-        private boolean selectMultipleExpression(final int x, final int y) {
+        private boolean selectMultipleExpression(final int x, final int y, boolean first) {
             Log.d(Utils.LOG_TAG, "multi-selection expression: ");
 
-            final Expression selection = getSelectedExp(x, y);
+            int depth[] = {0};
+            final Expression selection = getSelectedExp(x, y, depth);
+            if (first) {
+                mSelectedDepth = depth[0];
+            } else {
+                if (depth[0] != mSelectedDepth) {
+                    cancelSelection();
+                    Toast.makeText(getContext(), R.string.popup_multiple_selection_depth_error, Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }
 
             if (selection != null) {
                 if (!mSelectedExpressions.contains(selection)) {
@@ -170,6 +184,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
                     Log.d(Utils.LOG_TAG, "Already contained: " + selection.symbolicExpression());
 
                     mExp.clearSelection(x, y);
+
                     mSelectedExpressions.remove(selection);
                 }
                 Log.d(Utils.LOG_TAG, "Current multiple selection: " + mSelectedExpressions.toString());
@@ -182,8 +197,9 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
 
         private void selectSingleExpression(final int x, final int y) {
             Log.d(Utils.LOG_TAG, "Single selection");
+            int depth[] = {0};
             mExp.clearSelection();
-            final Expression selection = getSelectedExp(x, y);
+            final Expression selection = getSelectedExp(x, y, depth);
             if (selection != null) {
                 Log.d(Utils.LOG_TAG, "Selected Exp: " + selection.symbolicExpression());
                 mOnExpressionActionListener.onSingleExpressionSelected(selection);
@@ -210,7 +226,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             mSelectedExpressions = new ArrayList<>();
             mExp.clearSelection();
 
-            if (selectMultipleExpression(x, y)) {
+            if (selectMultipleExpression(x, y, true)) {
                 Toast.makeText(getContext(), R.string.popup_multiple_selection_enabled, Toast.LENGTH_SHORT).show();
             }
         }
