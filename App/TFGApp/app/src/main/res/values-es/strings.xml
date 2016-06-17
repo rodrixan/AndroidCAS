@@ -25,7 +25,7 @@
     <string name="menu_board">Tablero</string>
     <string name="menu_history">Historial de exp.</string>
     <string name="menu_settings">Ajustes</string>
-    <string name="menu_showcase">Expresiones de prueba</string>
+    <string name="menu_showcase">Expresiones de ejemplo</string>
     <string name="navigation_drawer_close">Cerrar navigation drawer</string>
     <string name="navigation_drawer_open">Abrir navigation drawer</string>
     <string name="popup_multiple_selection_depth_error">Términos en diferente nivel</string>
@@ -38,7 +38,7 @@
     <string name="settings_category_colors_title">Colores</string>
     <string name="settings_fragment_title">Ajustes</string>
     <string name="showcase_fragment_subtitle">Selecciona una para cargarla</string>
-    <string name="showcase_fragment_title">Expresiones de prueba</string>
+    <string name="showcase_fragment_title">Expresiones de ejemplo</string>
 
     <string name="help_expression_text">
         Click en los términos para seleccionarlos\n

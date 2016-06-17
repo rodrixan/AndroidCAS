@@ -16,11 +16,11 @@ import android.widget.TextView;
 import java.util.List;
 
 import es.uam.eps.tfg.app.tfgapp.R;
-import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASImplementation;
 import es.uam.eps.tfg.app.tfgapp.model.history.ExpressionHistory;
 import es.uam.eps.tfg.app.tfgapp.model.history.ExpressionHistoryDB;
 import es.uam.eps.tfg.app.tfgapp.model.history.ExpressionRecord;
+import es.uam.eps.tfg.app.tfgapp.util.Utils;
 
 /**
  * Created by Rodri on 13/06/2016.

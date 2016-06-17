@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.Utils;
+package es.uam.eps.tfg.app.tfgapp.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,7 +7,7 @@ import android.support.v7.preference.PreferenceManager;
 import es.uam.eps.tfg.app.tfgapp.R;
 
 /**
- * Created by laura on 14/06/16.
+ * Auxiliary methods for using the preferences along the application
  */
 public final class PreferenceUtils {
 
@@ -22,6 +22,12 @@ public final class PreferenceUtils {
 
     }
 
+    /**
+     * Returns the board color according to the user preference
+     *
+     * @param context activity that invoked the method
+     * @return white or dark green color
+     */
     public static int getBoardColor(final Context context) {
         if (getDarkBoardPreference(context)) {
             return context.getResources().getColor(R.color.dark_cardview_background);
@@ -30,11 +36,21 @@ public final class PreferenceUtils {
         }
     }
 
+    /**
+     * @param context activity that invoked the method
+     * @return value of the dark board preference
+     */
     private static boolean getDarkBoardPreference(final Context context) {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getBoolean(DARK_BOARD_CHECKBOX_PREF_KEY, false);
     }
 
+    /**
+     * Returns the expression color according to the board color
+     *
+     * @param context activity that invoked the method
+     * @return white or black color
+     */
     public static int getExpressionColor(final Context context) {
         if (getDarkBoardPreference(context)) {
             return context.getResources().getColor(R.color.light_expression_color);
@@ -43,6 +59,12 @@ public final class PreferenceUtils {
         }
     }
 
+    /**
+     * Returns the expression highlight color according to the user preference
+     *
+     * @param context activity that invoked the method
+     * @return amber, light blue or red color
+     */
     public static int getExpressionHighlightColor(final Context context) {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         final String exphighlightColorId = preferences.getString(EXP_HIGHLIGHT_COLOR_PREF_KEY, COLOR_AMBER_ID);

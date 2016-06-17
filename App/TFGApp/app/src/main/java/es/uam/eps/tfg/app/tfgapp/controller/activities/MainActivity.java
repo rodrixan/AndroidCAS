@@ -8,16 +8,16 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import es.uam.eps.tfg.app.tfgapp.R;
-import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.Callbacks;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.ExpressionFragment;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.HelpFragment;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.HistoryFragment;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.SettingsFragment;
 import es.uam.eps.tfg.app.tfgapp.controller.fragments.ShowcaseFragment;
+import es.uam.eps.tfg.app.tfgapp.util.Utils;
 
 /**
- * Activity that holds the fragments of the app
+ * Activity that holds all the fragments of the app
  */
 public class MainActivity extends NavigationDrawerFragmentActivity implements Callbacks {
 
@@ -28,14 +28,12 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
 
     @Override
     public boolean onNavigationItemSelected(final MenuItem item) {
-        // Handle navigation view item clicks here.
-        //http://www.appsrox.com/android/tutorials/showcase/4/#11
+
         int fragmentId = -1;
 
         switch (item.getItemId()) {
             case R.id.nav_board:
                 fragmentId = ExpressionFragment.EXPRESSION_FRAGMENT_ID;
-
                 break;
             case R.id.nav_showcase:
                 fragmentId = ShowcaseFragment.SHOWCASE_FRAGMENT_ID;
@@ -78,7 +76,6 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
                 fragment = ExpressionFragment.newInstance();
                 navItemPos = 0;
                 main = true;
-
                 break;
             case HelpFragment.HELP_FRAGMENT_ID:
                 fragment = HelpFragment.newInstance();
@@ -109,7 +106,14 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
 
     }
 
-
+    /**
+     * Performs a fragment transaction
+     *
+     * @param first    if it's the first time the application is called
+     * @param fragment the fragment to replace the old one
+     * @param tag      fragment tag for the backstack
+     * @param main     if it's the main fragment
+     */
     private void doFragmentTransaction(final boolean first, final Fragment fragment, final String tag, final boolean main) {
 
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -124,6 +128,11 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
 
     }
 
+    /**
+     * Enables or disables the navigation drawer
+     *
+     * @param enable if the drawer should be enabled or not
+     */
     private void setDrawerEnable(final boolean enable) {
         final int drawerSwipeStateFlag = (enable) ? DrawerLayout.LOCK_MODE_UNDEFINED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
 
@@ -137,7 +146,7 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
     }
 
     @Override
-    public void setSubtitle(String subtitle) {
+    public void setSubtitle(final String subtitle) {
         getSupportActionBar().setSubtitle(null);
     }
 
@@ -159,6 +168,9 @@ public class MainActivity extends NavigationDrawerFragmentActivity implements Ca
         mNavigationView.getMenu().getItem(0).setChecked(true);
     }
 
+    /**
+     * @return true if the navigation drawer is enabled, false otherwise
+     */
     private boolean isDrawerOpened() {
         return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START);
     }

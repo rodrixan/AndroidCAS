@@ -20,18 +20,18 @@ import java.util.List;
 import es.uam.eps.expressions.types.ExpressionList;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
-import es.uam.eps.tfg.app.tfgapp.Utils.PreferenceUtils;
-import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.controller.ActionButtons;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASImplementation;
 import es.uam.eps.tfg.app.tfgapp.model.history.ExpressionHistory;
 import es.uam.eps.tfg.app.tfgapp.model.history.ExpressionHistoryDB;
+import es.uam.eps.tfg.app.tfgapp.util.PreferenceUtils;
+import es.uam.eps.tfg.app.tfgapp.util.Utils;
 import es.uam.eps.tfg.app.tfgapp.view.ExpressionView;
 
 /**
- * Main controller for the app
+ * Board that shows the expressions and the allowed actions
  */
 public class ExpressionFragment extends Fragment implements OnExpressionActionListener, View.OnClickListener {
     public static final int EXPRESSION_FRAGMENT_ID = 0;
@@ -51,6 +51,9 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
         return new ExpressionFragment();
     }
 
+    /**
+     * @return the tag for the backstack
+     */
     public static int getTagID() {
         return FRAGMENT_TITLE;
     }
@@ -77,10 +80,16 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
         setupHistory();
     }
 
+    /**
+     * Gets a CAS instance
+     */
     private void setupCAS() {
         mCAS = CASImplementation.getInstance();
     }
 
+    /**
+     * Gets a history instance
+     */
     private void setupHistory() {
         mHistory = ExpressionHistoryDB.getInstance();
     }
@@ -114,10 +123,16 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
         mButtons = new ActionButtons(v, getContext());
     }
 
+    /**
+     * Notifies the view to be updated
+     */
     private void updateExpressionView() {
         mExpressionView.onExpressionUpdated(mCAS.getCurrentExpression());
     }
 
+    /**
+     * Changes the background color of the board
+     */
     private void setBoardColor() {
         final int boardColor = PreferenceUtils.getBoardColor(getActivity());
         mBoardCardView.setCardBackgroundColor(boardColor);
@@ -138,8 +153,9 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
     public void onSingleExpressionSelected(final Expression selected) {
         final int index = ((ExpressionList) mCAS.getCurrentExpression()).indexOf(selected);
         Log.d(Utils.LOG_TAG, "Index of single selection: " + index);
-        final String selectedExpSymbolicExpression = selected.symbolicExpression();
         mHistory.addExpression(CASAdapter.Actions.SELECT_SINGLE, mCAS.getCurrentExpression(), selected);
+
+
     }
 
     @Override
@@ -173,7 +189,13 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
         return super.onOptionsItemSelected(item);
     }
 
-    protected boolean onOptionsItemSelected(final int id) {
+    /**
+     * Performs an action from the toolbar menu
+     *
+     * @param id id of the menu item clicked
+     * @return true if the event was consumed, false if not
+     */
+    private boolean onOptionsItemSelected(final int id) {
         switch (id) {
             case R.id.menu_item_action_help:
                 showHelp();
@@ -186,10 +208,16 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
         }
     }
 
+    /**
+     * Shows the help screen
+     */
     private void showHelp() {
         mCallbacks.navigateToFragment(HelpFragment.HELP_FRAGMENT_ID);
     }
 
+    /**
+     * Undo the last action (if it's possible)
+     */
     private void undo() {
         if (mHistory.getRecordCount() < 1) {
             Toast.makeText(getActivity(), R.string.popup_unable_to_undo, Toast.LENGTH_SHORT).show();

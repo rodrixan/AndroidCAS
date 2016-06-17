@@ -3,6 +3,9 @@ package es.uam.eps.tfg.app.tfgapp.model.history;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
 
+/**
+ * Each item of the expression history
+ */
 public class ExpressionRecord {
     private final CASAdapter.Actions mAction;
     private final Expression mGlobalExp;

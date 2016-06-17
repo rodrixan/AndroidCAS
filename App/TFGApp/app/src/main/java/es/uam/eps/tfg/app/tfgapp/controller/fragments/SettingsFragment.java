@@ -9,7 +9,9 @@ import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat;
 
 import es.uam.eps.tfg.app.tfgapp.R;
 
-
+/**
+ * Settings screen for the application
+ */
 public class SettingsFragment extends PreferenceFragmentCompat {
     public static final int SETTINGS_FRAGMENT_ID = 4;
     private static final int FRAGMENT_TITLE = R.string.settings_fragment_title;
@@ -36,6 +38,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         return new SettingsFragment();
     }
 
+    /**
+     * @return tag for the stackback
+     */
     public static int getTagID() {
         return FRAGMENT_TITLE;
     }

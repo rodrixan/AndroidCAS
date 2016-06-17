@@ -10,6 +10,9 @@ import android.widget.Toast;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
 
+/**
+ * Buttons that perform the CAS allowed actions
+ */
 public class ActionButtons implements View.OnLongClickListener {
 
     private final ImageButton mChangeSide;
@@ -33,7 +36,8 @@ public class ActionButtons implements View.OnLongClickListener {
         mContext = context;
     }
 
-    private void setOmLongClickListener() {
+
+    private void setOnLongClickListener() {
         mChangeSide.setOnLongClickListener(this);
         mMoveRight.setOnLongClickListener(this);
         mMoveLeft.setOnLongClickListener(this);
@@ -58,11 +62,17 @@ public class ActionButtons implements View.OnLongClickListener {
 
     public void setListeners(final View.OnClickListener listener) {
 
-        setOmLongClickListener();
+        setOnLongClickListener();
         setOnClickListener(listener);
 
     }
 
+    /**
+     * Returns the CAS action associated to a given button
+     *
+     * @param id viewId of the button
+     * @return the associated CAS action
+     */
     public CASAdapter.Actions getAction(final int id) {
         switch (id) {
             case R.id.button_exp_change_side:
@@ -94,12 +104,13 @@ public class ActionButtons implements View.OnLongClickListener {
     @Override
     public boolean onLongClick(final View view) {
         if (view instanceof ImageButton) {
-            final String msg = ((ImageButton) view).getContentDescription().toString();
+            final String msg = view.getContentDescription().toString();
             showActionDescription(msg);
             return true;
         }
         return false;
     }
+
 
     private void showActionDescription(final String msg) {
         final Toast toast = Toast.makeText(mContext, msg, Toast.LENGTH_SHORT);

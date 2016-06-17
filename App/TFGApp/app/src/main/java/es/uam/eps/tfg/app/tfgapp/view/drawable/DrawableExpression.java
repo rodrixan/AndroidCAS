@@ -259,7 +259,7 @@ public abstract class DrawableExpression {
      * @param depth level of the expression. Each subexpression has a +1 level
      * @return the expression selected, null if no one was found
      */
-    public DrawableExpression select(final int x, final int y, int[] depth) {
+    public DrawableExpression select(final int x, final int y, final int[] depth) {
         final DrawableExpression exp = getDrawableAtPosition(x, y, depth);
         if (exp != null) {
             exp.setColor(mSelectedColor);
@@ -277,10 +277,19 @@ public abstract class DrawableExpression {
      */
     protected abstract DrawableExpression getDrawableAtPosition(final int x, final int y, int[] depth);
 
+    /**
+     * Clear the selection at given coordinates
+     *
+     * @param x
+     * @param y
+     */
     public void clearSelection(final int x, final int y) {
         clearSelection();
     }
 
+    /**
+     * Clears all the expression, going back to the normal colour
+     */
     public void clearSelection() {
         mPaint.setColor(mNormalColor);
     }

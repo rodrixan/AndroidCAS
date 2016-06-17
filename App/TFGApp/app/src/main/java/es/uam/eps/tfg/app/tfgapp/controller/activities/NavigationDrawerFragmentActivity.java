@@ -13,6 +13,9 @@ import android.view.View;
 
 import es.uam.eps.tfg.app.tfgapp.R;
 
+/**
+ * Activity with navigation drawer basics
+ */
 public abstract class NavigationDrawerFragmentActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     protected DrawerLayout mDrawerLayout;
     protected Toolbar mToolbar;
@@ -40,10 +43,23 @@ public abstract class NavigationDrawerFragmentActivity extends AppCompatActivity
         return R.layout.activity_main;
     }
 
+    /**
+     * Sets a fragment in the container
+     *
+     * @param id    id of the fragment
+     * @param first if it's first time the main activity is called
+     * @return position of the fragment item  in the navigation drawer
+     */
     public abstract int setFragment(int id, boolean first);
 
+    /**
+     * @return the default fragment id for the navigation drawer to show
+     */
     protected abstract int getDefaultFragmentId();
 
+    /**
+     * Sets up a navigation drawer
+     */
     private void setNavigationDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.navigation_drawer_layout);
 
@@ -57,6 +73,9 @@ public abstract class NavigationDrawerFragmentActivity extends AppCompatActivity
         mNavigationView.setNavigationItemSelectedListener(this);
     }
 
+    /**
+     * Sets the toggle associated to the drawer
+     */
     private void setActionToggle() {
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
@@ -72,26 +91,9 @@ public abstract class NavigationDrawerFragmentActivity extends AppCompatActivity
         });
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(final Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.fragment_expression_toolbar, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(final MenuItem item) {
-//        if (mToggle.onOptionsItemSelected(item)) {
-//            return true;
-//        }
-//        if (onOptionsItemSelected(item.getItemId())) {
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-//
-//    protected abstract boolean onOptionsItemSelected(int id);
-
+    /**
+     * Sets the toolbar for the application
+     */
     private void setToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);

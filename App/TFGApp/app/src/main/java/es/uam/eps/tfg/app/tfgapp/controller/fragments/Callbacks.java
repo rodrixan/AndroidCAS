@@ -1,5 +1,8 @@
 package es.uam.eps.tfg.app.tfgapp.controller.fragments;
 
+/**
+ * Actions of the activity to be called from the fragments
+ */
 public interface Callbacks {
     /**
      * Sets the title in the activity

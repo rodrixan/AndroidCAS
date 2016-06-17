@@ -17,10 +17,10 @@ import java.util.List;
 import es.uam.eps.expressions.types.ExpressionList;
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
-import es.uam.eps.tfg.app.tfgapp.Utils.PreferenceUtils;
-import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionUpdateListener;
+import es.uam.eps.tfg.app.tfgapp.util.PreferenceUtils;
+import es.uam.eps.tfg.app.tfgapp.util.Utils;
 import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpression;
 import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpressionList;
 
@@ -121,7 +121,15 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         invalidate();
     }
 
-    private Expression getSelectedExp(final int x, final int y, int[] depth) {
+    /**
+     * Returns the expression located at given coordinates and the depth of it
+     *
+     * @param x     x coordinate
+     * @param y     y coordinate
+     * @param depth depth of the expression returned in position 0. must be allowed by the external caller
+     * @return expression located at the coordinates, null if no one was found
+     */
+    private Expression getSelectedExp(final int x, final int y, final int[] depth) {
 
         final DrawableExpression exp = mExp.select(x, y, depth);
 
@@ -159,10 +167,18 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             return true;
         }
 
-        private boolean selectMultipleExpression(final int x, final int y, boolean first) {
+        /**
+         * Performs a multiple selection. It will add the consequent selections to the internal list
+         *
+         * @param x
+         * @param y
+         * @param first if its the first time invoked
+         * @return true if success, false if failure
+         */
+        private boolean selectMultipleExpression(final int x, final int y, final boolean first) {
             Log.d(Utils.LOG_TAG, "multi-selection expression: ");
 
-            int depth[] = {0};
+            final int[] depth = {0};
             final Expression selection = getSelectedExp(x, y, depth);
             if (first) {
                 mSelectedDepth = depth[0];
@@ -195,9 +211,15 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             }
         }
 
+        /**
+         * Performs a single selection
+         *
+         * @param x
+         * @param y
+         */
         private void selectSingleExpression(final int x, final int y) {
             Log.d(Utils.LOG_TAG, "Single selection");
-            int depth[] = {0};
+            final int[] depth = {0};
             mExp.clearSelection();
             final Expression selection = getSelectedExp(x, y, depth);
             if (selection != null) {
@@ -209,6 +231,9 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             }
         }
 
+        /**
+         * Cancels the current selection
+         */
         private void cancelSelection() {
             Log.d(Utils.LOG_TAG, "Selection cancelled");
             mMultiSelection = false;

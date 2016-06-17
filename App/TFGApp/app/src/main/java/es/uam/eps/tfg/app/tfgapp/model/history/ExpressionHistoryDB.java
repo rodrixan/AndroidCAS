@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.uam.eps.expressions.types.interfaces.Expression;
-import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
+import es.uam.eps.tfg.app.tfgapp.util.Utils;
 
+/**
+ * Implementation of the history.Singleton.
+ */
 public class ExpressionHistoryDB implements ExpressionHistory {
 
     private static ExpressionHistory mInstance = null;
@@ -37,16 +40,6 @@ public class ExpressionHistoryDB implements ExpressionHistory {
         final ExpressionRecord record = new ExpressionRecord(action, global, selection);
         mRecords.add(0, record);//always added in first position
 
-    }
-
-    @Override
-    public Expression getLastExpression() {
-        return mRecords.get(mRecords.size() - 1).getGlobalExp();
-    }
-
-    @Override
-    public Expression getFirstExpression() {
-        return mRecords.get(0).getGlobalExp();
     }
 
     @Override

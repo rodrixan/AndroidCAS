@@ -9,8 +9,18 @@ import es.uam.eps.expressions.types.interfaces.Expression;
  */
 public interface OnExpressionActionListener {
 
+    /**
+     * Single selection of an item of an expression
+     *
+     * @param selected the selected item
+     */
     void onSingleExpressionSelected(Expression selected);
 
+    /**
+     * Multiple selection of several items of an expression
+     *
+     * @param selection list with the multiple items
+     */
     void onMultipleExpressionSelected(List<Expression> selection);
 
 }

@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.Utils;
+package es.uam.eps.tfg.app.tfgapp.util;
 
 import es.uam.eps.expressions.types.ExpressionList;
 import es.uam.eps.expressions.types.SingleExpression;
@@ -6,6 +6,9 @@ import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.expressions.types.operations.MULList;
 import es.uam.eps.expressions.types.operations.SUMList;
 
+/**
+ * Generic utils for the app
+ */
 public final class Utils {
     public static final String LOG_TAG = "TFG-APP";
     public static final String FONT_PATH = "fonts/lmromanslant10-regular-ExpView.otf";

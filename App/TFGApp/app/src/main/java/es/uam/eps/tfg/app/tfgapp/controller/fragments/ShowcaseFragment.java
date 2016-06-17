@@ -17,10 +17,13 @@ import java.util.List;
 
 import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
-import es.uam.eps.tfg.app.tfgapp.Utils.Utils;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASImplementation;
+import es.uam.eps.tfg.app.tfgapp.util.Utils;
 
+/**
+ * Expression list screen for using them as examples
+ */
 public class ShowcaseFragment extends Fragment {
     public static final int SHOWCASE_FRAGMENT_ID = 2;
     private static final int FRAGMENT_TITLE = R.string.showcase_fragment_title;
@@ -37,6 +40,9 @@ public class ShowcaseFragment extends Fragment {
         return new ShowcaseFragment();
     }
 
+    /**
+     * @return tag for stackback
+     */
     public static int getTagID() {
         return FRAGMENT_TITLE;
     }
@@ -73,6 +79,9 @@ public class ShowcaseFragment extends Fragment {
 
     }
 
+    /**
+     * Updates the data of the adapter
+     */
     private void updateAdapter() {
         final CASAdapter CAS = CASImplementation.getInstance();
         final List<Expression> expList = CAS.getSampleExpressions();

@@ -13,6 +13,9 @@ import android.view.ViewGroup;
 
 import es.uam.eps.tfg.app.tfgapp.R;
 
+/**
+ * Show information about how the application working
+ */
 public class HelpFragment extends Fragment {
     public static final int HELP_FRAGMENT_ID = 1;
     private static final int FRAGMENT_TITLE = R.string.help_fragment_title;
@@ -25,6 +28,9 @@ public class HelpFragment extends Fragment {
         return new HelpFragment();
     }
 
+    /**
+     * @return tag for the stackback
+     */
     public static int getTagID() {
         return FRAGMENT_TITLE;
     }
@@ -40,6 +46,7 @@ public class HelpFragment extends Fragment {
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /*it has a menu, but only for showing the items. It does not work*/
         setHasOptionsMenu(true);
     }
 
