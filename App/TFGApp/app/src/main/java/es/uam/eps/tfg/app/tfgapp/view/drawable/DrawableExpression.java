@@ -6,7 +6,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 
-import es.uam.eps.expressions.types.interfaces.Expression;
+import es.uam.eps.tfg.algebraicEngine.Operation;
 
 /**
  * Each one of the elements that compose the ExpressionView
@@ -20,8 +20,6 @@ public abstract class DrawableExpression {
     protected Paint mPaint;
     protected int mNormalColor;
     protected int mSelectedColor;
-
-    protected int depth;
 
     protected DrawableExpression(final Typeface font) {
         this(font, DEFAULT_TEXTSIZE);
@@ -174,7 +172,7 @@ public abstract class DrawableExpression {
      */
     protected Rect getDefaultBounds() {
         final Rect rect = new Rect();
-        final String text = getExpression().toString();
+        final String text = "525";
         mPaint.getTextBounds(text, 0, text.length(), rect);
         return rect;
     }
@@ -182,7 +180,7 @@ public abstract class DrawableExpression {
     /**
      * @return the expression that this element draws
      */
-    public abstract Expression getExpression();
+    public abstract Operation getExpression();
 
     private Rect getCenteredBounds(final Rect defaultBounds) {
         final Rect container = new Rect();

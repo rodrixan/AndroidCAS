@@ -14,8 +14,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.uam.eps.expressions.types.ExpressionList;
-import es.uam.eps.expressions.types.interfaces.Expression;
+import es.uam.eps.tfg.algebraicEngine.Operation;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionUpdateListener;
@@ -104,7 +103,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
     }
 
     @Override
-    public void onExpressionUpdated(final Expression exp) {
+    public void onExpressionUpdated(final Operation exp) {
         Point coord = null;
         if (mExp != null) {
             coord = mExp.getCoordinates();
@@ -112,7 +111,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             coord = new Point(0, 0);
         }
         final int textSize = getResources().getDimensionPixelSize(R.dimen.exp_text_size);
-        mExp = new DrawableExpressionList(mFont, coord, (ExpressionList) exp, textSize);
+        mExp = new DrawableExpressionList(mFont, coord, exp, textSize);
 
         final int normalColor = PreferenceUtils.getExpressionColor(getContext());
         final int selectedColor = PreferenceUtils.getExpressionHighlightColor(getContext());
@@ -129,12 +128,12 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
      * @param depth depth of the expression returned in position 0. must be allowed by the external caller
      * @return expression located at the coordinates, null if no one was found
      */
-    private Expression getSelectedExp(final int x, final int y, final int[] depth) {
+    private Operation getSelectedExp(final int x, final int y, final int[] depth) {
 
         final DrawableExpression exp = mExp.select(x, y, depth);
 
         if (exp != null) {
-            Log.d(Utils.LOG_TAG, "Clicked on expression: " + exp.getExpression().symbolicExpression() + " DEPTH: " + depth[0]);
+            Log.d(Utils.LOG_TAG, "Clicked on expression: " + exp.getExpression().toString() + " DEPTH: " + depth[0]);
 
             return exp.getExpression();
         } else {
@@ -149,7 +148,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
 
         private boolean mMultiSelection = false;
-        private List<Expression> mSelectedExpressions = new ArrayList<>();
+        private List<Operation> mSelectedExpressions = new ArrayList<>();
 
         @Override
         public boolean onSingleTapUp(final MotionEvent e) {
@@ -179,7 +178,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             Log.d(Utils.LOG_TAG, "multi-selection expression: ");
 
             final int[] depth = {0};
-            final Expression selection = getSelectedExp(x, y, depth);
+            final Operation selection = getSelectedExp(x, y, depth);
             if (first) {
                 mSelectedDepth = depth[0];
             } else {
@@ -192,12 +191,12 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
 
             if (selection != null) {
                 if (!mSelectedExpressions.contains(selection)) {
-                    Log.d(Utils.LOG_TAG, "Added expression: " + selection.symbolicExpression());
+                    Log.d(Utils.LOG_TAG, "Added expression: " + selection.toString());
 
                     mSelectedExpressions.add(selection);
 
                 } else {
-                    Log.d(Utils.LOG_TAG, "Already contained: " + selection.symbolicExpression());
+                    Log.d(Utils.LOG_TAG, "Already contained: " + selection.toString());
 
                     mExp.clearSelection(x, y);
 
@@ -221,9 +220,9 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             Log.d(Utils.LOG_TAG, "Single selection");
             final int[] depth = {0};
             mExp.clearSelection();
-            final Expression selection = getSelectedExp(x, y, depth);
+            final Operation selection = getSelectedExp(x, y, depth);
             if (selection != null) {
-                Log.d(Utils.LOG_TAG, "Selected Exp: " + selection.symbolicExpression());
+                Log.d(Utils.LOG_TAG, "Selected Exp: " + selection.toString());
                 mOnExpressionActionListener.onSingleExpressionSelected(selection);
             } else {
                 Log.d(Utils.LOG_TAG, "Selected Exp: none");

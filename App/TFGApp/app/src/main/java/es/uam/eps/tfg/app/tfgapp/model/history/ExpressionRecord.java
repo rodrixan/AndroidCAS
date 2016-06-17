@@ -1,6 +1,5 @@
 package es.uam.eps.tfg.app.tfgapp.model.history;
 
-import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
 
 /**
@@ -8,10 +7,10 @@ import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
  */
 public class ExpressionRecord {
     private final CASAdapter.Actions mAction;
-    private final Expression mGlobalExp;
-    private final Expression mSelectedExp;
+    private final String mGlobalExp;
+    private final String mSelectedExp;
 
-    public ExpressionRecord(final CASAdapter.Actions action, final Expression global, final Expression selection) {
+    public ExpressionRecord(final CASAdapter.Actions action, final String global, final String selection) {
         mAction = action;
         mGlobalExp = global;
         mSelectedExp = selection;
@@ -21,16 +20,16 @@ public class ExpressionRecord {
         return mAction;
     }
 
-    public Expression getGlobalExp() {
+    public String getGlobalExp() {
         return mGlobalExp;
     }
 
-    public Expression getSelectedExp() {
+    public String getSelectedExp() {
         return mSelectedExp;
     }
 
     @Override
     public String toString() {
-        return mAction.toString() + "[" + mGlobalExp.symbolicExpression() + "," + mSelectedExp.symbolicExpression() + "]";
+        return mAction.toString() + "[" + mGlobalExp + "," + mSelectedExp + "]";
     }
 }

@@ -7,24 +7,23 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 
 import es.uam.eps.tfg.algebraicEngine.Operation;
-import es.uam.eps.tfg.app.tfgapp.util.CASUtils;
 
 /**
- * Single drawable element (such as numbers or variables)
+ * Drawable class for a parenthesis
  */
-public class DrawableSingleExpression extends DrawableExpression {
+public class DrawableParenthesis extends DrawableExpression {
 
-    Operation mExpression;
+    String mExpression;
 
-    public DrawableSingleExpression(final Operation expression) {
+    public DrawableParenthesis(final String expression) {
         this(null, expression, DEFAULT_TEXTSIZE);
     }
 
-    public DrawableSingleExpression(final Typeface font, final Operation expression, final float textSize) {
+    public DrawableParenthesis(final Typeface font, final String expression, final float textSize) {
         this(font, new Point(0, 0), expression, textSize);
     }
 
-    public DrawableSingleExpression(final Typeface font, final Point coordinates, final Operation expression, final float textSize) {
+    public DrawableParenthesis(final Typeface font, final Point coordinates, final String expression, final float textSize) {
         super(font, textSize);
         mExpression = expression;
         updateCoordinates(coordinates);
@@ -32,7 +31,7 @@ public class DrawableSingleExpression extends DrawableExpression {
 
     @Override
     public void onDraw(final Canvas canvas) {
-        canvas.drawText(CASUtils.getSymbolicExpressionOf(mExpression), x, y, mPaint);
+        canvas.drawText(mExpression.toString(), x, y, mPaint);
         drawContainer(canvas);
     }
 
@@ -45,7 +44,7 @@ public class DrawableSingleExpression extends DrawableExpression {
 
     @Override
     public Operation getExpression() {
-        return mExpression;
+        return new Operation(mExpression);
     }
 
     @Override
@@ -58,18 +57,17 @@ public class DrawableSingleExpression extends DrawableExpression {
 
     @Override
     public boolean isDrawableOperator() {
-
         return false;
     }
 
     @Override
     public boolean isDrawableParenthesis() {
 
-        return false;
+        return true;
     }
 
     @Override
     public boolean isDrawableSingleExpression() {
-        return true;
+        return false;
     }
 }

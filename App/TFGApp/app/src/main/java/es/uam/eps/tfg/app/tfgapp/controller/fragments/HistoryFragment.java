@@ -23,7 +23,7 @@ import es.uam.eps.tfg.app.tfgapp.model.history.ExpressionRecord;
 import es.uam.eps.tfg.app.tfgapp.util.Utils;
 
 /**
- * Created by Rodri on 13/06/2016.
+ * History screen for expressions+
  */
 public class HistoryFragment extends Fragment {
     public static final int HISTORY_FRAGMENT_ID = 3;
@@ -42,6 +42,9 @@ public class HistoryFragment extends Fragment {
         return new HistoryFragment();
     }
 
+    /**
+     * @return tag for backstack
+     */
     public static int getTagID() {
         return FRAGMENT_TITLE;
     }
@@ -131,15 +134,14 @@ public class HistoryFragment extends Fragment {
 
             final Typeface tf = Typeface.createFromAsset(getActivity().getAssets(), Utils.FONT_PATH);
             mGlobalExpTextView.setTypeface(tf, Typeface.BOLD);
-            //mGlobalExpTextView.setTextSize();
             mSelectedExpTextView.setTypeface(tf);
 
         }
 
         public void bindExpression(final ExpressionRecord record) {
             mRecord = record;
-            mGlobalExpTextView.setText(record.getGlobalExp().symbolicExpression());
-            mSelectedExpTextView.setText(record.getSelectedExp().symbolicExpression());
+            mGlobalExpTextView.setText(record.getGlobalExp());
+            mSelectedExpTextView.setText(record.getSelectedExp());
             mActionTextView.setText(record.getAction().toString());
         }
 

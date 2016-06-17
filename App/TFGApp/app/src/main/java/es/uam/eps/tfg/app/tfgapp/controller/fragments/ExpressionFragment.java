@@ -17,8 +17,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import es.uam.eps.expressions.types.ExpressionList;
-import es.uam.eps.expressions.types.interfaces.Expression;
+import es.uam.eps.tfg.algebraicEngine.Operation;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.controller.ActionButtons;
 import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
@@ -43,6 +42,8 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
     private ActionButtons mButtons;
     private CASAdapter mCAS;
     private ExpressionHistory mHistory;
+    private Operation mSingleSelectedExpression;
+    private List<Operation> mMultipleSelectionExpressions;
 
     /**
      * @return new instance of this fragment
@@ -150,26 +151,28 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
     }
 
     @Override
-    public void onSingleExpressionSelected(final Expression selected) {
-        final int index = ((ExpressionList) mCAS.getCurrentExpression()).indexOf(selected);
-        Log.d(Utils.LOG_TAG, "Index of single selection: " + index);
-        mHistory.addExpression(CASAdapter.Actions.SELECT_SINGLE, mCAS.getCurrentExpression(), selected);
+    public void onSingleExpressionSelected(final Operation selected) {
+//        final int index = ((ExpressionList) mCAS.getCurrentExpression()).indexOf(selected);
+//        Log.d(Utils.LOG_TAG, "Index of single selection: " + index);
+//        mHistory.addExpression(CASAdapter.Actions.SELECT_SINGLE, mCAS.getCurrentExpression(), selected);
 
-
+        mSingleSelectedExpression = selected;
     }
 
     @Override
-    public void onMultipleExpressionSelected(final List<Expression> selection) {
-        final int[] indexes = new int[selection.size()];
-        for (int i = 0; i < selection.size(); i++) {
-            indexes[i] = ((ExpressionList) mCAS.getCurrentExpression()).indexOf(selection.get(i));
-            Log.d(Utils.LOG_TAG, "Index of multiple selection: " + indexes[i]);
-        }
+    public void onMultipleExpressionSelected(final List<Operation> selection) {
+//        final int[] indexes = new int[selection.size()];
+//        for (int i = 0; i < selection.size(); i++) {
+//            indexes[i] = ((ExpressionList) mCAS.getCurrentExpression()).indexOf(selection.get(i));
+//            Log.d(Utils.LOG_TAG, "Index of multiple selection: " + indexes[i]);
+//        }
+        mMultipleSelectionExpressions = selection;
     }
 
     @Override
     public void onCancelledSelectedExpression() {
-
+        mSingleSelectedExpression = null;
+        mMultipleSelectionExpressions = null;
     }
 
     @Override
@@ -228,7 +231,7 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
             Toast.makeText(getActivity(), R.string.popup_unable_to_undo, Toast.LENGTH_SHORT).show();
             return;
         }
-        final Expression current = mHistory.returnToPreviousExpression();
+        final String current = mHistory.returnToPreviousExpression();
         mCAS.initCAS(current);
         updateExpressionView();
     }

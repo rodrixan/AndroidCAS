@@ -11,31 +11,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import es.uam.eps.expressions.types.ExpressionList;
-import es.uam.eps.expressions.types.SingleExpression;
-import es.uam.eps.expressions.types.interfaces.Expression;
-import es.uam.eps.expressions.types.interfaces.Operator;
+import es.uam.eps.tfg.algebraicEngine.Operation;
+import es.uam.eps.tfg.app.tfgapp.util.CASUtils;
 
 /**
  * List of drawable elements (such as operations)
  */
 public class DrawableExpressionList extends DrawableExpression {
 
-    private final ExpressionList<Expression> mExpressionList;
+    private final Operation mExpression;
     private List<DrawableExpression> mDrawableExpList;
 
-    public DrawableExpressionList(final Typeface font, final Point coordinates, final ExpressionList<Expression> exp, final float textSize) {
+    public DrawableExpressionList(final Typeface font, final Point coordinates, final Operation exp, final float textSize) {
         super(font, textSize);
-        mExpressionList = exp;
+        mExpression = exp;
         createDrawableList();
         updateCoordinates(coordinates);
     }
 
-    public DrawableExpressionList(final Typeface font, final ExpressionList<Expression> exp, final float textSize) {
+    public DrawableExpressionList(final Typeface font, final Operation exp, final float textSize) {
         this(font, new Point(0, 0), exp, textSize);
     }
 
-    public DrawableExpressionList(final Typeface font, final ExpressionList<Expression> exp) {
+    public DrawableExpressionList(final Typeface font, final Operation exp) {
         this(font, new Point(0, 0), exp, DEFAULT_TEXTSIZE);
     }
 
@@ -45,7 +43,7 @@ public class DrawableExpressionList extends DrawableExpression {
 
             element.onDraw(canvas);
         }
-        //drawExternalContainers(canvas);
+        drawExternalContainers(canvas);
     }
 
     private void drawExternalContainers(final Canvas canvas) {
@@ -67,46 +65,46 @@ public class DrawableExpressionList extends DrawableExpression {
 
     private void createDrawableList() {
         mDrawableExpList = new ArrayList<>();
-        final Operator op = mExpressionList.getOperator();
-        for (final Expression exp : mExpressionList) {
+        final String op = CASUtils.getStringOperatorSymbol(mExpression);
+        for (final Operation exp : mExpression.getArgs()) {
             final List<DrawableExpression> drawExp = getDrawableExpressionFromExpression(exp);
             if (drawExp.size() != 0) {
                 mDrawableExpList.addAll(drawExp);
             }
-            mDrawableExpList.add(new DrawableSingleExpression(mPaint.getTypeface(), new SingleExpression(op.toString()), mPaint.getTextSize()));
+            mDrawableExpList.add(new DrawableOperator(mPaint.getTypeface(), op, mPaint.getTextSize()));
         }
         //delete the last operator
         mDrawableExpList.remove(mDrawableExpList.size() - 1);
     }
 
-    private List<DrawableExpression> getDrawableExpressionFromExpression(final Expression exp) {
+    private List<DrawableExpression> getDrawableExpressionFromExpression(final Operation exp) {
 
-        if (exp instanceof ExpressionList) {
-            return expressionListAsDrawableExpressionList((ExpressionList<Expression>) exp);
+        if (CASUtils.isMathematicalOperation(exp)) {
+            return expressionAsDrawableExpressionList(exp);
 
-        } else if (exp instanceof SingleExpression) {
-            DrawableSingleExpression singleExp = new DrawableSingleExpression(mPaint.getTypeface(), (SingleExpression) exp, mPaint.getTextSize());
+        } else {
+            final DrawableSingleExpression singleExp = new DrawableSingleExpression(mPaint.getTypeface(), exp, mPaint.getTextSize());
             return Arrays.asList(new DrawableExpression[]{singleExp});
         }
-        return null;
     }
 
-    private List<DrawableExpression> expressionListAsDrawableExpressionList(final ExpressionList<Expression> exp) {
+
+    private List<DrawableExpression> expressionAsDrawableExpressionList(final Operation exp) {
         final List<DrawableExpression> returnList = new ArrayList<>();
 
         final DrawableExpressionList drawableExpressionList = new DrawableExpressionList(mPaint.getTypeface(), exp, mPaint.getTextSize());
 
-        final Operator op = exp.getOperator();
+        final String op = CASUtils.getStringOperatorSymbol(exp);
 
-        returnList.add(new DrawableSingleExpression(mPaint.getTypeface(), new SingleExpression("("), mPaint.getTextSize()));
+        returnList.add(new DrawableParenthesis(mPaint.getTypeface(), "(", mPaint.getTextSize()));
 
-        for (final Expression e : exp) {
+        for (final Operation e : exp.getArgs()) {
             final List<DrawableExpression> subExpression = getDrawableExpressionFromExpression(e);
             returnList.addAll(subExpression);
-            returnList.add(new DrawableSingleExpression(mPaint.getTypeface(), new SingleExpression(op.toString()), mPaint.getTextSize()));
+            returnList.add(new DrawableOperator(mPaint.getTypeface(), op, mPaint.getTextSize()));
         }
         //replace the last operator occurrence
-        returnList.set(returnList.size() - 1, new DrawableSingleExpression(mPaint.getTypeface(), new SingleExpression(")"), mPaint.getTextSize()));
+        returnList.set(returnList.size() - 1, new DrawableParenthesis(mPaint.getTypeface(), ")", mPaint.getTextSize()));
 
         drawableExpressionList.setDrawableExpList(returnList);
 
@@ -140,15 +138,15 @@ public class DrawableExpressionList extends DrawableExpression {
     protected Rect getDefaultBounds() {
         final Rect rect = new Rect();
         //used for height, width will be changed to better size
-        final String text = getExpression().toString();
+        final String text = "525";
         mPaint.getTextBounds(text, 0, text.length(), rect);
         rect.right = rect.left + width();
         return rect;
     }
 
     @Override
-    public Expression getExpression() {
-        return mExpressionList;
+    public Operation getExpression() {
+        return mExpression;
     }
 
     @Override
@@ -196,7 +194,7 @@ public class DrawableExpressionList extends DrawableExpression {
     }
 
     @Override
-    public DrawableExpression getDrawableAtPosition(final int x, final int y, int[] depth) {
+    public DrawableExpression getDrawableAtPosition(final int x, final int y, final int[] depth) {
         for (final DrawableExpression exp : mDrawableExpList) {
             if (exp.contains(x, y)) {
                 if (exp.isDrawableOperator()) {
@@ -214,7 +212,7 @@ public class DrawableExpressionList extends DrawableExpression {
         return null;
     }
 
-    private DrawableExpression getDrawableSubExpressionAt(final int x, final int y, final DrawableExpression exp, int[] depth) {
+    private DrawableExpression getDrawableSubExpressionAt(final int x, final int y, final DrawableExpression exp, final int[] depth) {
 
         final DrawableExpression selected = exp.getDrawableAtPosition(x, y, depth);
         if (selected == null) {

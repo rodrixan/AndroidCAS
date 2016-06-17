@@ -5,7 +5,6 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
 import es.uam.eps.tfg.app.tfgapp.util.Utils;
 
@@ -35,7 +34,7 @@ public class ExpressionHistoryDB implements ExpressionHistory {
     }
 
     @Override
-    public void addExpression(final CASAdapter.Actions action, final Expression global, final Expression selection) {
+    public void addExpression(final CASAdapter.Actions action, final String global, final String selection) {
         Log.d(Utils.LOG_TAG, "Adding history record");
         final ExpressionRecord record = new ExpressionRecord(action, global, selection);
         mRecords.add(0, record);//always added in first position
@@ -43,9 +42,9 @@ public class ExpressionHistoryDB implements ExpressionHistory {
     }
 
     @Override
-    public Expression returnToPreviousExpression() {
+    public String returnToPreviousExpression() {
 
-        final Expression newCurrent = mRecords.get(0).getGlobalExp();
+        final String newCurrent = mRecords.get(0).getGlobalExp();
         //delete the last and return the new last
         mRecords.remove(0);
 

@@ -15,11 +15,11 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import es.uam.eps.expressions.types.interfaces.Expression;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASImplementation;
 import es.uam.eps.tfg.app.tfgapp.util.Utils;
+
 
 /**
  * Expression list screen for using them as examples
@@ -84,7 +84,7 @@ public class ShowcaseFragment extends Fragment {
      */
     private void updateAdapter() {
         final CASAdapter CAS = CASImplementation.getInstance();
-        final List<Expression> expList = CAS.getSampleExpressions();
+        final List<String> expList = CAS.getSampleExpressions();
         if (mAdapter == null) {
 
             mAdapter = new ExpressionAdapter(expList);
@@ -99,7 +99,7 @@ public class ShowcaseFragment extends Fragment {
     //ExpressionHolder for Expression class
     private class ExpressionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mExpressionTextView;
-        private Expression mExpression;
+        private String mExpression;
 
         public ExpressionHolder(final View itemView) {
             super(itemView);
@@ -113,9 +113,9 @@ public class ShowcaseFragment extends Fragment {
             mExpressionTextView.setTypeface(tf);
         }
 
-        public void bindExpression(final Expression expression) {
+        public void bindExpression(final String expression) {
             mExpression = expression;
-            mExpressionTextView.setText(expression.symbolicExpression());
+            mExpressionTextView.setText(expression);
         }
 
         @Override
@@ -129,9 +129,9 @@ public class ShowcaseFragment extends Fragment {
     //Adapter for an Expression list
     private class ExpressionAdapter extends RecyclerView.Adapter<ExpressionHolder> {
 
-        private List<Expression> mExpressionList;
+        private List<String> mExpressionList;
 
-        public ExpressionAdapter(final List<Expression> expressionList) {
+        public ExpressionAdapter(final List<String> expressionList) {
             mExpressionList = expressionList;
         }
 
@@ -150,7 +150,7 @@ public class ShowcaseFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(final ExpressionHolder holder, final int position) {
-            final Expression exp = mExpressionList.get(position);
+            final String exp = mExpressionList.get(position);
             holder.bindExpression(exp);
         }
 
@@ -159,7 +159,7 @@ public class ShowcaseFragment extends Fragment {
             return mExpressionList.size();
         }
 
-        public void setData(final List<Expression> expList) {
+        public void setData(final List<String> expList) {
             mExpressionList = expList;
         }
     }//END_ExpressionAdapter
