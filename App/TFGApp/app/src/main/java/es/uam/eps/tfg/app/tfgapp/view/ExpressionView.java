@@ -239,6 +239,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             mMultiSelection = false;
             mExp.clearSelection();
             mSelectedExpressions = null;
+            mOnExpressionActionListener.onCancelledSelectedExpression();
         }
 
         @Override

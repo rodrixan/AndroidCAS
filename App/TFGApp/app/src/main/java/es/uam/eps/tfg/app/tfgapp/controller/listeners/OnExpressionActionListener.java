@@ -23,4 +23,9 @@ public interface OnExpressionActionListener {
      */
     void onMultipleExpressionSelected(List<Expression> selection);
 
+    /**
+     * Selection canceled
+     */
+    void onCancelledSelectedExpression();
+
 }

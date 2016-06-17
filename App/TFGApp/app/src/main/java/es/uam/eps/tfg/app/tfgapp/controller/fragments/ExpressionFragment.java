@@ -168,6 +168,11 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
     }
 
     @Override
+    public void onCancelledSelectedExpression() {
+
+    }
+
+    @Override
     public void onClick(final View view) {
         final CASAdapter.Actions action = mButtons.getAction(view.getId());
         if (action != null) {
