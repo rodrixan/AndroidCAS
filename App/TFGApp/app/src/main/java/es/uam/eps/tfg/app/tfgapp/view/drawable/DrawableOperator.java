@@ -31,14 +31,14 @@ public class DrawableOperator extends DrawableExpression {
 
     @Override
     public void onDraw(final Canvas canvas) {
-        canvas.drawText(mExpression.toString(), x, y, mPaint);
-        drawContainer(canvas);
+        canvas.drawText(mExpression, x, y, mPaint);
+        //drawContainer(canvas);
     }
 
     private void drawContainer(final Canvas canvas) {
         final Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.YELLOW);
+        paint.setColor(Color.BLACK);
         canvas.drawRect(mRectContainer, paint);
     }
 

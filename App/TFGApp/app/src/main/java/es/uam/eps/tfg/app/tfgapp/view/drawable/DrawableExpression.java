@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 
 import es.uam.eps.tfg.algebraicEngine.Operation;
+import es.uam.eps.tfg.app.tfgapp.util.CASUtils;
 
 /**
  * Each one of the elements that compose the ExpressionView
@@ -161,10 +162,12 @@ public abstract class DrawableExpression {
 
         final Rect defaultBounds = getDefaultBounds();
 
-        mWidth = defaultBounds.width();
-        mHeight = defaultBounds.height();
+        final Rect centeredBounds = getCenteredBounds(defaultBounds);
 
-        return getCenteredBounds(defaultBounds);
+        mWidth = centeredBounds.width();
+        mHeight = centeredBounds.height();
+
+        return centeredBounds;
     }
 
     /**
@@ -172,7 +175,7 @@ public abstract class DrawableExpression {
      */
     protected Rect getDefaultBounds() {
         final Rect rect = new Rect();
-        final String text = "525";
+        final String text = CASUtils.getSymbolicExpressionOf(getExpression());
         mPaint.getTextBounds(text, 0, text.length(), rect);
         return rect;
     }

@@ -43,7 +43,7 @@ public class DrawableExpressionList extends DrawableExpression {
 
             element.onDraw(canvas);
         }
-        drawExternalContainers(canvas);
+        //drawExternalContainers(canvas);
     }
 
     private void drawExternalContainers(final Canvas canvas) {
@@ -88,7 +88,6 @@ public class DrawableExpressionList extends DrawableExpression {
         }
     }
 
-
     private List<DrawableExpression> expressionAsDrawableExpressionList(final Operation exp) {
         final List<DrawableExpression> returnList = new ArrayList<>();
 
@@ -123,13 +122,12 @@ public class DrawableExpressionList extends DrawableExpression {
 
     private void updateSubExpressionsCoordinates() {
         final int nextY = y;
-        final int parentHeight = mHeight;
         int leftBound = mRectContainer.left;
         for (final DrawableExpression exp : mDrawableExpList) {
             final int expWidth = exp.width();
             final float nextX = leftBound + expWidth / 2;
             exp.updateCoordinates((int) nextX, nextY);
-            exp.setHeight(parentHeight);//all items with the same height
+            exp.setHeight(mHeight);//all items with the same height
             leftBound = exp.mRectContainer.right;
         }
     }
@@ -138,9 +136,10 @@ public class DrawableExpressionList extends DrawableExpression {
     protected Rect getDefaultBounds() {
         final Rect rect = new Rect();
         //used for height, width will be changed to better size
-        final String text = "525";
+        final String text = CASUtils.getSymbolicExpressionOf(getExpression());
         mPaint.getTextBounds(text, 0, text.length(), rect);
         rect.right = rect.left + width();
+        rect.top= rect.bottom-height();
         return rect;
     }
 
@@ -159,6 +158,20 @@ public class DrawableExpressionList extends DrawableExpression {
         mRectContainer.right = mRectContainer.left + width;
         return width;
 
+    }
+
+    @Override
+    public int height() {
+        int height = 0;
+        for (final DrawableExpression exp : mDrawableExpList) {
+            final int expHeight = exp.height();
+            if (height < expHeight) {
+                height = expHeight;
+            }
+        }
+        mHeight = height;
+        mRectContainer.top = mRectContainer.bottom -height;
+        return height;
     }
 
     @Override

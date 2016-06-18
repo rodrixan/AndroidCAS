@@ -31,8 +31,8 @@ public class DrawableParenthesis extends DrawableExpression {
 
     @Override
     public void onDraw(final Canvas canvas) {
-        canvas.drawText(mExpression.toString(), x, y, mPaint);
-        drawContainer(canvas);
+        canvas.drawText(mExpression, x, y, mPaint);
+        //drawContainer(canvas);
     }
 
     private void drawContainer(final Canvas canvas) {

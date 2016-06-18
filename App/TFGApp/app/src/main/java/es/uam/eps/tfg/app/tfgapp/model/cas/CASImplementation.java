@@ -16,9 +16,9 @@ import es.uam.eps.tfg.exception.EquationCreationException;
  * Implementation of the CASAdapter. Singleton.
  */
 public class CASImplementation implements CASAdapter {
+    private static final String DEF_SYMBOL = "o-";
     private static final List<String> mShowcaseExpressionList = new ArrayList<>();
     private static CASAdapter mCASInstance = null;
-    private final AlgebraicEngine mCAS;
 
     static {
         mShowcaseExpressionList.add(Utils.createShortSampleExpression());
@@ -27,6 +27,7 @@ public class CASImplementation implements CASAdapter {
         mShowcaseExpressionList.add(Utils.createUltraLongSampleExpression());
     }
 
+    private final AlgebraicEngine mCAS;
 
     private CASImplementation() {
         mCAS = new AlgebraicEngine();
@@ -43,16 +44,6 @@ public class CASImplementation implements CASAdapter {
     }
 
     @Override
-    public void initCAS(final String exp) {
-        try {
-            Log.d(Utils.LOG_TAG, "Initializing CAS with expression: " + exp);
-            mCAS.insertEquation(exp);
-        } catch (final EquationCreationException e) {
-            Log.e(Utils.LOG_TAG, "Error while initializing CAS", e);
-        }
-    }
-
-    @Override
     public Operation getCurrentExpression() {
         final Operation current = mCAS.getOperEq();
         if (current == null) {
@@ -64,12 +55,41 @@ public class CASImplementation implements CASAdapter {
         return current;
     }
 
+    @Override
+    public void initCAS(final String exp) {
+        try {
+            Log.d(Utils.LOG_TAG, "Initializing CAS with expression: " + exp);
+            mCAS.insertEquation(exp);
+        } catch (final EquationCreationException e) {
+            Log.e(Utils.LOG_TAG, "Error while initializing CAS", e);
+        }
+    }
+
+    @Override
+    public String getParentStringOperatorSymbol(final Operation exp) {
+        return null;
+    }
+
+    @Override
+    public String getSymbolicExpression(final Operation exp) {
+        final String symbol = getStringOperatorSymbol(exp);
+        if (symbol == null) {
+            return exp.getArg(0).toString();
+        } else {
+            return symbol;
+        }
+    }
 
     /*TODO Implement*/
     @Override
     public String getStringOperatorSymbol(final Operation exp) {
 
         final String symbol = exp.getRepresentationOperID();
+
+        //when custom operation creation
+        if (symbol == null) {
+            return DEF_SYMBOL;
+        }
 
         switch (symbol) {
             case "#":
@@ -93,21 +113,6 @@ public class CASImplementation implements CASAdapter {
     }
 
     @Override
-    public String getParentStringOperatorSymbol(final Operation exp) {
-        return null;
-    }
-
-    @Override
-    public String getSymbolicExpression(final Operation exp) {
-        final String symbol = getStringOperatorSymbol(exp);
-        if (symbol == null) {
-            return exp.getArg(0).toString();
-        } else {
-            return symbol;
-        }
-    }
-
-    @Override
     public Operation commuteProperty(final Operation elementToCommute, final Actions leftOrRight) {
         return null;
     }
@@ -122,7 +127,6 @@ public class CASImplementation implements CASAdapter {
         return null;
     }
     /*TODO: implement*/
-
 
 //    @Override
 //    public Expression operate(final Expression mainExp, final int elemPos) {
