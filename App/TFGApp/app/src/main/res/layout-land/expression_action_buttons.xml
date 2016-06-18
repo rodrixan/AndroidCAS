@@ -30,7 +30,7 @@
                     android:src="@drawable/ic_exp_change_side"/>
 
                 <ImageButton
-                    android:id="@+id/button_exp_move_right"
+                    android:id="@+id/button_exp_move_left"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -39,7 +39,7 @@
                     android:src="@drawable/ic_exp_move_right"/>
 
                 <ImageButton
-                    android:id="@+id/button_exp_move_left"
+                    android:id="@+id/button_exp_move_right"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"

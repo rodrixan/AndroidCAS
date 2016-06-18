@@ -1,6 +1,5 @@
 package es.uam.eps.tfg.app.tfgapp.controller;
 
-
 import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
@@ -15,6 +14,16 @@ import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
  */
 public class ActionButtons implements View.OnLongClickListener {
 
+    private static final int[] IDS = {
+            R.id.button_exp_associate,
+            R.id.button_exp_change_side,
+            R.id.button_exp_delete,
+            R.id.button_exp_disassociate,
+            R.id.button_exp_move_left,
+            R.id.button_exp_move_right,
+            R.id.button_exp_operate
+    };
+
     private final ImageButton mChangeSide;
     private final ImageButton mMoveRight;
     private final ImageButton mMoveLeft;
@@ -23,7 +32,6 @@ public class ActionButtons implements View.OnLongClickListener {
     private final ImageButton mDisassociate;
     private final ImageButton mOperate;
     private final Context mContext;
-
 
     public ActionButtons(final View rootView, final Context context) {
         mChangeSide = (ImageButton) rootView.findViewById(R.id.button_exp_change_side);
@@ -36,6 +44,12 @@ public class ActionButtons implements View.OnLongClickListener {
         mContext = context;
     }
 
+    public void setListeners(final View.OnClickListener listener) {
+
+        setOnLongClickListener();
+        setOnClickListener(listener);
+
+    }
 
     private void setOnLongClickListener() {
         mChangeSide.setOnLongClickListener(this);
@@ -57,13 +71,6 @@ public class ActionButtons implements View.OnLongClickListener {
         mAssociate.setOnClickListener(listener);
         mDisassociate.setOnClickListener(listener);
         mOperate.setOnClickListener(listener);
-
-    }
-
-    public void setListeners(final View.OnClickListener listener) {
-
-        setOnLongClickListener();
-        setOnClickListener(listener);
 
     }
 
@@ -111,12 +118,57 @@ public class ActionButtons implements View.OnLongClickListener {
         return false;
     }
 
-
     private void showActionDescription(final String msg) {
         final Toast toast = Toast.makeText(mContext, msg, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 100);
         toast.show();
     }
 
+    public void enableAll() {
+        for (final int id : IDS) {
+            enable(id);
+        }
+    }
 
+    public void enable(final int buttonId) {
+        getButton(buttonId).setEnabled(true);
+    }
+
+    public ImageButton getButton(final int id) {
+        switch (id) {
+            case R.id.button_exp_change_side:
+                return mChangeSide;
+
+            case R.id.button_exp_move_right:
+                return mMoveRight;
+
+            case R.id.button_exp_move_left:
+                return mMoveLeft;
+
+            case R.id.button_exp_delete:
+                return mDelete;
+
+            case R.id.button_exp_associate:
+                return mAssociate;
+
+            case R.id.button_exp_disassociate:
+                return mDisassociate;
+
+            case R.id.button_exp_operate:
+                return mOperate;
+
+            default:
+                return null;
+        }
+    }
+
+    public void disableAll() {
+        for (final int id : IDS) {
+            disable(id);
+        }
+    }
+
+    public void disable(final int buttonId) {
+        getButton(buttonId).setEnabled(false);
+    }
 }

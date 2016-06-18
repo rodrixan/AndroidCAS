@@ -52,5 +52,18 @@
         Las acciones no permitidas no tendrán repercusión en la expresión\n
         Si un botón aparece desactivado, significa que esa acción no puede ser aplicada
     </string>
+    <string name="operation_failure">No se puede realizar esa acción</string>
+
+    <string name="action_change_side">Cambiar lado</string>
+    <string name="action_move_left">Conmutar izda.</string>
+    <string name="action_move_right">Conmutar dcha.</string>
+    <string name="action_delete">Cancelar término</string>
+    <string name="action_associate">Asociar</string>
+    <string name="action_disassociate">Desasociar</string>
+    <string name="action_operate">Operar</string>
+    <string name="no_exp_selected">Debe hacer una selección</string>
+    <string name="operation_failure_dissociative">Debe ser una operación</string>
+    <string name="operation_failure_multiple_selection">Selecciona dos elementos con mismo padre</string>
+
 
 </resources>

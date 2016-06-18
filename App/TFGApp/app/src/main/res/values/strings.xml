@@ -60,6 +60,21 @@
     <string name="action_undo_help">Undo last action</string>
     <string name="popup_unable_to_undo">No previous expression yet</string>
     <string name="popup_multiple_selection_depth_error">Selection at different level</string>
+    <string name="operation_failure">Action can\'t be applied</string>
+
+    <string name="operation_failure_dissociative">Must be an operation</string>
+
+    <string name="action_change_side">Change side</string>
+    <string name="action_move_left">Commute left</string>
+    <string name="action_move_right">Commute right</string>
+    <string name="action_delete">Cancel term</string>
+    <string name="action_associate">Associate</string>
+    <string name="action_disassociate">Disassociate</string>
+    <string name="action_operate">Operate</string>
+
+    <string name="no_exp_selected">Must do a selection</string>
+
+    <string name="operation_failure_multiple_selection">Select two elements with same parent</string>
 
 
 </resources>

@@ -142,13 +142,14 @@ public class HistoryFragment extends Fragment {
             mRecord = record;
             mGlobalExpTextView.setText(record.getGlobalExp());
             mSelectedExpTextView.setText(record.getSelectedExp());
-            mActionTextView.setText(record.getAction().toString());
+            mActionTextView.setText(record.getAction().getStringCode());
         }
 
         @Override
         public void onClick(final View v) {
             //just update the CAS and go back
-            CASImplementation.getInstance().initCAS(mRecord.getGlobalExp());
+            final String oldExp = ExpressionHistoryDB.getInstance().returnToExpression(mRecord);
+            CASImplementation.getInstance().initCAS(oldExp);
             mCallbacks.navigateToFragment(ExpressionFragment.EXPRESSION_FRAGMENT_ID);
         }
     }//END_RecordHolder

@@ -181,15 +181,13 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             final Operation selection = getSelectedExp(x, y, depth);
             if (first) {
                 mSelectedDepth = depth[0];
-            } else {
+            }
+            if (selection != null) {
                 if (depth[0] != mSelectedDepth) {
                     cancelSelection();
                     Toast.makeText(getContext(), R.string.popup_multiple_selection_depth_error, Toast.LENGTH_SHORT).show();
                     return false;
                 }
-            }
-
-            if (selection != null) {
                 if (!mSelectedExpressions.contains(selection)) {
                     Log.d(Utils.LOG_TAG, "Added expression: " + selection.toString());
 
@@ -253,6 +251,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
 
             if (selectMultipleExpression(x, y, true)) {
                 Toast.makeText(getContext(), R.string.popup_multiple_selection_enabled, Toast.LENGTH_SHORT).show();
+                mOnExpressionActionListener.onMultipleExpressionSelected(mSelectedExpressions);
             }
         }
 

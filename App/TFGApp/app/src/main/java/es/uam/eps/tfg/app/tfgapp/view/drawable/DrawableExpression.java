@@ -175,7 +175,7 @@ public abstract class DrawableExpression {
      */
     protected Rect getDefaultBounds() {
         final Rect rect = new Rect();
-        final String text = CASUtils.getSymbolicExpressionOf(getExpression());
+        final String text = CASUtils.getSymbolStringExpression(getExpression());
         mPaint.getTextBounds(text, 0, text.length(), rect);
         return rect;
     }

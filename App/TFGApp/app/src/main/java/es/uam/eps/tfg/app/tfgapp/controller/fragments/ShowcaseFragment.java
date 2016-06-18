@@ -18,8 +18,8 @@ import java.util.List;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASImplementation;
+import es.uam.eps.tfg.app.tfgapp.util.CASUtils;
 import es.uam.eps.tfg.app.tfgapp.util.Utils;
-
 
 /**
  * Expression list screen for using them as examples
@@ -115,7 +115,7 @@ public class ShowcaseFragment extends Fragment {
 
         public void bindExpression(final String expression) {
             mExpression = expression;
-            mExpressionTextView.setText(expression);
+            mExpressionTextView.setText(CASUtils.getInfixExpressionOf(expression));
         }
 
         @Override

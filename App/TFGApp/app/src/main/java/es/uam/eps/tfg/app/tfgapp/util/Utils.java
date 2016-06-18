@@ -11,23 +11,6 @@ public final class Utils {
     private Utils() {
     }
 
-    public static String createLongSampleExpression() {
 
-        return "+[#[3],#[5]]";
-    }
-
-    public static String createShortSampleExpression() {
-        return "=[*[#[x],+[#[3],#[2]]],-R[$[x],#[5]]]";
-    }
-
-    public static String createMediumSampleExpression() {
-
-        return "+[#[3],#[5]]";
-    }
-
-    public static String createUltraLongSampleExpression() {
-
-        return "+[#[3],#[5]]";
-    }
 
 }

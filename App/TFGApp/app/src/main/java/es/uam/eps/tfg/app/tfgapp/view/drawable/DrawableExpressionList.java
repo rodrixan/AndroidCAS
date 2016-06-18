@@ -74,7 +74,9 @@ public class DrawableExpressionList extends DrawableExpression {
             mDrawableExpList.add(new DrawableOperator(mPaint.getTypeface(), op, mPaint.getTextSize()));
         }
         //delete the last operator
-        mDrawableExpList.remove(mDrawableExpList.size() - 1);
+        if (mDrawableExpList.size() > 0) {
+            mDrawableExpList.remove(mDrawableExpList.size() - 1);
+        }
     }
 
     private List<DrawableExpression> getDrawableExpressionFromExpression(final Operation exp) {
@@ -136,10 +138,10 @@ public class DrawableExpressionList extends DrawableExpression {
     protected Rect getDefaultBounds() {
         final Rect rect = new Rect();
         //used for height, width will be changed to better size
-        final String text = CASUtils.getSymbolicExpressionOf(getExpression());
+        final String text = CASUtils.getSymbolStringExpression(getExpression());
         mPaint.getTextBounds(text, 0, text.length(), rect);
         rect.right = rect.left + width();
-        rect.top= rect.bottom-height();
+        rect.top = rect.bottom - height();
         return rect;
     }
 
@@ -170,7 +172,7 @@ public class DrawableExpressionList extends DrawableExpression {
             }
         }
         mHeight = height;
-        mRectContainer.top = mRectContainer.bottom -height;
+        mRectContainer.top = mRectContainer.bottom - height;
         return height;
     }
 

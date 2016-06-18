@@ -32,7 +32,7 @@ public class DrawableSingleExpression extends DrawableExpression {
 
     @Override
     public void onDraw(final Canvas canvas) {
-        canvas.drawText(CASUtils.getSymbolicExpressionOf(mExpression), x, y, mPaint);
+        canvas.drawText(CASUtils.getSymbolStringExpression(mExpression), x, y, mPaint);
         //drawContainer(canvas);
     }
 
