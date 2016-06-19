@@ -19,8 +19,8 @@ import es.uam.eps.tfg.app.tfgapp.util.CASUtils;
  */
 public class DrawableExpressionList extends DrawableExpression {
 
-    private final Operation mExpression;
-    private List<DrawableExpression> mDrawableExpList;
+    protected final Operation mExpression;
+    protected List<DrawableExpression> mDrawableExpList;
 
     public DrawableExpressionList(final Typeface font, final Point coordinates, final Operation exp, final float textSize) {
         super(font, textSize);
@@ -99,6 +99,10 @@ public class DrawableExpressionList extends DrawableExpression {
 
         returnList.add(new DrawableParenthesis(mPaint.getTypeface(), "(", mPaint.getTextSize()));
 
+        if (CASUtils.isInverseOperation(exp)) {
+            returnList.add(new DrawableOperator(mPaint.getTypeface(), op, mPaint.getTextSize()));
+            //return inverseOperationAsDrawableExpressionList(exp);
+        }
         for (final Operation e : exp.getArgs()) {
             final List<DrawableExpression> subExpression = getDrawableExpressionFromExpression(e);
             returnList.addAll(subExpression);
@@ -110,6 +114,11 @@ public class DrawableExpressionList extends DrawableExpression {
         drawableExpressionList.setDrawableExpList(returnList);
 
         return Arrays.asList(new DrawableExpression[]{drawableExpressionList});
+    }
+
+    private List<DrawableExpression> inverseOperationAsDrawableExpressionList(final Operation exp) {
+
+        return null;
     }
 
     private void setDrawableExpList(final List<DrawableExpression> list) {
@@ -138,7 +147,7 @@ public class DrawableExpressionList extends DrawableExpression {
     protected Rect getDefaultBounds() {
         final Rect rect = new Rect();
         //used for height, width will be changed to better size
-        final String text = CASUtils.getSymbolStringExpression(getExpression());
+        final String text = CASUtils.getInfixExpressionOf(getExpression());
         mPaint.getTextBounds(text, 0, text.length(), rect);
         rect.right = rect.left + width();
         rect.top = rect.bottom - height();

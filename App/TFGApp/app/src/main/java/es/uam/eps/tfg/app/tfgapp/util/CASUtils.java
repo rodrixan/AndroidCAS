@@ -34,6 +34,19 @@ public final class CASUtils {
     }
 
     /**
+     * Decides if the operation is an invrse operation (1/exp)
+     *
+     * @param op operation to decide
+     * @return true if the operation is an inverse one, false in other case
+     */
+    public static boolean isInverseOperation(final Operation op) {
+        if (getStringOperatorSymbol(op).equals("1/")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Given an expression, returns the string operator symbol
      *
      * @param exp expression to know its operator symbol
@@ -88,7 +101,7 @@ public final class CASUtils {
 
     public static String createLongSampleExpression() {
 
-        return "+[#[3],#[5]]";
+        return "=[*[$[x],+[#[3],@INV[#[2],#[4]]]],@INV[-[$[x],#[5]]]]";
     }
 
     public static String createShortSampleExpression() {
@@ -102,7 +115,21 @@ public final class CASUtils {
 
     public static String createUltraLongSampleExpression() {
 
-        return "+[#[3],#[5]]";
+        return "=[*[$[a],$[x],+[#[9],#[3],@INV[+[#[2],#[4],#[34]]]]],@INV[-[$[x],#[5]]]]";
+    }
+
+    /**
+     * @param op
+     * @return
+     */
+    public static boolean isOnlyOperatorOrParenthesis(final Operation op) {
+        if (op.getArgs().size() == 0) {
+            if (isMathematicalOperation(op) || op.getOperId().equals("(") || op.getOperId().equals(")")) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
     /**
@@ -114,13 +141,21 @@ public final class CASUtils {
     public static String getInfixExpressionOf(final Operation op) {
         final StringBuilder sb = new StringBuilder();
         int i = 0;
+        if (isOnlyOperatorOrParenthesis(op)) {
+            return op.getOperId();
+        }
         for (final Operation arg : op.getArgs()) {
             if (arg.isNumber()) {
                 sb.append(arg.getArgNumber() + "");
             } else if (arg.isString()) {
                 sb.append(arg.getArgStr());
             } else if (isMathematicalOperation(arg)) {
-                sb.append("(" + getInfixExpressionOf(arg) + ")");
+                if (isInverseOperation(arg)) {
+                    sb.append("( 1 / ");
+                    sb.append(getInfixExpressionOf(arg) + "");
+                } else {
+                    sb.append("(" + getInfixExpressionOf(arg) + ")");
+                }
             } else {
                 sb.append(arg.getArg(0).toString());
             }

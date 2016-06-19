@@ -33,6 +33,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
     private DrawableExpression mExp;
     private OnExpressionActionListener mOnExpressionActionListener;
     private int mSelectedDepth;
+    private int mCurrentTextSize;
 
     public ExpressionView(final Context context) {
         this(context, null, 0);
@@ -63,8 +64,8 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         //FOR DEBUGGING!!!!!!
 
         mExp.updateCoordinates(w / 2, h / 2);
-        final int textSize = getResources().getDimensionPixelSize(R.dimen.exp_text_size);
-        mExp.setTextSize(textSize);
+        mCurrentTextSize = getResources().getDimensionPixelSize(R.dimen.exp_text_size);
+        mExp.setTextSize(mCurrentTextSize);
 
         super.onSizeChanged(w, h, oldw, oldh);
     }
@@ -90,6 +91,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
     @Override
     protected void onDraw(final Canvas canvas) {
         super.onDraw(canvas);
+
         mExp.onDraw(canvas);
     }
 

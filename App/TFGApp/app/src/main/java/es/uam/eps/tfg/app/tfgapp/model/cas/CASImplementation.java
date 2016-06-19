@@ -110,6 +110,8 @@ public class CASImplementation implements CASAdapter {
             case "=":
             case "-":
                 return symbol;
+            case "@INV":
+                return "1/";
             default:
                 return null;
         }
