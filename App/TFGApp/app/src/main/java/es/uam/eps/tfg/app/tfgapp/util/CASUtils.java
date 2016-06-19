@@ -101,7 +101,7 @@ public final class CASUtils {
 
     public static String createLongSampleExpression() {
 
-        return "=[*[$[x],+[#[3],@INV[#[2],#[4]]]],@INV[-[$[x],#[5]]]]";
+        return "=[*[$[x],+[#[3],+[#[2],#[4]]],#[8]],@INV[-[$[x],#[5]]]]";
     }
 
     public static String createShortSampleExpression() {
