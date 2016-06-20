@@ -9,8 +9,8 @@
 
     <dimen name="card_title_size">10dp</dimen>
     <dimen name="exp_button_size">50dp</dimen>
-    <dimen name="exp_text_size">30sp</dimen>
-    <dimen name="exp_showcase_text_size">25sp</dimen>
+    <dimen name="exp_text_size">27sp</dimen>
+    <dimen name="exp_showcase_text_size">20sp</dimen>
     <dimen name="exp_history_selected_exp_text_size">20sp</dimen>
 
     <dimen name="status_bar_margin_top">0dp</dimen>

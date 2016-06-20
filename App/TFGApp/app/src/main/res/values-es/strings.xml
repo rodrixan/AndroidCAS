@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TFGApp</string>
+
     <string name="action_help">Ayuda</string>
     <string name="action_undo_help">Deshacer última acción</string>
     <string name="action_undo">Deshacer</string>

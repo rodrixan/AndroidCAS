@@ -152,7 +152,7 @@ public final class CASUtils {
             } else if (isMathematicalOperation(arg)) {
                 if (isInverseOperation(arg)) {
                     sb.append("( 1 / ");
-                    sb.append(getInfixExpressionOf(arg) + "");
+                    sb.append(getInfixExpressionOf(arg) + ")");
                 } else {
                     sb.append("(" + getInfixExpressionOf(arg) + ")");
                 }
