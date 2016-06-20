@@ -50,7 +50,7 @@ public abstract class NavigationDrawerFragmentActivity extends AppCompatActivity
      * @param first if it's first time the main activity is called
      * @return position of the fragment item  in the navigation drawer
      */
-    public abstract int setFragment(int id, boolean first);
+    protected abstract int setFragment(int id, boolean first);
 
     /**
      * @return the default fragment id for the navigation drawer to show
