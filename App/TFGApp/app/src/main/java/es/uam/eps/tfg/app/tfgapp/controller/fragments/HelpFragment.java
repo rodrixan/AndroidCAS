@@ -1,7 +1,5 @@
 package es.uam.eps.tfg.app.tfgapp.controller.fragments;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,10 +14,10 @@ import es.uam.eps.tfg.app.tfgapp.R;
 /**
  * Show information about how the application working
  */
-public class HelpFragment extends Fragment {
+public class HelpFragment extends BaseFragment {
     public static final int HELP_FRAGMENT_ID = 1;
     private static final int FRAGMENT_TITLE = R.string.help_fragment_title;
-    private Callbacks mCallbacks;
+
 
     /**
      * @return new instance of this fragment
@@ -35,13 +33,6 @@ public class HelpFragment extends Fragment {
         return FRAGMENT_TITLE;
     }
 
-    @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
-        if (context instanceof Activity) {
-            mCallbacks = (Callbacks) context;
-        }
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -55,11 +46,6 @@ public class HelpFragment extends Fragment {
         inflater.inflate(R.menu.fragment_help_toolbar, menu);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCallbacks = null;
-    }
 
     @Nullable
     @Override

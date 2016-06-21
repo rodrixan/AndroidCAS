@@ -1,7 +1,5 @@
 package es.uam.eps.tfg.app.tfgapp.controller.fragments;
 
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,12 +22,11 @@ import es.uam.eps.tfg.app.tfgapp.util.Utils;
 /**
  * Expression list screen for using them as examples
  */
-public class ShowcaseFragment extends Fragment {
+public class ShowcaseFragment extends BaseFragment {
     public static final int SHOWCASE_FRAGMENT_ID = 2;
     private static final int FRAGMENT_TITLE = R.string.showcase_fragment_title;
     private static final int FRAGMENT_SUBTITLE = R.string.showcase_fragment_subtitle;
 
-    private Callbacks mCallbacks;
     private RecyclerView mExpRecyclerView;
     private ExpressionAdapter mAdapter;
 
@@ -47,19 +44,6 @@ public class ShowcaseFragment extends Fragment {
         return FRAGMENT_TITLE;
     }
 
-    @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
-        if (context instanceof Activity) {
-            mCallbacks = (Callbacks) context;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCallbacks = null;
-    }
 
     @Nullable
     @Override

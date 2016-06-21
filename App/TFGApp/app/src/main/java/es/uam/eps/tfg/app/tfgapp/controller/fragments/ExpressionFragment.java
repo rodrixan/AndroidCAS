@@ -1,7 +1,5 @@
 package es.uam.eps.tfg.app.tfgapp.controller.fragments;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -34,11 +32,11 @@ import es.uam.eps.tfg.exception.NotApplicableReductionException;
 /**
  * Board that shows the expressions and the allowed actions
  */
-public class ExpressionFragment extends Fragment implements OnExpressionActionListener, View.OnClickListener {
+public class ExpressionFragment extends BaseFragment implements OnExpressionActionListener, View.OnClickListener {
     public static final int EXPRESSION_FRAGMENT_ID = 0;
     private static final int FRAGMENT_TITLE = R.string.expression_fragment_title;
 
-    private Callbacks mCallbacks;
+
     private ExpressionView mExpressionView;
     private CardView mBoardCardView;
     private ActionButtons mButtons;
@@ -61,19 +59,6 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
         return FRAGMENT_TITLE;
     }
 
-    @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
-        if (context instanceof Activity) {
-            mCallbacks = (Callbacks) context;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCallbacks = null;
-    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -154,10 +139,6 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
 
     @Override
     public void onSingleExpressionSelected(final Operation selected) {
-//        final int index = ((ExpressionList) mCAS.getCurrentExpression()).indexOf(selected);
-//        Log.d(Utils.LOG_TAG, "Index of single selection: " + index);
-//        mHistory.addExpression(CASAdapter.Actions.SELECT_SINGLE, mCAS.getCurrentExpression(), selected);
-
         mSingleSelectedExpression = selected;
         mMultipleSelectionExpressions = null;
         enableSingleSelectionButtons();
@@ -175,11 +156,6 @@ public class ExpressionFragment extends Fragment implements OnExpressionActionLi
 
     @Override
     public void onMultipleExpressionSelected(final List<Operation> selection) {
-//        final int[] indexes = new int[selection.size()];
-//        for (int i = 0; i < selection.size(); i++) {
-//            indexes[i] = ((ExpressionList) mCAS.getCurrentExpression()).indexOf(selection.get(i));
-//            Log.d(Utils.LOG_TAG, "Index of multiple selection: " + indexes[i]);
-//        }
         mMultipleSelectionExpressions = selection;
         mSingleSelectedExpression = null;
         enableMultipleSelectionButtons();

@@ -1,7 +1,5 @@
 package es.uam.eps.tfg.app.tfgapp.controller.fragments;
 
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,14 +21,14 @@ import es.uam.eps.tfg.app.tfgapp.model.history.ExpressionRecord;
 import es.uam.eps.tfg.app.tfgapp.util.Utils;
 
 /**
- * History screen for expressions+
+ * History screen for expressions
  */
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends BaseFragment {
     public static final int HISTORY_FRAGMENT_ID = 3;
     private static final int FRAGMENT_TITLE = R.string.history_fragment_title;
     private static final int FRAGMENT_SUBTITLE = R.string.history_fragment_subtitle;
 
-    private Callbacks mCallbacks;
+
     private RecyclerView mRecordRecyclerView;
     private TextView mEmptyView;
     private ExpressionAdapter mAdapter;
@@ -49,19 +47,6 @@ public class HistoryFragment extends Fragment {
         return FRAGMENT_TITLE;
     }
 
-    @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
-        if (context instanceof Activity) {
-            mCallbacks = (Callbacks) context;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCallbacks = null;
-    }
 
     @Nullable
     @Override
