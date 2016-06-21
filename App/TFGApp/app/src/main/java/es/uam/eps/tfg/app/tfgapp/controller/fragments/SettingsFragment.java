@@ -17,20 +17,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private static final int FRAGMENT_TITLE = R.string.settings_fragment_title;
     private Callbacks mCallbacks;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mCallbacks.setTitle(FRAGMENT_TITLE);
-
-    }
-
-
-    @Override
-    public void onCreatePreferencesFix(final Bundle savedInstanceState, final String rootKey) {
-        addPreferencesFromResource(R.xml.settings);
-    }
-
-
     /**
      * @return new instance of this fragment
      */
@@ -44,6 +30,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public static int getTagID() {
         return FRAGMENT_TITLE;
     }
+
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mCallbacks.setTitle(FRAGMENT_TITLE);
+
+    }
+
+
+    @Override
+    public void onCreatePreferencesFix(final Bundle savedInstanceState, final String rootKey) {
+        addPreferencesFromResource(R.xml.settings);
+    }
+
 
     @Override
     public void onAttach(final Context context) {
