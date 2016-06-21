@@ -224,7 +224,7 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
                     return false;
                 case MOVE_RIGHT:
                 case MOVE_LEFT:
-                    mCAS.commuteProperty(mSingleSelectedExpression, action);
+                    mCAS.commutativeProperty(mSingleSelectedExpression, action);
                     break;
                 case DELETE:
                     return false;

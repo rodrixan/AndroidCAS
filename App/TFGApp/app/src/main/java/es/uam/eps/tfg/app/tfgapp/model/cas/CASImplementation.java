@@ -118,7 +118,7 @@ public class CASImplementation implements CASAdapter {
     }
 
     @Override
-    public Operation commuteProperty(final Operation elementToCommute, final Actions leftOrRight) throws NotApplicableReductionException {
+    public Operation commutativeProperty(final Operation elementToCommute, final Actions leftOrRight) throws NotApplicableReductionException {
         final UUID parentId = elementToCommute.getParentID();
         final Operation parent = mCAS.getOperById(parentId);
 

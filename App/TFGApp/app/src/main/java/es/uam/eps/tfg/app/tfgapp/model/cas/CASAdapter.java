@@ -55,19 +55,17 @@ public interface CASAdapter {
      */
     String getSymbolStringExpression(Operation exp);
 
-    /**
-     * TODO: implement
-     */
-    Operation commuteProperty(Operation elementToCommute, Actions leftOrRight) throws NotApplicableReductionException;
+
+    Operation commutativeProperty(Operation elementToCommute, Actions leftOrRight) throws NotApplicableReductionException;
 
     Operation associativeProperty(Operation startElem, Operation endElement) throws NotApplicableReductionException;
 
     Operation dissociativeProperty(Operation elementToDissociate) throws NotApplicableReductionException;
 
+
     /**
      * TODO implement
      */
-
 //
 //    Expression operate(Expression mainExp, int elemPos);
 //
@@ -79,6 +77,10 @@ public interface CASAdapter {
 //
 //    Expression moveMember(Expression equation, int elemPos);
 //
+
+    /**
+     * TODO implement
+     */
 
     List<String> getSampleExpressions();
 
