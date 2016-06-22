@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.util.Arrays;
 import java.util.List;
 
 import es.uam.eps.tfg.algebraicEngine.Operation;
@@ -36,7 +37,6 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
     public static final int EXPRESSION_FRAGMENT_ID = 0;
     private static final int FRAGMENT_TITLE = R.string.expression_fragment_title;
 
-
     private ExpressionView mExpressionView;
     private CardView mBoardCardView;
     private ActionButtons mButtons;
@@ -58,7 +58,6 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
     public static int getTagID() {
         return FRAGMENT_TITLE;
     }
-
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -215,9 +214,7 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
      * @return true or false, depending on success
      */
     private boolean doSingleSelectionAction(final CASAdapter.Actions action) {
-        final Operation oldOperation = mCAS.getCurrentExpression();
-        final String oldExp = CASUtils.getInfixExpressionOf(oldOperation);
-        final String oldCASExp = oldOperation.toString();
+        final String oldCASExp = mCAS.getCurrentExpression().toString();
         try {
             switch (action) {
                 case CHANGE_SIDE:
@@ -245,10 +242,27 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
             Toast.makeText(getActivity(), R.string.operation_failure, Toast.LENGTH_SHORT).show();
             return false;
         }
-        final String selection = CASUtils.getInfixExpressionOf(mSingleSelectedExpression);
-        mHistory.addRecord(action, oldExp, oldCASExp, selection);
+        addRecordToHistory(oldCASExp, Arrays.asList(new Operation[]{mSingleSelectedExpression}), action);
         updateExpressionView();
         return true;
+    }
+
+    /**
+     * Add to the history a new record
+     *
+     * @param oldExpression the CAS string expression for the old one (before taken the action)
+     * @param operations    selected expressions. At least one element is needed
+     * @param action        the action that was performed
+     */
+    private void addRecordToHistory(final String oldExpression, final List<Operation> operations, final CASAdapter.Actions action) {
+        final String infixExpressionFromOldExp = CASUtils.getInfixExpressionOf(oldExpression);
+        final String selection1 = CASUtils.getInfixExpressionOf(operations.get(0));
+        if (operations.size() == 1) {
+            mHistory.addRecord(action, infixExpressionFromOldExp, oldExpression, selection1);
+        } else {
+            final String selection2 = CASUtils.getInfixExpressionOf(operations.get(1));
+            mHistory.addRecord(action, infixExpressionFromOldExp, oldExpression, selection1, selection2);
+        }
     }
 
     /**
@@ -258,9 +272,9 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
      * @return tru or false according to the action success
      */
     private boolean doMultipleSelectionAction(final CASAdapter.Actions action) {
-        final Operation oldOperation = mCAS.getCurrentExpression();
-        final String oldExp = CASUtils.getInfixExpressionOf(oldOperation);
-        final String oldCASExp = oldOperation.toString();
+        
+        final String oldCASExp = mCAS.getCurrentExpression().toString();
+
         if (mMultipleSelectionExpressions.size() != 2) {
             Toast.makeText(getActivity(), R.string.operation_failure_multiple_selection, Toast.LENGTH_SHORT).show();
             return false;
@@ -280,9 +294,7 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
             Toast.makeText(getActivity(), R.string.operation_failure, Toast.LENGTH_SHORT).show();
             return false;
         }
-        final String selection1 = CASUtils.getInfixExpressionOf(mMultipleSelectionExpressions.get(0));
-        final String selection2 = CASUtils.getInfixExpressionOf(mMultipleSelectionExpressions.get(1));
-        mHistory.addRecord(action, oldExp, oldCASExp, selection1, selection2);
+        addRecordToHistory(oldCASExp, mMultipleSelectionExpressions, action);
         updateExpressionView();
         return true;
     }
