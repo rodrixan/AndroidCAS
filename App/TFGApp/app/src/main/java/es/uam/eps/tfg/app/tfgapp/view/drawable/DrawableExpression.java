@@ -158,7 +158,7 @@ public abstract class DrawableExpression {
      *
      * @return the new bound rectangle
      */
-    public Rect updateBounds() {
+    protected Rect updateBounds() {
 
         final Rect defaultBounds = getDefaultBounds();
 

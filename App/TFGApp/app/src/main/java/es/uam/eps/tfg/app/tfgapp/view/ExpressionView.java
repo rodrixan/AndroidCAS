@@ -70,13 +70,6 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
-    /**
-     * @return the used font for the texts
-     */
-    public Typeface getFont() {
-        return mFont;
-    }
-
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -257,6 +250,6 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             }
         }
 
-    }
+    }/* END_GESTURELISTENER */
 
 }

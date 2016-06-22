@@ -13,7 +13,7 @@ import es.uam.eps.tfg.algebraicEngine.Operation;
  */
 public class DrawableParenthesis extends DrawableExpression {
 
-    String mExpression;
+    private String mExpression;
 
     public DrawableParenthesis(final String expression) {
         this(null, expression, DEFAULT_TEXTSIZE);

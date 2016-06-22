@@ -19,8 +19,8 @@ import es.uam.eps.tfg.app.tfgapp.util.CASUtils;
  */
 public class DrawableExpressionList extends DrawableExpression {
 
-    protected final Operation mExpression;
-    protected List<DrawableExpression> mDrawableExpList;
+    private final Operation mExpression;
+    private List<DrawableExpression> mDrawableExpList;
 
     public DrawableExpressionList(final Typeface font, final Point coordinates, final Operation exp, final float textSize) {
         super(font, textSize);
@@ -114,11 +114,6 @@ public class DrawableExpressionList extends DrawableExpression {
         drawableExpressionList.setDrawableExpList(returnList);
 
         return Arrays.asList(new DrawableExpression[]{drawableExpressionList});
-    }
-
-    private List<DrawableExpression> inverseOperationAsDrawableExpressionList(final Operation exp) {
-
-        return null;
     }
 
     private void setDrawableExpList(final List<DrawableExpression> list) {

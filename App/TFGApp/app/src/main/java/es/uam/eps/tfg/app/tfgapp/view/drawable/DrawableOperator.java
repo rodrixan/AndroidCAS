@@ -13,7 +13,7 @@ import es.uam.eps.tfg.algebraicEngine.Operation;
  */
 public class DrawableOperator extends DrawableExpression {
 
-    String mExpression;
+    private final String mExpression;
 
     public DrawableOperator(final String expression) {
         this(null, expression, DEFAULT_TEXTSIZE);

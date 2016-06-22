@@ -14,7 +14,7 @@ import es.uam.eps.tfg.app.tfgapp.util.CASUtils;
  */
 public class DrawableSingleExpression extends DrawableExpression {
 
-    Operation mExpression;
+    private Operation mExpression;
 
     public DrawableSingleExpression(final Operation expression) {
         this(null, expression, DEFAULT_TEXTSIZE);
