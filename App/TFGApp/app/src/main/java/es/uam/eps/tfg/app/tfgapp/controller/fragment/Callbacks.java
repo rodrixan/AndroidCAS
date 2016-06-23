@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.controller.fragments;
+package es.uam.eps.tfg.app.tfgapp.controller.fragment;
 
 /**
  * Actions of the activity to be called from the fragments

@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.controller.listeners;
+package es.uam.eps.tfg.app.tfgapp.controller.listener;
 
 import java.util.List;
 

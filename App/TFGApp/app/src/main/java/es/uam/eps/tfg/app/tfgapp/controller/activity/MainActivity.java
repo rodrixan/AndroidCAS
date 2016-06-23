@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.controller.activities;
+package es.uam.eps.tfg.app.tfgapp.controller.activity;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -8,12 +8,12 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import es.uam.eps.tfg.app.tfgapp.R;
-import es.uam.eps.tfg.app.tfgapp.controller.fragments.Callbacks;
-import es.uam.eps.tfg.app.tfgapp.controller.fragments.ExpressionFragment;
-import es.uam.eps.tfg.app.tfgapp.controller.fragments.HelpFragment;
-import es.uam.eps.tfg.app.tfgapp.controller.fragments.HistoryFragment;
-import es.uam.eps.tfg.app.tfgapp.controller.fragments.SettingsFragment;
-import es.uam.eps.tfg.app.tfgapp.controller.fragments.ShowcaseFragment;
+import es.uam.eps.tfg.app.tfgapp.controller.fragment.Callbacks;
+import es.uam.eps.tfg.app.tfgapp.controller.fragment.ExpressionFragment;
+import es.uam.eps.tfg.app.tfgapp.controller.fragment.HelpFragment;
+import es.uam.eps.tfg.app.tfgapp.controller.fragment.HistoryFragment;
+import es.uam.eps.tfg.app.tfgapp.controller.fragment.SettingsFragment;
+import es.uam.eps.tfg.app.tfgapp.controller.fragment.ShowcaseFragment;
 import es.uam.eps.tfg.app.tfgapp.util.Utils;
 
 /**

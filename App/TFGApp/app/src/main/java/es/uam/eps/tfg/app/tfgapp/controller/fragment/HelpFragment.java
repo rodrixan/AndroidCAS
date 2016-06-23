@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.controller.fragments;
+package es.uam.eps.tfg.app.tfgapp.controller.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

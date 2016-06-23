@@ -16,8 +16,8 @@ import java.util.List;
 
 import es.uam.eps.tfg.algebraicEngine.Operation;
 import es.uam.eps.tfg.app.tfgapp.R;
-import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
-import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionUpdateListener;
+import es.uam.eps.tfg.app.tfgapp.controller.listener.OnExpressionActionListener;
+import es.uam.eps.tfg.app.tfgapp.controller.listener.OnExpressionUpdateListener;
 import es.uam.eps.tfg.app.tfgapp.util.PreferenceUtils;
 import es.uam.eps.tfg.app.tfgapp.util.Utils;
 import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpression;
@@ -44,7 +44,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
 
         mFont = Typeface.createFromAsset(context.getAssets(), Utils.FONT_PATH);
 
-        mGestureDetector = new GestureDetector(context, new MyGestureListener());
+        mGestureDetector = new GestureDetector(context, new SelectionGestureListener());
 
         mExp = null;
 
@@ -140,7 +140,7 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
     /**
      * GestureListener for performing actions whenever the user touches the view
      */
-    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+    private class SelectionGestureListener extends GestureDetector.SimpleOnGestureListener {
 
         private boolean mMultiSelection = false;
         private List<Operation> mSelectedExpressions = new ArrayList<>();

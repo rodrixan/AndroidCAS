@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.controller.fragments;
+package es.uam.eps.tfg.app.tfgapp.controller.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,7 +19,7 @@ import java.util.List;
 import es.uam.eps.tfg.algebraicEngine.Operation;
 import es.uam.eps.tfg.app.tfgapp.R;
 import es.uam.eps.tfg.app.tfgapp.controller.ActionButtons;
-import es.uam.eps.tfg.app.tfgapp.controller.listeners.OnExpressionActionListener;
+import es.uam.eps.tfg.app.tfgapp.controller.listener.OnExpressionActionListener;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASImplementation;
 import es.uam.eps.tfg.app.tfgapp.model.history.ExpressionHistory;

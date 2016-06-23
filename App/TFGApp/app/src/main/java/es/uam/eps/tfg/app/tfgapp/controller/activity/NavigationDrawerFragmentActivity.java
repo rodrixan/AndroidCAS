@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.controller.activities;
+package es.uam.eps.tfg.app.tfgapp.controller.activity;
 
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;

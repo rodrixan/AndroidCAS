@@ -1,4 +1,4 @@
-package es.uam.eps.tfg.app.tfgapp.controller.fragments;
+package es.uam.eps.tfg.app.tfgapp.controller.fragment;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
