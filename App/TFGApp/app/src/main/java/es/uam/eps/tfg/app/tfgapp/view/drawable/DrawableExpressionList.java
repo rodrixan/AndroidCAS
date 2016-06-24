@@ -99,9 +99,8 @@ public class DrawableExpressionList extends DrawableExpression {
 
         returnList.add(new DrawableParenthesis(mPaint.getTypeface(), "(", mPaint.getTextSize()));
 
-        if (CASUtils.isInverseOperation(exp)) {
+        if (CASUtils.isInverseOperation(exp) || CASUtils.isMinusOperation(exp)) {
             returnList.add(new DrawableOperator(mPaint.getTypeface(), op, mPaint.getTextSize()));
-            //return inverseOperationAsDrawableExpressionList(exp);
         }
         for (final Operation e : exp.getArgs()) {
             final List<DrawableExpression> subExpression = getDrawableExpressionFromExpression(e);
@@ -216,12 +215,15 @@ public class DrawableExpressionList extends DrawableExpression {
     public DrawableExpression getDrawableAtPosition(final int x, final int y, final int[] depth) {
         for (final DrawableExpression exp : mDrawableExpList) {
             if (exp.contains(x, y)) {
+
                 if (exp.isDrawableOperator()) {
                     if (depth[0] > 0) {
                         depth[0] -= 1;
                     }
                     return this;
                 } else if (exp.isDrawableSingleExpression()) {
+                    return exp;
+                } else if (CASUtils.isMinusOperation(exp.getExpression())) {
                     return exp;
                 }
                 depth[0] += 1;

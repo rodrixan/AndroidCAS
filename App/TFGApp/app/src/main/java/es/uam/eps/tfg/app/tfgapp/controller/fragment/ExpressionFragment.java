@@ -166,7 +166,7 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
     private void enableMultipleSelectionButtons() {
         mButtons.disableAll();
         mButtons.enable(R.id.button_exp_associate);
-        mButtons.enable(R.id.button_exp_operate);
+        //mButtons.enable(R.id.button_exp_operate);
     }
 
     @Override
@@ -233,7 +233,12 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
                     mCAS.dissociativeProperty(mSingleSelectedExpression);
                     break;
                 case OPERATE:
-                    return false;
+                    if (!CASUtils.isMathematicalOperation(mSingleSelectedExpression)) {
+                        Toast.makeText(getActivity(), R.string.operation_failure_dissociative, Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                    mCAS.operate(mSingleSelectedExpression);
+                    break;
                 default:
                     return false;
             }
@@ -272,19 +277,21 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
      * @return tru or false according to the action success
      */
     private boolean doMultipleSelectionAction(final CASAdapter.Actions action) {
-        
+
         final String oldCASExp = mCAS.getCurrentExpression().toString();
 
-        if (mMultipleSelectionExpressions.size() != 2) {
-            Toast.makeText(getActivity(), R.string.operation_failure_multiple_selection, Toast.LENGTH_SHORT).show();
-            return false;
-        }
+
         try {
             switch (action) {
                 case ASSOCIATE:
+                    if (mMultipleSelectionExpressions.size() != 2) {
+                        Toast.makeText(getActivity(), R.string.operation_failure_multiple_selection, Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
                     mCAS.associativeProperty(mMultipleSelectionExpressions.get(0), mMultipleSelectionExpressions.get(1));
                     break;
                 case OPERATE:
+
                     return false;
                 default:
                     return false;

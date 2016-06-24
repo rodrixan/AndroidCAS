@@ -56,18 +56,40 @@ public interface CASAdapter {
     String getSymbolStringExpression(Operation exp);
 
 
+    /**
+     * Commutes an element one position to the right or left
+     *
+     * @param elementToCommute element to commute
+     * @param leftOrRight      commute to left or right
+     * @return new expression with the element commuted
+     * @throws NotApplicableReductionException
+     */
     Operation commutativeProperty(Operation elementToCommute, Actions leftOrRight) throws NotApplicableReductionException;
 
+    /**
+     * Associate the elements between two limits
+     *
+     * @param startElem  starting element to associate
+     * @param endElement ending element to associate
+     * @return new expression with associated elements
+     * @throws NotApplicableReductionException
+     */
     Operation associativeProperty(Operation startElem, Operation endElement) throws NotApplicableReductionException;
 
+    /**
+     * Dissociates a previous associated subexpression
+     *
+     * @param elementToDissociate expression to dissociate
+     * @return new expression with the dissociated element
+     * @throws NotApplicableReductionException
+     */
     Operation dissociativeProperty(Operation elementToDissociate) throws NotApplicableReductionException;
 
 
     /**
      * TODO implement
      */
-//
-//    Expression operate(Expression mainExp, int elemPos);
+    Operation operate(Operation selection) throws NotApplicableReductionException;
 //
 //    Expression operate(Expression mainExp, int elemPos1, int elemPos2);
 //
@@ -82,6 +104,9 @@ public interface CASAdapter {
      * TODO implement
      */
 
+    /**
+     * @return list of sample expressions as strings
+     */
     List<String> getSampleExpressions();
 
     /**

@@ -33,14 +33,61 @@ public final class CASUtils {
         }
     }
 
+    public static boolean isNumber(final Operation op) {
+
+        final String opString = getStringOperatorSymbol(op);
+        if (opString != null) {
+            if (opString.equals(ZERO) || opString.equals(ONE) || opString.equals(M_ONE)) {
+                return true;
+            }
+            return false;
+
+        }
+        if (op.isNumber()) {
+            return true;
+        }
+        if (op.isString()) {
+            return false;
+        }
+        if (op.isOper()) {
+            if (op.getRepresentationOperID().equals("#")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
-     * Decides if the operation is an invrse operation (1/exp)
+     * Decides if the operation is an inverse operation (1/exp)
      *
      * @param op operation to decide
      * @return true if the operation is an inverse one, false in other case
      */
     public static boolean isInverseOperation(final Operation op) {
+        if (op == null) {
+            return false;
+        }
         if (getStringOperatorSymbol(op).equals("1/")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Decides if the operation is a minus operation (-exp)
+     *
+     * @param op operation to decide
+     * @return true if the operation is an inverse one, false in other case
+     */
+    public static boolean isMinusOperation(final Operation op) {
+        if (getStringOperatorSymbol(op).equals("-")) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isVariable(final Operation op) {
+        if (op.getRepresentationOperID().equals("$") || op.isString()) {
             return true;
         }
         return false;
@@ -101,7 +148,7 @@ public final class CASUtils {
 
     public static String createLongSampleExpression() {
 
-        return "=[*[$[x],+[#[3],+[#[2],#[4]]],#[8]],@INV[-[$[x],#[5]]]]";
+        return "=[*[$[x],+[#[3],+[#[2],#[4]]],@INV[#[3]]],@INV[+[$[x],-[#[5]]]]]";
     }
 
     public static String createShortSampleExpression() {
@@ -110,12 +157,13 @@ public final class CASUtils {
 
     public static String createMediumSampleExpression() {
 
-        return "=[*[$[x],+[#[3],#[2],#[4]]],-[$[x],#[5]]]";
+        return "=[*[$[x],+[#[3],#[2],#[4]]],+[$[x],-[#[5]]]]";
     }
 
     public static String createUltraLongSampleExpression() {
 
-        return "=[*[$[a],$[x],+[#[9],#[3],@INV[+[#[2],#[4],#[34]]]]],@INV[-[$[x],#[5]]]]";
+        //return "=[*[$[a],$[x],+[#[9],#[3],@INV[+[#[2],#[4],#[34]]]]],@INV[+[$[x],-[#[5]]]]]";
+        return "=[+[#[3],#[4],*[#[3],#[2]]],$[x]]";
     }
 
     /**
@@ -152,6 +200,9 @@ public final class CASUtils {
             } else if (isMathematicalOperation(arg)) {
                 if (isInverseOperation(arg)) {
                     sb.append("( 1 / ");
+                    sb.append(getInfixExpressionOf(arg) + ")");
+                } else if (isMinusOperation(arg)) {
+                    sb.append("(-");
                     sb.append(getInfixExpressionOf(arg) + ")");
                 } else {
                     sb.append("(" + getInfixExpressionOf(arg) + ")");
