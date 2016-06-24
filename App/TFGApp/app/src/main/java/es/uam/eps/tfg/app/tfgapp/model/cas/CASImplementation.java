@@ -256,7 +256,7 @@ public class CASImplementation implements CASAdapter {
                 if (res == null) {
                     return null;
                 }
-                res.setParentID(oper.getId());
+
                 oper.setArg(oper.getIndexOfArg(arg), res);
             }
         }
