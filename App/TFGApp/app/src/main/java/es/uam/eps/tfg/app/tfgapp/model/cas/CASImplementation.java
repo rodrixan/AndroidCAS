@@ -392,22 +392,29 @@ public class CASImplementation implements CASAdapter {
         }
 
         Operation pivot = mCAS.getOperById(commonElements.get(0).getParentID());
-
+        int indexParent = grandParent.getIndexOfArg(pivot);
         Operation grandParent = mCAS.getOperById(pivot.getParentID());
+        int indexGrandParent = mCAS.getOperById(grandParent.getParentID());
+        Operation greatGranParent = mCAS.getOperById(grandParent.getParentID());
 
         final int indexOfCommonElement0 = pivot.getIndexOfArg(commonElements.get(0));
         if (indexOfCommonElement0 != pivot.getNumberArgs() - 1) {
             //move to the end
             pivot = mCAS.commute(pivot, indexOfCommonElement0, pivot.getNumberArgs() - 1);
+            grandParent.setArg(indexParent, pivot);
         }
         if (pivot.getNumberArgs() > 2) {
             //associate
             pivot = mCAS.associate(pivot, 0, pivot.getNumberArgs() - 2);
+            grandParent.setArg(indexParent, pivot);
         }
-
+        
         //insert the new element in grandpa
         grandParent = mCAS.commute(grandParent, grandParent.getIndexOfArg(pivot), 0);
-
+        
+        greatGranParent.setArg(indexGrandParent, grandParent);
+        
+        //Hasta aqui creo que arreglado
         for (int i = 1; i < commonElements.size() - 1; i++) {
 
 
