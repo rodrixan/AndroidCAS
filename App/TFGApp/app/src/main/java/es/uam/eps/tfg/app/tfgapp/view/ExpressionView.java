@@ -2,7 +2,9 @@ package es.uam.eps.tfg.app.tfgapp.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -28,12 +30,18 @@ import es.uam.eps.tfg.app.tfgapp.view.drawable.DrawableExpressionList;
  */
 public class ExpressionView extends View implements OnExpressionUpdateListener {
 
+    private static final int POPUP_MARGIN = 15;
+
     private final GestureDetector mGestureDetector;
     private final Typeface mFont;
+    private final Paint mMultiSelectionTextPaint;
     private DrawableExpression mExp;
     private OnExpressionActionListener mOnExpressionActionListener;
-    private int mSelectedDepth;
     private int mCurrentTextSize;
+    private boolean mMultiSelection = false;
+    private String mMultipleSelectionText;
+    private int mPopupX;
+    private int mPopupY;
 
     public ExpressionView(final Context context) {
         this(context, null, 0);
@@ -47,6 +55,8 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         mGestureDetector = new GestureDetector(context, new SelectionGestureListener());
 
         mExp = null;
+
+        mMultiSelectionTextPaint = new Paint();
 
         //Log.d(Utils.LOG_TAG, "Main exp position: " + mExp.x() + " " + mExp.y());
     }
@@ -86,6 +96,10 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         super.onDraw(canvas);
 
         mExp.onDraw(canvas);
+
+        if (mMultiSelection) {
+            canvas.drawText(mMultipleSelectionText, mPopupX, mPopupY, mMultiSelectionTextPaint);
+        }
     }
 
     /**
@@ -112,6 +126,18 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
         final int selectedColor = PreferenceUtils.getExpressionHighlightColor(getContext());
         mExp.setNormalColor(normalColor);
         mExp.setSelectedColor(selectedColor);
+
+        mMultiSelectionTextPaint.setColor(selectedColor);
+        mMultiSelectionTextPaint.setTextSize(getResources().getDimension(R.dimen.card_title_size));
+
+        mMultipleSelectionText = getResources().getString(R.string.popup_multiple_selection_enabled);
+
+        final Rect rect = new Rect();
+        mMultiSelectionTextPaint.getTextBounds(mMultipleSelectionText, 0, mMultipleSelectionText.length(), rect);
+
+        mPopupX = POPUP_MARGIN;
+        mPopupY = rect.height() + POPUP_MARGIN;
+
         invalidate();
     }
 
@@ -142,7 +168,6 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
      */
     private class SelectionGestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        private boolean mMultiSelection = false;
         private List<Operation> mSelectedExpressions = new ArrayList<>();
 
         @Override
@@ -174,15 +199,9 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
 
             final int[] depth = {0};
             final Operation selection = getSelectedExp(x, y, depth);
-            if (first) {
-                mSelectedDepth = depth[0];
-            }
+
             if (selection != null) {
-                if (depth[0] != mSelectedDepth) {
-                    cancelSelection();
-                    Toast.makeText(getContext(), R.string.popup_multiple_selection_depth_error, Toast.LENGTH_SHORT).show();
-                    return false;
-                }
+
                 if (!mSelectedExpressions.contains(selection)) {
                     Log.d(Utils.LOG_TAG, "Added expression: " + selection.toString());
 
@@ -245,7 +264,6 @@ public class ExpressionView extends View implements OnExpressionUpdateListener {
             mExp.clearSelection();
 
             if (selectMultipleExpression(x, y, true)) {
-                Toast.makeText(getContext(), R.string.popup_multiple_selection_enabled, Toast.LENGTH_SHORT).show();
                 mOnExpressionActionListener.onMultipleExpressionSelected(mSelectedExpressions);
             }
         }

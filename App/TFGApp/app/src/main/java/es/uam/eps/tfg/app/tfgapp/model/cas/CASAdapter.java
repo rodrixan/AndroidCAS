@@ -55,7 +55,6 @@ public interface CASAdapter {
      */
     String getSymbolStringExpression(Operation exp);
 
-
     /**
      * Commutes an element one position to the right or left
      *
@@ -85,11 +84,12 @@ public interface CASAdapter {
      */
     Operation dissociativeProperty(Operation elementToDissociate) throws NotApplicableReductionException;
 
-
     /**
      * TODO implement
      */
     Operation operate(Operation selection) throws NotApplicableReductionException;
+
+    Operation operate(List<Operation> commonElems) throws NotApplicableReductionException;
 //
 //    Expression operate(Expression mainExp, int elemPos1, int elemPos2);
 //
@@ -124,7 +124,8 @@ public interface CASAdapter {
         CHANGE_SIDE(R.string.action_change_side), MOVE_LEFT(R.string.action_move_left),
         MOVE_RIGHT(R.string.action_move_right), DELETE(R.string.action_delete),
         ASSOCIATE(R.string.action_associate), DISASSOCIATE(R.string.action_disassociate),
-        OPERATE(R.string.action_operate);
+        OPERATE(R.string.action_operate), DISTRIBUTE(R.string.action_distribute),
+        COMMON_FACTOR(R.string.action_common_factor);
 
         private final int mStringCode;
 

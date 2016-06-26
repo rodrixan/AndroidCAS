@@ -43,7 +43,7 @@ public class DrawableExpressionList extends DrawableExpression {
 
             element.onDraw(canvas);
         }
-        //drawExternalContainers(canvas);
+        drawExternalContainers(canvas);
     }
 
     private void drawExternalContainers(final Canvas canvas) {
@@ -84,6 +84,8 @@ public class DrawableExpressionList extends DrawableExpression {
         if (CASUtils.isMathematicalOperation(exp)) {
             return expressionAsDrawableExpressionList(exp);
 
+        } else if (CASUtils.isMinusOne(exp)) {
+            return minusOneAsDrawableExpressionList(exp);
         } else {
             final DrawableSingleExpression singleExp = new DrawableSingleExpression(mPaint.getTypeface(), exp, mPaint.getTextSize());
             return Arrays.asList(new DrawableExpression[]{singleExp});
@@ -108,11 +110,25 @@ public class DrawableExpressionList extends DrawableExpression {
             returnList.add(new DrawableOperator(mPaint.getTypeface(), op, mPaint.getTextSize()));
         }
         //replace the last operator occurrence
+
         returnList.set(returnList.size() - 1, new DrawableParenthesis(mPaint.getTypeface(), ")", mPaint.getTextSize()));
 
         drawableExpressionList.setDrawableExpList(returnList);
 
         return Arrays.asList(new DrawableExpression[]{drawableExpressionList});
+    }
+
+    private List<DrawableExpression> minusOneAsDrawableExpressionList(final Operation exp) {
+        final List<DrawableExpression> returnList = new ArrayList<>();
+
+        final DrawableExpressionList drawableExpression = new DrawableExpressionList(mPaint.getTypeface(), exp, mPaint.getTextSize());
+
+        returnList.add(new DrawableParenthesis(mPaint.getTypeface(), "(", mPaint.getTextSize()));
+        returnList.add(new DrawableSingleExpression(mPaint.getTypeface(), exp, mPaint.getTextSize()));
+        returnList.add(new DrawableParenthesis(mPaint.getTypeface(), ")", mPaint.getTextSize()));
+
+        drawableExpression.setDrawableExpList(returnList);
+        return Arrays.asList(new DrawableExpression[]{drawableExpression});
     }
 
     private void setDrawableExpList(final List<DrawableExpression> list) {
@@ -161,8 +177,8 @@ public class DrawableExpressionList extends DrawableExpression {
         }
         mWidth = width;
         mRectContainer.right = mRectContainer.left + width;
-        return width;
 
+        return width;
     }
 
     @Override
@@ -224,6 +240,8 @@ public class DrawableExpressionList extends DrawableExpression {
                 } else if (exp.isDrawableSingleExpression()) {
                     return exp;
                 } else if (CASUtils.isMinusOperation(exp.getExpression())) {
+                    return exp;
+                } else if (CASUtils.isMinusOne(exp.getExpression())) {
                     return exp;
                 }
                 depth[0] += 1;

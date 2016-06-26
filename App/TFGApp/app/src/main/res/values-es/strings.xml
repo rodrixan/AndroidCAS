@@ -61,9 +61,13 @@
     <string name="action_associate">Asociar</string>
     <string name="action_disassociate">Desasociar</string>
     <string name="action_operate">Operar</string>
+    <string name="action_common_factor">Factor común</string>
+    <string name="action_distribute">Prop. distributiva</string>
     <string name="no_exp_selected">Debe hacer una selección</string>
     <string name="operation_failure_dissociative">Debe ser una operación</string>
-    <string name="operation_failure_multiple_selection">Selecciona dos elementos con mismo padre</string>
+    <string name="operation_failure_associative">Selecciona elemento de inicio y final</string>
+    <string name="operation_failure_multiple_selection">Selecciona al menos dos elementos</string>
+    <string name="operation_failure_operate">No se puede operar esa selección</string>
 
 
 </resources>

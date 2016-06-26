@@ -63,6 +63,9 @@
     <string name="operation_failure">Action can\'t be applied</string>
 
     <string name="operation_failure_dissociative">Must be an operation</string>
+    <string name="operation_failure_associative">Select start and end elements</string>
+    <string name="operation_failure_multiple_selection">Select at least two elements</string>
+    <string name="operation_failure_operate">Can\'t operate that selection</string>
 
     <string name="action_change_side">Change side</string>
     <string name="action_move_left">Commute left</string>
@@ -71,10 +74,12 @@
     <string name="action_associate">Associate</string>
     <string name="action_disassociate">Disassociate</string>
     <string name="action_operate">Operate</string>
+    <string name="action_common_factor">Common factor</string>
+    <string name="action_distribute">Distribute</string>
 
     <string name="no_exp_selected">Must do a selection</string>
 
-    <string name="operation_failure_multiple_selection">Select two elements with same parent</string>
+
 
 
 </resources>

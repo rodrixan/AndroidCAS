@@ -1,5 +1,6 @@
 package es.uam.eps.tfg.app.tfgapp.util;
 
+import es.uam.eps.tfg.algebraicEngine.AlgebraicEngine;
 import es.uam.eps.tfg.algebraicEngine.Operation;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASAdapter;
 import es.uam.eps.tfg.app.tfgapp.model.cas.CASImplementation;
@@ -11,6 +12,7 @@ public final class CASUtils {
     public static final String ZERO = "0";
     public static final String ONE = "1";
     public static final String M_ONE = "-1";
+    public static final String INV_OP = "1/";
 
     private CASUtils() {
     }
@@ -50,45 +52,9 @@ public final class CASUtils {
             return false;
         }
         if (op.isOper()) {
-            if (op.getRepresentationOperID().equals("#")) {
+            if (op.getRepresentationOperID().equals(AlgebraicEngine.Opers.NUMBER)) {
                 return true;
             }
-        }
-        return false;
-    }
-
-    /**
-     * Decides if the operation is an inverse operation (1/exp)
-     *
-     * @param op operation to decide
-     * @return true if the operation is an inverse one, false in other case
-     */
-    public static boolean isInverseOperation(final Operation op) {
-        if (op == null) {
-            return false;
-        }
-        if (getStringOperatorSymbol(op).equals("1/")) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Decides if the operation is a minus operation (-exp)
-     *
-     * @param op operation to decide
-     * @return true if the operation is an inverse one, false in other case
-     */
-    public static boolean isMinusOperation(final Operation op) {
-        if (getStringOperatorSymbol(op).equals("-")) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isVariable(final Operation op) {
-        if (op.getRepresentationOperID().equals("$") || op.isString()) {
-            return true;
         }
         return false;
     }
@@ -106,6 +72,45 @@ public final class CASUtils {
     }
 
     /**
+     * Decides if the operation is an inverse operation (1/exp)
+     *
+     * @param op operation to decide
+     * @return true if the operation is an inverse one, false in other case
+     */
+    public static boolean isInverseOperation(final Operation op) {
+        if (op == null) {
+            return false;
+        }
+        if (getStringOperatorSymbol(op).equals(INV_OP)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Decides if the operation is a minus operation (-exp)
+     *
+     * @param op operation to decide
+     * @return true if the operation is an inverse one, false in other case
+     */
+    public static boolean isMinusOperation(final Operation op) {
+        if (getStringOperatorSymbol(op).equals(AlgebraicEngine.Opers.MINUS.getSymbol())) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isVariable(final Operation op) {
+        if (op.getRepresentationOperID() == null) {
+            return false;
+        }
+        if (op.getRepresentationOperID().equals(AlgebraicEngine.Opers.VAR) || op.isString()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param op operation to know its symbol representation
      * @return string represntation of an operation symbol
      */
@@ -116,19 +121,40 @@ public final class CASUtils {
 
     /**
      * @param op operation to know if it's on the main level of the equation
-     * @return tru if its parent or grandparent is the main equation, false if not
+     * @return true if its parent or grandparent is the main equation, false if not
      */
     public static boolean isOnMainLevelOfEquation(final Operation op) {
-        final String parentSymbol = CASUtils.getParentStringOperatorSymbol(op);
+        if (isSideOfEquation(op)) {
+            return true;
+        }
+        return isMainTermOfEquation(op);
+
+    }
+
+    /**
+     * @param op operation to know if its grandparent is the equation
+     * @return true if the operation it's grandchildren of the equation
+     */
+    private static boolean isMainTermOfEquation(final Operation op) {
         final String grandParentSymbol = CASImplementation.getInstance().getGrandParentStringOperatorSymbol(op);
-        if (parentSymbol != null) {
-            if (parentSymbol.equals("=")) {
+
+        if (grandParentSymbol != null) {
+            if (grandParentSymbol.equals(AlgebraicEngine.Opers.EQU.getSymbol())) {
                 return true;
             }
-            if (grandParentSymbol != null) {
-                if (grandParentSymbol.equals("=")) {
-                    return true;
-                }
+        }
+        return false;
+    }
+
+    /**
+     * @param op operation to know if it's one of the two sides of an equation
+     * @return true if the operation it's a whole side of the equation
+     */
+    public static boolean isSideOfEquation(final Operation op) {
+        final String parentSymbol = CASUtils.getParentStringOperatorSymbol(op);
+        if (parentSymbol != null) {
+            if (parentSymbol.equals(AlgebraicEngine.Opers.EQU.getSymbol())) {
+                return true;
             }
             return false;
         }
@@ -148,22 +174,25 @@ public final class CASUtils {
 
     public static String createLongSampleExpression() {
 
-        return "=[*[$[x],+[#[3],+[#[2],#[4]]],@INV[#[3]]],@INV[+[$[x],-[#[5]]]]]";
+        return "=[*[$[x],+[-[#[8]],+[#[2],#[4]]],@INV[#[3]]],@INV[+[$[x],-[#[5]]]]]";
     }
 
     public static String createShortSampleExpression() {
-        return "+[#[3],#[5]]";
+        return "#[3.6663]";
     }
 
     public static String createMediumSampleExpression() {
 
-        return "=[*[$[x],+[#[3],#[2],#[4]]],+[$[x],-[#[5]]]]";
+        //return "=[*[$[x],+[#[3],#[2],#[4]]],+[$[x],-[#[5]]]]";
+        // return "=[*[#[5],&ONE[]],$[x]]";
+        return "=[+[#[5],#[7],$[y],-[#[6]],#[3]],$[x]]";
     }
 
     public static String createUltraLongSampleExpression() {
 
         //return "=[*[$[a],$[x],+[#[9],#[3],@INV[+[#[2],#[4],#[34]]]]],@INV[+[$[x],-[#[5]]]]]";
-        return "=[+[#[3],#[4],*[#[3],#[2]]],$[x]]";
+        return "=[+[#[3],#[3],*[#[3],#[7],#[8]],#[4],*[#[3],#[2],#[4]]],$[x]]";
+        //return "=[+[#[3],&MONE[],*[#[3],#[2]]],$[x]]";
     }
 
     /**
@@ -171,6 +200,9 @@ public final class CASUtils {
      * @return
      */
     public static boolean isOnlyOperatorOrParenthesis(final Operation op) {
+        if (op.getOperId() == null) {
+            return false;
+        }
         if (op.getArgs().size() == 0) {
             if (isMathematicalOperation(op) || op.getOperId().equals("(") || op.getOperId().equals(")")) {
                 return true;
@@ -192,9 +224,12 @@ public final class CASUtils {
         if (isOnlyOperatorOrParenthesis(op)) {
             return op.getOperId();
         }
+        if (isConstant(op)) {
+            return getStringRepresentationOfConstant(op);
+        }
         for (final Operation arg : op.getArgs()) {
-            if (arg.isNumber()) {
-                sb.append(arg.getArgNumber() + "");
+            if (isConstant(arg)) {
+                sb.append(getStringRepresentationOfConstant(arg));
             } else if (arg.isString()) {
                 sb.append(arg.getArgStr());
             } else if (isMathematicalOperation(arg)) {
@@ -228,5 +263,55 @@ public final class CASUtils {
     public static String getInfixExpressionOf(final String CASExpression) {
         final Operation op = CASImplementation.getInstance().createOperationFromString(CASExpression);
         return getInfixExpressionOf(op);
+    }
+
+    /**
+     * Returns the expression of a constant
+     *
+     * @param op operation to know its constant string
+     * @return constant as a string
+     */
+    private static String getStringRepresentationOfConstant(final Operation op) {
+        final String opString = getStringOperatorSymbol(op);
+        if (opString != null) {
+            if (opString.equals(ZERO)) {
+                return "0";
+            } else if (opString.equals(ONE)) {
+                return "1";
+            } else if (opString.equals(M_ONE)) {
+                return "(-1)";
+            }
+            return null;
+        }
+        if (op.isNumber()) {
+            return op.getArgNumber() + "";
+        }
+        return null;
+    }
+
+    private static boolean isConstant(final Operation op) {
+        if (op.isNumber()) {
+            return true;
+        }
+        final String opString = getStringOperatorSymbol(op);
+        if (opString != null) {
+            if (opString.equals(ZERO) || opString.equals(ONE) || opString.equals(M_ONE)) {
+                return true;
+            }
+            return false;
+
+        }
+
+        return false;
+    }
+
+    public static boolean isMinusOne(final Operation op) {
+        if (op.getOperId() == null) {
+            return false;
+        }
+        if (op.getOperId().equals("MONE")) {
+            return true;
+        }
+        return false;
     }
 }

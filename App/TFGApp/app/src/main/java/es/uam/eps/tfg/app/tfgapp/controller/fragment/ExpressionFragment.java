@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import es.uam.eps.tfg.algebraicEngine.Operation;
 import es.uam.eps.tfg.app.tfgapp.R;
@@ -166,14 +167,7 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
     private void enableMultipleSelectionButtons() {
         mButtons.disableAll();
         mButtons.enable(R.id.button_exp_associate);
-        //mButtons.enable(R.id.button_exp_operate);
-    }
-
-    @Override
-    public void onCancelledSelectedExpression() {
-        mSingleSelectedExpression = null;
-        mMultipleSelectionExpressions = null;
-        mButtons.enableAll();
+        mButtons.enable(R.id.button_exp_operate);
     }
 
     @Override
@@ -215,6 +209,7 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
      */
     private boolean doSingleSelectionAction(final CASAdapter.Actions action) {
         final String oldCASExp = mCAS.getCurrentExpression().toString();
+        final Operation cloneSelection = (Operation) mSingleSelectedExpression.clone();
         try {
             switch (action) {
                 case CHANGE_SIDE:
@@ -234,7 +229,7 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
                     break;
                 case OPERATE:
                     if (!CASUtils.isMathematicalOperation(mSingleSelectedExpression)) {
-                        Toast.makeText(getActivity(), R.string.operation_failure_dissociative, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.operation_failure_operate, Toast.LENGTH_SHORT).show();
                         return false;
                     }
                     mCAS.operate(mSingleSelectedExpression);
@@ -245,9 +240,12 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
         } catch (final NotApplicableReductionException e) {
             Log.e(Utils.LOG_TAG, "Error on action: " + action.toString(), e);
             Toast.makeText(getActivity(), R.string.operation_failure, Toast.LENGTH_SHORT).show();
+            onCancelledSelectedExpression();
+            mCAS.initCAS(oldCASExp);
+            updateExpressionView();
             return false;
         }
-        addRecordToHistory(oldCASExp, Arrays.asList(new Operation[]{mSingleSelectedExpression}), action);
+        addRecordToHistory(oldCASExp, Arrays.asList(new Operation[]{cloneSelection}), action);
         updateExpressionView();
         return true;
     }
@@ -270,6 +268,13 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
         }
     }
 
+    @Override
+    public void onCancelledSelectedExpression() {
+        mSingleSelectedExpression = null;
+        mMultipleSelectionExpressions = null;
+        mButtons.enableAll();
+    }
+
     /**
      * Do a given action for the current multiple selection
      *
@@ -277,33 +282,75 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
      * @return tru or false according to the action success
      */
     private boolean doMultipleSelectionAction(final CASAdapter.Actions action) {
-
+        if (mMultipleSelectionExpressions.size() < 2) {
+            Toast.makeText(getActivity(), R.string.operation_failure_multiple_selection, Toast.LENGTH_SHORT).show();
+            return false;
+        }
         final String oldCASExp = mCAS.getCurrentExpression().toString();
-
 
         try {
             switch (action) {
                 case ASSOCIATE:
                     if (mMultipleSelectionExpressions.size() != 2) {
-                        Toast.makeText(getActivity(), R.string.operation_failure_multiple_selection, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.operation_failure_associative, Toast.LENGTH_SHORT).show();
                         return false;
                     }
                     mCAS.associativeProperty(mMultipleSelectionExpressions.get(0), mMultipleSelectionExpressions.get(1));
                     break;
                 case OPERATE:
-
-                    return false;
+                    final CASAdapter.Actions kindOfOperation = distributeOrCommonFactor();
+                    if (CASAdapter.Actions.COMMON_FACTOR.equals(kindOfOperation)) {
+                        mCAS.operate(mMultipleSelectionExpressions);
+                    } else if (CASAdapter.Actions.DISTRIBUTE.equals(kindOfOperation)) {
+                        return false;
+                    } else {
+                        throw new NotApplicableReductionException("Can't decide operation to apply");
+                    }
+                    break;
                 default:
                     return false;
             }
         } catch (final NotApplicableReductionException e) {
             Log.e(Utils.LOG_TAG, "Error on action: " + action.toString(), e);
             Toast.makeText(getActivity(), R.string.operation_failure, Toast.LENGTH_SHORT).show();
+            onCancelledSelectedExpression();
+            mCAS.initCAS(oldCASExp);
+            updateExpressionView();
             return false;
         }
         addRecordToHistory(oldCASExp, mMultipleSelectionExpressions, action);
         updateExpressionView();
         return true;
+    }
+
+    private CASAdapter.Actions distributeOrCommonFactor() {
+        if (mMultipleSelectionExpressions == null || mMultipleSelectionExpressions.size() < 2) {
+            return null;
+        }
+        if (mMultipleSelectionExpressions.size() == 2) {
+            if (isDistributiveForm()) {
+                return CASAdapter.Actions.DISTRIBUTE;
+            } else {
+                return CASAdapter.Actions.COMMON_FACTOR;
+            }
+        } else {
+            return CASAdapter.Actions.COMMON_FACTOR;
+        }
+    }
+
+    private boolean isDistributiveForm() {
+        final Operation term1 = mMultipleSelectionExpressions.get(0);
+        final Operation term2 = mMultipleSelectionExpressions.get(1);
+
+        final UUID parent = term1.getParentID();
+        if (!parent.equals(term2.getParentID())) {
+            return false;
+        }
+        //check parent is MUL
+
+        //check one is variable or number
+        //check the other is a SUM
+        return false;
     }
 
     @Override

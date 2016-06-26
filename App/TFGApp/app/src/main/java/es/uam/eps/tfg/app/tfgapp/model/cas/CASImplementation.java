@@ -88,30 +88,33 @@ public class CASImplementation implements CASAdapter {
     @Override
     public String getStringOperatorSymbol(final Operation exp) {
 
-        final String symbol = exp.getRepresentationOperID();
+        final AlgebraicEngine.Opers symbol = exp.getRepresentationOperID();
 
         //when custom operation creation
+        if (exp.isNumber() || exp.isString()) {
+            return null;
+        }
         if (symbol == null) {
             return DEFAULT_SYMBOL;
         }
 
         switch (symbol) {
-            case "#":
-            case "$":
+            case NUMBER:
+            case VAR:
                 return null;
-            case "&ZERO":
+            case ZERO:
                 return CASUtils.ZERO;
-            case "&ONE":
+            case ONE:
                 return CASUtils.ONE;
-            case "&MONE":
+            case MONE:
                 return CASUtils.M_ONE;
-            case "+":
-            case "*":
-            case "=":
-            case "-":
-                return symbol;
-            case "@INV":
-                return "1/";
+            case SUM:
+            case PROD:
+            case EQU:
+            case MINUS:
+                return symbol.getSymbol();
+            case INV:
+                return CASUtils.INV_OP;
             default:
                 return null;
         }
@@ -132,7 +135,6 @@ public class CASImplementation implements CASAdapter {
             throw new NotApplicableReductionException("Can't apply the commutative: exceeded index");
         }
         final Operation commutedOperation = mCAS.commute(parent, indexOfElement, finalPosition);
-
 
         final Operation grandParent = mCAS.getOperById(parent.getParentID());
 
@@ -160,6 +162,12 @@ public class CASImplementation implements CASAdapter {
     public String getSymbolStringExpression(final Operation exp) {
         final String symbol = getStringOperatorSymbol(exp);
         if (symbol == null) {
+            if (exp.isNumber()) {
+                return exp.getArgNumber() + "";
+            }
+            if (exp.isString()) {
+                return exp.getArgStr();
+            }
             return exp.getArg(0).toString();
         } else {
             return symbol;
@@ -191,7 +199,6 @@ public class CASImplementation implements CASAdapter {
 
         return mCAS.getOperEq();
     }
-
 
     @Override
     public Operation dissociativeProperty(final Operation elementToDissociate) throws NotApplicableReductionException {
@@ -230,98 +237,94 @@ public class CASImplementation implements CASAdapter {
 
         final int indexOfElement = parent.getIndexOfArg(selection);
 
-        final Operation res = operateRec(selection);
+        Operation res = operateRec(selection);
         if (res == null) {
             throw new NotApplicableReductionException("Null on operation");
         }
-
+        final float numberRes = res.getArg(0).getArgNumber();
+        if (numberRes == 0) {
+            res = new Operation(AlgebraicEngine.Opers.ZERO.toString());
+        } else if (numberRes == 1) {
+            res = new Operation(AlgebraicEngine.Opers.ONE.toString());
+        } else if (numberRes == -1) {
+            res = new Operation(AlgebraicEngine.Opers.MONE.toString());
+        } else if (numberRes < 0) {
+            res = createNegativeNumber(numberRes);
+        }
+        res.setParentIdsRec(parentId);
         parent.setArg(indexOfElement, res);
 
         return mCAS.getOperEq();
     }
 
-    private Operation operateRec(final Operation oper) throws NotApplicableReductionException {
+    @Override
+    public Operation operate(final List<Operation> commonElems) throws NotApplicableReductionException {
 
-        Operation res;
-        boolean flagVar = false;
-
-        for (final Operation arg : oper.getArgs()) {
-            if (CASUtils.isVariable(arg)) {
-                flagVar = true;
-            }
-            if (CASUtils.isMathematicalOperation(arg)) {
-
-                res = operateRec(arg);
-
-                if (res == null) {
-                    return null;
-                }
-
-                oper.setArg(oper.getIndexOfArg(arg), res);
-            }
-        }
-
-
-        if (allArgsAreNumbers(oper)) {
-            return calculate(oper);
-        }
-        if (flagVar) {
-            return oper;
-        }
+        applyCommonFactor(commonElems);
 
         return null;
     }
 
-    private Operation calculateRes(final Operation oper) throws NotApplicableReductionException {
-        final String operId = oper.getOperId();
-
-        switch (operId) {
-            case "SUM":
-                return mCAS.reduction0(oper);
-            case "PROD":
-                return mCAS.reduction5(oper);
-            case "INV":
-                return mCAS.reduction23(oper);
-            case "MINUS":
-                return mCAS.reduction10(oper);
-            default:
-                return null;
-        }
-    }
-
-    private Operation calculate(Operation oper) throws NotApplicableReductionException {
-
-        final List<Operation> args = oper.getArgs();
-
-        if (CASUtils.isInverseOperation(oper) || CASUtils.isInverseOperation(oper) || args.size() == 2) {
-            return calculateRes(oper);
+    private Operation applyCommonFactor(final List<Operation> commonElements) throws NotApplicableReductionException {
+        final Operation sumOperation = canApplyCommonFactor(commonElements);
+        if (sumOperation == null) {
+            throw new NotApplicableReductionException("Can't apply common factor");
         }
 
-        Operation pivot;
-
-        while (oper.getNumberArgs() > 2) {
-            oper = mCAS.associate(oper, 0, 1);
-            pivot = calculateRes(oper.getArg(0));
-            oper.setArg(0, pivot);
+        Operation pivot = mCAS.getOperById(commonElements.get(0).getParentID());
+        Operation grandParent = mCAS.getOperById(pivot.getParentID());
+        final int indexParent = grandParent.getIndexOfArg(pivot);
+        final Operation greatGranParent = mCAS.getOperById(grandParent.getParentID());
+        final int indexGrandParent = greatGranParent.getIndexOfArg(grandParent);
+        final int indexOfCommonElement0 = pivot.getIndexOfArg(commonElements.get(0));
+        if (indexOfCommonElement0 != pivot.getNumberArgs() - 1) {
+            //move to the end
+            pivot = mCAS.commute(pivot, indexOfCommonElement0, pivot.getNumberArgs() - 1);
+            grandParent.setArg(indexParent, pivot);
+        }
+        if (pivot.getNumberArgs() > 2) {
+            //associate
+            pivot = mCAS.associate(pivot, 0, pivot.getNumberArgs() - 2);
+            grandParent.setArg(indexParent, pivot);
         }
 
-        return calculateRes(oper);
-    }
+        //insert the new element in grandpa
+        grandParent = mCAS.commute(grandParent, grandParent.getIndexOfArg(pivot), 0);
+        greatGranParent.setArg(indexGrandParent, grandParent);
 
+        for (int i = 1; i < commonElements.size(); i++) {
 
-    private boolean allArgsAreNumbers(final Operation selection) {
-        if (!CASUtils.isMathematicalOperation(selection)) {
-            return false;
-        }
-
-        for (final Operation arg : selection.getArgs()) {
-            if (!CASUtils.isNumber(arg)) {
-                return false;
+            Operation nextElement = mCAS.getOperById(commonElements.get(i).getParentID());
+            final int indexOfNextCommonElement = nextElement.getIndexOfArg(commonElements.get(i));
+            if (indexOfNextCommonElement != nextElement.getNumberArgs() - 1) {
+                final int indexOfNextCommonOper = grandParent.getIndexOfArg(nextElement);
+                //move to the end
+                nextElement = mCAS.commute(nextElement, indexOfNextCommonElement, nextElement.getNumberArgs() - 1);
+                grandParent.setArg(indexOfNextCommonOper, nextElement);
             }
-        }
-        return true;
-    }
+            if (nextElement.getNumberArgs() > 2) {
+                final int indexOfNextCommonOper = grandParent.getIndexOfArg(nextElement);
+                //associate
+                nextElement = mCAS.associate(nextElement, 0, nextElement.getNumberArgs() - 2);
+                grandParent.setArg(indexOfNextCommonOper, nextElement);
+            }
 
+            //insert the new element in grandpa and associate
+            grandParent = mCAS.commute(grandParent, grandParent.getIndexOfArg(nextElement), 1);
+            greatGranParent.setArg(indexGrandParent, grandParent);
+
+            grandParent = mCAS.associate(grandParent, 0, 1);
+            greatGranParent.setArg(indexGrandParent, grandParent);
+            //reduction19 => commonfactor
+            pivot = mCAS.reduction19(grandParent.getArg(0));
+            grandParent.setArg(0, pivot);
+        }
+
+        grandParent.setArg(0, pivot);
+        greatGranParent.setArg(indexGrandParent, grandParent);
+
+        return mCAS.getOperEq();
+    }
 
     private Operation canApplyCommonFactor(final List<Operation> commonElements) {
         if (!allElementsAreTheSame(commonElements)) {
@@ -354,7 +357,7 @@ public class CASImplementation implements CASAdapter {
 
                     //reduction8 => a= 1*a
                     final Operation multipliedByOneOp = mCAS.reduction8(op);
-
+                    commonElements.set(commonElements.indexOf(op), multipliedByOneOp.getArg(1));
                     //replace the element in the cloned expression
                     sumOperation.getArgs().set(sumOperation.getIndexOfArg(op), multipliedByOneOp);
 
@@ -375,7 +378,7 @@ public class CASImplementation implements CASAdapter {
             for (final Operation op : grandpaOrphanList) {
                 //reduction8 => a= 1*a
                 final Operation multipliedByOneOp = mCAS.reduction8(op);
-
+                commonElements.set(commonElements.indexOf(op), multipliedByOneOp.getArg(1));
                 //replace the element in the cloned expression
                 sumOperation.getArgs().set(sumOperation.getIndexOfArg(op), multipliedByOneOp);
             }
@@ -383,66 +386,6 @@ public class CASImplementation implements CASAdapter {
 
         //at this point, we can apply common factor to the sum operation
         return sumOperation;
-    }
-
-    private Operation applyCommonFactor(final List<Operation> commonElements) throws NotApplicableReductionException {
-        final Operation sumOperation = canApplyCommonFactor(commonElements);
-        if (sumOperation == null) {
-            throw new NotApplicableReductionException("Can't apply common factor");
-        }
-
-        Operation pivot = mCAS.getOperById(commonElements.get(0).getParentID());
-        int indexParent = grandParent.getIndexOfArg(pivot);
-        Operation grandParent = mCAS.getOperById(pivot.getParentID());
-        int indexGrandParent = mCAS.getOperById(grandParent.getParentID());
-        Operation greatGranParent = mCAS.getOperById(grandParent.getParentID());
-
-        final int indexOfCommonElement0 = pivot.getIndexOfArg(commonElements.get(0));
-        if (indexOfCommonElement0 != pivot.getNumberArgs() - 1) {
-            //move to the end
-            pivot = mCAS.commute(pivot, indexOfCommonElement0, pivot.getNumberArgs() - 1);
-            grandParent.setArg(indexParent, pivot);
-        }
-        if (pivot.getNumberArgs() > 2) {
-            //associate
-            pivot = mCAS.associate(pivot, 0, pivot.getNumberArgs() - 2);
-            grandParent.setArg(indexParent, pivot);
-        }
-        
-        //insert the new element in grandpa
-        grandParent = mCAS.commute(grandParent, grandParent.getIndexOfArg(pivot), 0);
-        
-        greatGranParent.setArg(indexGrandParent, grandParent);
-        
-        //Hasta aqui creo que arreglado
-        for (int i = 1; i < commonElements.size() - 1; i++) {
-
-
-            Operation nextElement = mCAS.getOperById(commonElements.get(i).getParentID());
-
-            final int indexOfNextCommonElement = nextElement.getIndexOfArg(commonElements.get(i));
-            if (indexOfCommonElement0 != nextElement.getNumberArgs() - 1) {
-                //move to the end
-                nextElement = mCAS.commute(nextElement, indexOfCommonElement0, nextElement.getNumberArgs() - 1);
-            }
-            if (nextElement.getNumberArgs() > 2) {
-                //associate
-                nextElement = mCAS.associate(nextElement, 0, nextElement.getNumberArgs() - 2);
-            }
-
-            //insert the new element in grandpa and associate
-            grandParent = mCAS.commute(grandParent, grandParent.getIndexOfArg(nextElement), 1);
-
-            grandParent = mCAS.associate(grandParent, 0, 1);
-
-
-            //reduction19 => commonfactor
-            pivot = mCAS.reduction19(grandParent.getArg(0));
-        }
-
-        grandParent.setArg(0, pivot);
-
-        return grandParent;
     }
 
     private boolean allElementsAreTheSame(final List<Operation> operList) {
@@ -455,6 +398,188 @@ public class CASImplementation implements CASAdapter {
         return true;
     }
 
+    private Operation operateRec(final Operation oper) throws NotApplicableReductionException {
+
+        Operation res;
+
+        for (final Operation arg : oper.getArgs()) {
+            if (CASUtils.isVariable(arg)) {
+                throw new NotApplicableReductionException("Hay variables");
+            }
+            if (CASUtils.isMathematicalOperation(arg)) {
+
+                res = operateRec(arg);
+
+                if (res == null) {
+                    return null;
+                }
+
+                oper.setArg(oper.getIndexOfArg(arg), res);
+            }
+        }
+
+        if (allArgsAreNumbers(oper)) {
+            return calculate(oper);
+        }
+
+        return null;
+    }
+
+    private Operation calculateVarRes(final Operation oper) {
+
+        final String operId = oper.getOperId();
+
+        switch (operId) {
+            case "SUM":
+                return null;
+            case "PROD":
+                return null;
+            case "INV":
+                return null;
+            case "MINUS":
+                return null;
+            default:
+                return null;
+        }
+
+    }
+
+    private Operation calculateRes(final Operation oper) throws NotApplicableReductionException {
+        final String operId = oper.getOperId();
+        final Operation result;
+        switch (operId) {
+            case "SUM":
+                //CERO
+                if (oper.getArg(0).getOperId().equals("ZERO")) {
+                    final Operation commuted = mCAS.commute(oper, 0, 1);
+                    result = mCAS.reduction3(commuted);
+                } else if (oper.getArg(1).getOperId().equals("ZERO")) {
+                    result = mCAS.reduction3(oper);
+                }
+                //UNO
+                else if (oper.getArg(0).getOperId().equals("ONE")) {
+                    if (oper.getArg(1).getOperId().equals("ONE")) {
+                        result = mCAS.reduction2(oper);
+                    } else {
+                        final Operation commuted = mCAS.commute(oper, 0, 1);
+                        result = mCAS.reduction1(commuted);
+                    }
+                } else if (oper.getArg(1).getOperId().equals("ONE")) {
+                    result = mCAS.reduction1(oper);
+                }
+                //MENOS UNO
+                else if (oper.getArg(0).getOperId().equals("MONE")) {
+                    if (oper.getArg(1).getOperId().equals("MONE")) {
+                        result = mCAS.reduction34(oper);
+                    } else {
+                        final Operation commuted = mCAS.commute(oper, 0, 1);
+                        result = mCAS.reduction33(commuted);
+                    }
+                } else if (oper.getArg(1).getOperId().equals("MONE")) {
+                    result = mCAS.reduction33(oper);
+                } else {
+                    result = mCAS.reduction0(oper);
+                }
+                break;
+            case "PROD":
+                //CERO
+                if (oper.getArg(0).getOperId().equals("ZERO")) {
+                    final Operation commuted = mCAS.commute(oper, 0, 1);
+                    result = mCAS.reduction6(commuted);
+                } else if (oper.getArg(1).getOperId().equals("ZERO")) {
+                    result = mCAS.reduction6(oper);
+                }
+                //UNO
+                else if (oper.getArg(0).getOperId().equals("ONE")) {
+                    final Operation commuted = mCAS.commute(oper, 0, 1);
+                    result = mCAS.reduction7(commuted);
+                } else if (oper.getArg(1).getOperId().equals("ONE")) {
+                    result = mCAS.reduction7(oper);
+                }
+                //MENOS UNO
+                else if (oper.getArg(0).getOperId().equals("MONE")) {
+                    final Operation commuted = mCAS.commute(oper, 0, 1);
+                    result = mCAS.reduction35(commuted);
+                } else if (oper.getArg(1).getOperId().equals("ONE")) {
+                    result = mCAS.reduction35(oper);
+                } else {
+                    result = mCAS.reduction5(oper);
+                }
+                break;
+            case "INV":
+                //UNO
+                if (oper.getArg(0).getOperId().equals("ONE")) {
+                    result = mCAS.reduction24(oper);
+                }
+                //MENOS UNO
+                else if (oper.getArg(0).getOperId().equals("MONE")) {
+                    result = mCAS.reduction25(oper);
+                }
+                //CERO
+                else if (oper.getArg(0).getOperId().equals("ZERO")) {
+                    throw new NotApplicableReductionException("INFINITY!!Trying to destroy the world??¬¬");
+                } else {
+                    result = mCAS.reduction23(oper);
+                }
+                break;
+            case "MINUS":
+                if (oper.getArg(0).getOperId().equals("ONE")) {
+                    result = mCAS.reduction12(oper);
+                } else if (oper.getArg(0).getOperId().equals("MONE")) {
+                    result = mCAS.reduction13(oper);
+                } else if (oper.getArg(0).getOperId().equals("ZERO")) {
+                    result = mCAS.reduction11(oper);
+                } else {
+                    result = mCAS.reduction10(oper);
+                }
+                break;
+            default:
+                return null;
+        }
+
+        return result;
+
+    }
+
+    private Operation createNegativeNumber(final float number) {
+        final Operation negNumber = new Operation(AlgebraicEngine.Opers.MINUS.toString());
+        final Operation numberOp = new Operation(AlgebraicEngine.Opers.NUMBER.toString());
+        numberOp.addArg(new Operation(Math.abs(number)));
+        negNumber.addArg(numberOp);
+        return negNumber;
+    }
+
+    private Operation calculate(Operation oper) throws NotApplicableReductionException {
+
+        final List<Operation> args = oper.getArgs();
+
+        if (CASUtils.isInverseOperation(oper) || CASUtils.isInverseOperation(oper) || args.size() == 2) {
+            return calculateRes(oper);
+        }
+
+        Operation pivot;
+
+        while (oper.getNumberArgs() > 2) {
+            oper = mCAS.associate(oper, 0, 1);
+            pivot = calculateRes(oper.getArg(0));
+            oper.setArg(0, pivot);
+        }
+
+        return calculateRes(oper);
+    }
+
+    private boolean allArgsAreNumbers(final Operation selection) {
+        if (!CASUtils.isMathematicalOperation(selection)) {
+            return false;
+        }
+
+        for (final Operation arg : selection.getArgs()) {
+            if (!CASUtils.isNumber(arg)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     //    @Override
 //    public Expression operate(final Expression mainExp, final int elemPos) {
