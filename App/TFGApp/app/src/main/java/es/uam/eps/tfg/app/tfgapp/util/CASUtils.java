@@ -81,7 +81,7 @@ public final class CASUtils {
         if (op == null) {
             return false;
         }
-        if (getStringOperatorSymbol(op).equals(INV_OP)) {
+        if (INV_OP.equals(getStringOperatorSymbol(op))) {
             return true;
         }
         return false;
@@ -94,17 +94,15 @@ public final class CASUtils {
      * @return true if the operation is an inverse one, false in other case
      */
     public static boolean isMinusOperation(final Operation op) {
-        if (getStringOperatorSymbol(op).equals(AlgebraicEngine.Opers.MINUS.getSymbol())) {
+        if (AlgebraicEngine.Opers.MINUS.getSymbol().equals(getStringOperatorSymbol(op))) {
             return true;
         }
         return false;
     }
 
     public static boolean isVariable(final Operation op) {
-        if (op.getRepresentationOperID() == null) {
-            return false;
-        }
-        if (op.getRepresentationOperID().equals(AlgebraicEngine.Opers.VAR) || op.isString()) {
+
+        if (AlgebraicEngine.Opers.VAR.equals(op.getRepresentationOperID()) || op.isString()) {
             return true;
         }
         return false;
@@ -112,7 +110,7 @@ public final class CASUtils {
 
     /**
      * @param op operation to know its symbol representation
-     * @return string represntation of an operation symbol
+     * @return string representation of an operation symbol
      */
     public static String getSymbolStringExpression(final Operation op) {
         final CASAdapter CAS = CASImplementation.getInstance();
@@ -135,7 +133,7 @@ public final class CASUtils {
      * @param op operation to know if its grandparent is the equation
      * @return true if the operation it's grandchildren of the equation
      */
-    private static boolean isMainTermOfEquation(final Operation op) {
+    public static boolean isMainTermOfEquation(final Operation op) {
         final String grandParentSymbol = CASImplementation.getInstance().getGrandParentStringOperatorSymbol(op);
 
         if (grandParentSymbol != null) {
@@ -161,6 +159,19 @@ public final class CASUtils {
         return false;
     }
 
+    public static boolean minusOperationHasSubexpressions(final Operation op) {
+        //assuming that op is minus operation
+        final Operation arg0 = op.getArg(0);
+        if (isMathematicalOperation(arg0)) {
+            if (!isMinusOperation(arg0)) {
+                return true;
+            } else {
+                return minusOperationHasSubexpressions(arg0);
+            }
+        }
+        return false;
+    }
+
     /**
      * Given an expression, returns the string parent operator symbol
      *
@@ -182,10 +193,7 @@ public final class CASUtils {
     }
 
     public static String createMediumSampleExpression() {
-
-        //return "=[*[$[x],+[#[3],#[2],#[4]]],+[$[x],-[#[5]]]]";
-        // return "=[*[#[5],&ONE[]],$[x]]";
-        return "=[+[#[5],#[7],$[y],-[#[6]],#[3]],$[x]]";
+        return "=[+[*[#[15],$[x]],&ONE[]],+[#[31],*[#[5],$[x]]]]";
     }
 
     public static String createUltraLongSampleExpression() {
@@ -220,6 +228,7 @@ public final class CASUtils {
      */
     public static String getInfixExpressionOf(final Operation op) {
         final StringBuilder sb = new StringBuilder();
+        final boolean inverse = false;
         int i = 0;
         if (isOnlyOperatorOrParenthesis(op)) {
             return op.getOperId();
@@ -228,6 +237,7 @@ public final class CASUtils {
             return getStringRepresentationOfConstant(op);
         }
         for (final Operation arg : op.getArgs()) {
+
             if (isConstant(arg)) {
                 sb.append(getStringRepresentationOfConstant(arg));
             } else if (arg.isString()) {
@@ -289,6 +299,7 @@ public final class CASUtils {
         return null;
     }
 
+
     private static boolean isConstant(final Operation op) {
         if (op.isNumber()) {
             return true;
@@ -305,6 +316,7 @@ public final class CASUtils {
         return false;
     }
 
+
     public static boolean isMinusOne(final Operation op) {
         if (op.getOperId() == null) {
             return false;
@@ -313,5 +325,20 @@ public final class CASUtils {
             return true;
         }
         return false;
+    }
+
+    public static int getSideOfEquation(final Operation oper) {
+        if (isMainTermOfEquation(oper)) {
+            final Operation parent = CASImplementation.getInstance().getOperationById(oper.getParentID());
+            final Operation grandparent = CASImplementation.getInstance().getOperationById(parent.getParentID());
+            final int indexOfElementToChangeInParent = grandparent.getIndexOfArg(parent);
+            return indexOfElementToChangeInParent;
+
+        } else if (isSideOfEquation(oper)) {
+            final Operation parent = CASImplementation.getInstance().getOperationById(oper.getParentID());
+            final int indexOfElementToChangeInParent = parent.getIndexOfArg(oper);
+            return indexOfElementToChangeInParent;
+        }
+        return -1;
     }
 }

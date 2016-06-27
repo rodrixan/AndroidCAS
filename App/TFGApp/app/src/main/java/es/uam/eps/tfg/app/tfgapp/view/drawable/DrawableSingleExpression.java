@@ -14,7 +14,7 @@ import es.uam.eps.tfg.app.tfgapp.util.CASUtils;
  */
 public class DrawableSingleExpression extends DrawableExpression {
 
-    private Operation mExpression;
+    private final Operation mExpression;
 
     public DrawableSingleExpression(final Operation expression) {
         this(null, expression, DEFAULT_TEXTSIZE);
@@ -33,7 +33,7 @@ public class DrawableSingleExpression extends DrawableExpression {
     @Override
     public void onDraw(final Canvas canvas) {
         canvas.drawText(CASUtils.getSymbolStringExpression(mExpression), x, y, mPaint);
-        drawContainer(canvas);
+        //drawContainer(canvas);
     }
 
     private void drawContainer(final Canvas canvas) {

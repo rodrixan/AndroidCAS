@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import es.uam.eps.tfg.algebraicEngine.Operation;
 import es.uam.eps.tfg.app.tfgapp.R;
@@ -29,7 +28,6 @@ import es.uam.eps.tfg.app.tfgapp.util.CASUtils;
 import es.uam.eps.tfg.app.tfgapp.util.PreferenceUtils;
 import es.uam.eps.tfg.app.tfgapp.util.Utils;
 import es.uam.eps.tfg.app.tfgapp.view.ExpressionView;
-import es.uam.eps.tfg.exception.NotApplicableReductionException;
 
 /**
  * Board that shows the expressions and the allowed actions
@@ -213,13 +211,13 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
         try {
             switch (action) {
                 case CHANGE_SIDE:
-                    return false;
+                    mCAS.changeSide(mSingleSelectedExpression);
+                    break;
                 case MOVE_RIGHT:
                 case MOVE_LEFT:
                     mCAS.commutativeProperty(mSingleSelectedExpression, action);
                     break;
-                case DELETE:
-                    return false;
+
                 case DISASSOCIATE:
                     if (!CASUtils.isMathematicalOperation(mSingleSelectedExpression)) {
                         Toast.makeText(getActivity(), R.string.operation_failure_dissociative, Toast.LENGTH_SHORT).show();
@@ -227,6 +225,7 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
                     }
                     mCAS.dissociativeProperty(mSingleSelectedExpression);
                     break;
+
                 case OPERATE:
                     if (!CASUtils.isMathematicalOperation(mSingleSelectedExpression)) {
                         Toast.makeText(getActivity(), R.string.operation_failure_operate, Toast.LENGTH_SHORT).show();
@@ -234,11 +233,12 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
                     }
                     mCAS.operate(mSingleSelectedExpression);
                     break;
+
                 default:
                     return false;
             }
-        } catch (final NotApplicableReductionException e) {
-            Log.e(Utils.LOG_TAG, "Error on action: " + action.toString(), e);
+        } catch (final Exception e) {
+            Log.e(Utils.LOG_TAG, "Error on action: " + action.toString() + ". Cause: " + e.getMessage());
             Toast.makeText(getActivity(), R.string.operation_failure, Toast.LENGTH_SHORT).show();
             onCancelledSelectedExpression();
             mCAS.initCAS(oldCASExp);
@@ -260,11 +260,16 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
     private void addRecordToHistory(final String oldExpression, final List<Operation> operations, final CASAdapter.Actions action) {
         final String infixExpressionFromOldExp = CASUtils.getInfixExpressionOf(oldExpression);
         final String selection1 = CASUtils.getInfixExpressionOf(operations.get(0));
+
+
         if (operations.size() == 1) {
             mHistory.addRecord(action, infixExpressionFromOldExp, oldExpression, selection1);
         } else {
-            final String selection2 = CASUtils.getInfixExpressionOf(operations.get(1));
-            mHistory.addRecord(action, infixExpressionFromOldExp, oldExpression, selection1, selection2);
+            final String[] stringOpers = new String[operations.size()];
+            for (int i = 0; i < operations.size(); i++) {
+                stringOpers[i] = CASUtils.getInfixExpressionOf(operations.get(i));
+            }
+            mHistory.addRecord(action, infixExpressionFromOldExp, oldExpression, stringOpers);
         }
     }
 
@@ -282,6 +287,7 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
      * @return tru or false according to the action success
      */
     private boolean doMultipleSelectionAction(final CASAdapter.Actions action) {
+
         if (mMultipleSelectionExpressions.size() < 2) {
             Toast.makeText(getActivity(), R.string.operation_failure_multiple_selection, Toast.LENGTH_SHORT).show();
             return false;
@@ -298,20 +304,22 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
                     mCAS.associativeProperty(mMultipleSelectionExpressions.get(0), mMultipleSelectionExpressions.get(1));
                     break;
                 case OPERATE:
-                    final CASAdapter.Actions kindOfOperation = distributeOrCommonFactor();
-                    if (CASAdapter.Actions.COMMON_FACTOR.equals(kindOfOperation)) {
-                        mCAS.operate(mMultipleSelectionExpressions);
-                    } else if (CASAdapter.Actions.DISTRIBUTE.equals(kindOfOperation)) {
-                        return false;
+
+                    final int firstIndex = isDistributiveForm();
+                    if (firstIndex != -1) {
+                        final int secondIndex = (firstIndex == 0) ? 1 : 0;
+                        mCAS.distribute(mMultipleSelectionExpressions.get(firstIndex), mMultipleSelectionExpressions.get(secondIndex));
                     } else {
-                        throw new NotApplicableReductionException("Can't decide operation to apply");
+
+                        mCAS.commonFactor(mMultipleSelectionExpressions);
                     }
+
                     break;
                 default:
                     return false;
             }
-        } catch (final NotApplicableReductionException e) {
-            Log.e(Utils.LOG_TAG, "Error on action: " + action.toString(), e);
+        } catch (final Exception e) {
+            Log.e(Utils.LOG_TAG, "Error on action: " + action.toString() + ". Cause: " + e.getMessage(), e);
             Toast.makeText(getActivity(), R.string.operation_failure, Toast.LENGTH_SHORT).show();
             onCancelledSelectedExpression();
             mCAS.initCAS(oldCASExp);
@@ -328,7 +336,7 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
             return null;
         }
         if (mMultipleSelectionExpressions.size() == 2) {
-            if (isDistributiveForm()) {
+            if (isDistributiveForm() != -1) {
                 return CASAdapter.Actions.DISTRIBUTE;
             } else {
                 return CASAdapter.Actions.COMMON_FACTOR;
@@ -338,19 +346,19 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
         }
     }
 
-    private boolean isDistributiveForm() {
-        final Operation term1 = mMultipleSelectionExpressions.get(0);
-        final Operation term2 = mMultipleSelectionExpressions.get(1);
+    private int isDistributiveForm() {
+        final Operation op1 = mMultipleSelectionExpressions.get(0);
+        final Operation op2 = mMultipleSelectionExpressions.get(1);
 
-        final UUID parent = term1.getParentID();
-        if (!parent.equals(term2.getParentID())) {
-            return false;
+        if (!mCAS.isOnDistributiveForm(op1, op2)) {
+            if (!mCAS.isOnDistributiveForm(op2, op1)) {
+                return -1;
+            } else {
+                return 1;
+            }
+
         }
-        //check parent is MUL
-
-        //check one is variable or number
-        //check the other is a SUM
-        return false;
+        return 0;
     }
 
     @Override

@@ -48,16 +48,6 @@
                     android:src="@drawable/ic_exp_move_left"/>
 
                 <ImageButton
-                    android:id="@+id/button_exp_delete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/button_exp_action"
-                    android:contentDescription="@string/button_exp_delete_desc"
-                    android:src="@drawable/ic_exp_delete"/>
-
-
-                <ImageButton
                     android:id="@+id/button_exp_associate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

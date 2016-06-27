@@ -1,6 +1,7 @@
 package es.uam.eps.tfg.app.tfgapp.model.cas;
 
 import java.util.List;
+import java.util.UUID;
 
 import es.uam.eps.tfg.algebraicEngine.Operation;
 import es.uam.eps.tfg.app.tfgapp.R;
@@ -17,6 +18,14 @@ public interface CASAdapter {
      * @param exp new expression to be consider the main one
      */
     void initCAS(String exp);
+
+    /**
+     * Gets an operation given an id
+     *
+     * @param id id of the operation
+     * @return the operation whose id is the given one
+     */
+    Operation getOperationById(UUID id);
 
     /**
      * @return the current expression
@@ -84,25 +93,17 @@ public interface CASAdapter {
      */
     Operation dissociativeProperty(Operation elementToDissociate) throws NotApplicableReductionException;
 
-    /**
-     * TODO implement
-     */
+
     Operation operate(Operation selection) throws NotApplicableReductionException;
 
-    Operation operate(List<Operation> commonElems) throws NotApplicableReductionException;
-//
-//    Expression operate(Expression mainExp, int elemPos1, int elemPos2);
-//
-//    Expression operate(Expression mainExp, int... elemPos);
-//
-//    Expression dropElement(Expression mainExp, int elemPos);
-//
-//    Expression moveMember(Expression equation, int elemPos);
-//
+    Operation commonFactor(List<Operation> commonElems) throws NotApplicableReductionException;
 
-    /**
-     * TODO implement
-     */
+    Operation changeSide(Operation selection) throws NotApplicableReductionException;
+
+    Operation distribute(Operation elemToDistribute, Operation sumOperation) throws NotApplicableReductionException;
+
+
+    boolean isOnDistributiveForm(final Operation singleElem, final Operation sumOperation);
 
     /**
      * @return list of sample expressions as strings
@@ -122,7 +123,7 @@ public interface CASAdapter {
      */
     enum Actions {
         CHANGE_SIDE(R.string.action_change_side), MOVE_LEFT(R.string.action_move_left),
-        MOVE_RIGHT(R.string.action_move_right), DELETE(R.string.action_delete),
+        MOVE_RIGHT(R.string.action_move_right),
         ASSOCIATE(R.string.action_associate), DISASSOCIATE(R.string.action_disassociate),
         OPERATE(R.string.action_operate), DISTRIBUTE(R.string.action_distribute),
         COMMON_FACTOR(R.string.action_common_factor);

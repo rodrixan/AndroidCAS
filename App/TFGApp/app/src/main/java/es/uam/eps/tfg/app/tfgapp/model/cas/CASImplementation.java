@@ -68,6 +68,11 @@ public class CASImplementation implements CASAdapter {
     }
 
     @Override
+    public Operation getOperationById(final UUID id) {
+        return mCAS.getOperById(id);
+    }
+
+    @Override
     public String getGrandParentStringOperatorSymbol(final Operation exp) {
         final Operation parent = mCAS.getOperById(exp.getParentID());
         if (parent != null) {
@@ -258,18 +263,219 @@ public class CASImplementation implements CASAdapter {
     }
 
     @Override
-    public Operation operate(final List<Operation> commonElems) throws NotApplicableReductionException {
+    public Operation commonFactor(final List<Operation> commonElements) throws NotApplicableReductionException {
 
-        applyCommonFactor(commonElems);
-
-        return null;
-    }
-
-    private Operation applyCommonFactor(final List<Operation> commonElements) throws NotApplicableReductionException {
         final Operation sumOperation = canApplyCommonFactor(commonElements);
         if (sumOperation == null) {
             throw new NotApplicableReductionException("Can't apply common factor");
         }
+
+        return applyCommonFactor(commonElements);
+    }
+
+    @Override
+    public Operation changeSide(final Operation selection) throws NotApplicableReductionException {
+        if (!canChangeSide(selection)) {
+            throw new NotApplicableReductionException("Can't change side of the equation");
+        }
+        return changeSideOfEquation(selection);
+    }
+
+    @Override
+    public Operation distribute(final Operation elemToDistribute, final Operation sumOperation) throws NotApplicableReductionException {
+        if (!isOnDistributiveForm(elemToDistribute, sumOperation)) {
+            throw new NotApplicableReductionException("Bad distributive form");
+        }
+
+        final Operation parent = mCAS.getOperById(elemToDistribute.getParentID());
+
+        final Operation grandParent = mCAS.getOperById(parent.getParentID());
+
+        final int indexOfParentInGrandpa = grandParent.getIndexOfArg(parent);
+        final int indexOfSingleElem = parent.getIndexOfArg(elemToDistribute);
+        final int indexOfSum = parent.getIndexOfArg(sumOperation);
+
+        //commute
+        final Operation commutedExpAux = mCAS.commute(parent, indexOfSingleElem, 0);
+
+        grandParent.setArg(indexOfParentInGrandpa, commutedExpAux);
+
+        //final Operation commutedExp = mCAS.commute(commutedExpAux, indexOfSum, 1);
+
+
+        //r20
+        final Operation distributedExp = mCAS.reduction20(commutedExpAux);
+
+        grandParent.setArg(indexOfParentInGrandpa, distributedExp);
+
+
+        return mCAS.getOperEq();
+    }
+
+    @Override
+    public boolean isOnDistributiveForm(final Operation singleElem, final Operation sumOperation) {
+        final UUID parentId = singleElem.getParentID();
+
+        //same parent
+        if (!parentId.equals(sumOperation.getParentID())) {
+            return false;
+        }
+        final Operation parent = mCAS.getOperById(parentId);
+
+        //parent is a product
+        if (!AlgebraicEngine.Opers.PROD.toString().equals(parent.getOperId())) {
+            return false;
+        }
+
+        //second one must be a sum
+        if (!AlgebraicEngine.Opers.SUM.toString().equals(sumOperation.getOperId())) {
+            return false;
+        }
+
+        //single element must be a number or a minus with a single number
+        if (!AlgebraicEngine.Opers.NUMBER.toString().equals(singleElem.getOperId())) {
+            if (AlgebraicEngine.Opers.MINUS.toString().equals(singleElem.getOperId())) {
+                if (CASUtils.minusOperationHasSubexpressions(singleElem)) {
+                    return false;
+                }
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private boolean canChangeSide(final Operation op) {
+        if (!CASUtils.isOnMainLevelOfEquation(op)) {
+            return false;
+        }
+        return true;
+    }
+
+    private Operation changeSideOfEquation(final Operation elementToChange) throws NotApplicableReductionException {
+        final Operation parent = mCAS.getOperById(elementToChange.getParentID());
+        final int indexOfElementToChangeInParent = parent.getIndexOfArg(elementToChange);
+        final String parentOperdId = parent.getOperId();
+
+        if (tryToChangeZero(elementToChange, parentOperdId)) {
+            throw new NotApplicableReductionException("Trying to divide by zero");
+        }
+
+
+        if (CASUtils.isMainTermOfEquation(elementToChange)) {
+
+
+            final boolean isTermNegative = CASUtils.isMinusOperation(elementToChange);
+            final boolean isTermInverse = CASUtils.isInverseOperation(elementToChange);
+
+
+            //move to the end
+            final int finalPosition = parent.getNumberArgs() - 1;
+            final Operation commutedOperation = mCAS.commute(parent, indexOfElementToChangeInParent, finalPosition);
+            final Operation grandParent = mCAS.getOperById(parent.getParentID());//must be the equal
+            final int indexOfParent = grandParent.getIndexOfArg(parent);
+            grandParent.setArg(indexOfParent, commutedOperation);
+
+            //associate
+            Operation associatedElement = commutedOperation;
+            if (commutedOperation.getNumberArgs() > 2) {
+                associatedElement = mCAS.associate(commutedOperation, 0, finalPosition - 1);
+            }
+
+            grandParent.setArg(indexOfParent, associatedElement);
+
+            final int sideOfEquation = CASUtils.getSideOfEquation(elementToChange);
+
+            if (parentOperdId.equals(AlgebraicEngine.Opers.SUM.toString())) {
+
+                if (sideOfEquation == 0) {
+                    if (isTermNegative) {
+                        final Operation finalExp = mCAS.reduction38(grandParent);
+                        mCAS.setOperEq(finalExp);
+                        return finalExp;
+                    } else {
+                        final Operation finalExp = mCAS.reduction30(grandParent);
+                        mCAS.setOperEq(finalExp);
+                        return finalExp;
+                    }
+                } else if (sideOfEquation == 1) {
+                    if (isTermNegative) {
+                        final Operation finalExp = mCAS.reduction43(grandParent);
+                        mCAS.setOperEq(finalExp);
+                        return finalExp;
+                    } else {
+                        final Operation finalExp = mCAS.reduction41(grandParent);
+                        mCAS.setOperEq(finalExp);
+                        return finalExp;
+                    }
+                } else {
+                    throw new NotApplicableReductionException("Bad index: not in a side of equation");
+                }
+
+
+            } else if (parentOperdId.equals(AlgebraicEngine.Opers.PROD.toString())) {
+
+                if (sideOfEquation == 0) {
+                    if (isTermInverse) {
+                        final Operation finalExp = mCAS.reduction44(grandParent);
+                        mCAS.setOperEq(finalExp);
+                        return finalExp;
+                    } else {
+                        final Operation finalExp = mCAS.reduction32(grandParent);
+                        mCAS.setOperEq(finalExp);
+                        return finalExp;
+                    }
+                } else if (sideOfEquation == 1) {
+                    if (isTermInverse) {
+                        final Operation finalExp = mCAS.reduction45(grandParent);
+                        mCAS.setOperEq(finalExp);
+                        return finalExp;
+                    } else {
+                        final Operation finalExp = mCAS.reduction42(grandParent);
+                        mCAS.setOperEq(finalExp);
+                        return finalExp;
+                    }
+                } else {
+                    throw new NotApplicableReductionException("Bad index: not in a side of equation");
+                }
+            } else {
+                throw new NotApplicableReductionException("Can't change side, parent not a sum or product");
+            }
+
+
+        } else if (CASUtils.isSideOfEquation(elementToChange)) {
+
+            Operation finalExp = null;
+            if (indexOfElementToChangeInParent == 0) {
+
+                final Operation changedExpression = mCAS.reduction39(parent);
+                mCAS.setOperEq(changedExpression);
+                finalExp = mCAS.getOperEq();
+
+            } else if (indexOfElementToChangeInParent == 1) {
+
+                final Operation changedExpression = mCAS.reduction40(parent);
+                mCAS.setOperEq(changedExpression);
+                finalExp = mCAS.getOperEq();
+            }
+
+            return finalExp;
+        }
+
+        return null;
+    }
+
+    private boolean tryToChangeZero(final Operation elemToChange, final String parentOperId) {
+        if (parentOperId.equals(AlgebraicEngine.Opers.PROD.toString())) {
+            if (elemToChange.getOperId().equals(AlgebraicEngine.Opers.ZERO.toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Operation applyCommonFactor(final List<Operation> commonElements) throws NotApplicableReductionException {
+
 
         Operation pivot = mCAS.getOperById(commonElements.get(0).getParentID());
         Operation grandParent = mCAS.getOperById(pivot.getParentID());
@@ -449,14 +655,14 @@ public class CASImplementation implements CASAdapter {
         final Operation result;
         switch (operId) {
             case "SUM":
-                //CERO
+                //ZERO
                 if (oper.getArg(0).getOperId().equals("ZERO")) {
                     final Operation commuted = mCAS.commute(oper, 0, 1);
                     result = mCAS.reduction3(commuted);
                 } else if (oper.getArg(1).getOperId().equals("ZERO")) {
                     result = mCAS.reduction3(oper);
                 }
-                //UNO
+                //ONE
                 else if (oper.getArg(0).getOperId().equals("ONE")) {
                     if (oper.getArg(1).getOperId().equals("ONE")) {
                         result = mCAS.reduction2(oper);
@@ -467,7 +673,7 @@ public class CASImplementation implements CASAdapter {
                 } else if (oper.getArg(1).getOperId().equals("ONE")) {
                     result = mCAS.reduction1(oper);
                 }
-                //MENOS UNO
+                //MINUS
                 else if (oper.getArg(0).getOperId().equals("MONE")) {
                     if (oper.getArg(1).getOperId().equals("MONE")) {
                         result = mCAS.reduction34(oper);
@@ -482,21 +688,21 @@ public class CASImplementation implements CASAdapter {
                 }
                 break;
             case "PROD":
-                //CERO
+                //ZERO
                 if (oper.getArg(0).getOperId().equals("ZERO")) {
                     final Operation commuted = mCAS.commute(oper, 0, 1);
                     result = mCAS.reduction6(commuted);
                 } else if (oper.getArg(1).getOperId().equals("ZERO")) {
                     result = mCAS.reduction6(oper);
                 }
-                //UNO
+                //ONE
                 else if (oper.getArg(0).getOperId().equals("ONE")) {
                     final Operation commuted = mCAS.commute(oper, 0, 1);
                     result = mCAS.reduction7(commuted);
                 } else if (oper.getArg(1).getOperId().equals("ONE")) {
                     result = mCAS.reduction7(oper);
                 }
-                //MENOS UNO
+                //MINUS ONE
                 else if (oper.getArg(0).getOperId().equals("MONE")) {
                     final Operation commuted = mCAS.commute(oper, 0, 1);
                     result = mCAS.reduction35(commuted);
@@ -507,15 +713,15 @@ public class CASImplementation implements CASAdapter {
                 }
                 break;
             case "INV":
-                //UNO
+                //ONE
                 if (oper.getArg(0).getOperId().equals("ONE")) {
                     result = mCAS.reduction24(oper);
                 }
-                //MENOS UNO
+                //MINUS ONE
                 else if (oper.getArg(0).getOperId().equals("MONE")) {
                     result = mCAS.reduction25(oper);
                 }
-                //CERO
+                //ZERO
                 else if (oper.getArg(0).getOperId().equals("ZERO")) {
                     throw new NotApplicableReductionException("INFINITY!!Trying to destroy the world??¬¬");
                 } else {

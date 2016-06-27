@@ -43,7 +43,7 @@ public class DrawableExpressionList extends DrawableExpression {
 
             element.onDraw(canvas);
         }
-        drawExternalContainers(canvas);
+        //drawExternalContainers(canvas);
     }
 
     private void drawExternalContainers(final Canvas canvas) {
@@ -240,7 +240,9 @@ public class DrawableExpressionList extends DrawableExpression {
                 } else if (exp.isDrawableSingleExpression()) {
                     return exp;
                 } else if (CASUtils.isMinusOperation(exp.getExpression())) {
-                    return exp;
+                    if(!CASUtils.minusOperationHasSubexpressions(exp.getExpression())){
+                        return exp;
+                    }
                 } else if (CASUtils.isMinusOne(exp.getExpression())) {
                     return exp;
                 }

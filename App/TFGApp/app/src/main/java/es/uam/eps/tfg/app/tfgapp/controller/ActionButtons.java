@@ -17,7 +17,6 @@ public class ActionButtons implements View.OnLongClickListener {
     private static final int[] IDS = {
             R.id.button_exp_associate,
             R.id.button_exp_change_side,
-            R.id.button_exp_delete,
             R.id.button_exp_disassociate,
             R.id.button_exp_move_left,
             R.id.button_exp_move_right,
@@ -27,7 +26,6 @@ public class ActionButtons implements View.OnLongClickListener {
     private final ImageButton mChangeSide;
     private final ImageButton mMoveRight;
     private final ImageButton mMoveLeft;
-    private final ImageButton mDelete;
     private final ImageButton mAssociate;
     private final ImageButton mDisassociate;
     private final ImageButton mOperate;
@@ -37,7 +35,6 @@ public class ActionButtons implements View.OnLongClickListener {
         mChangeSide = (ImageButton) rootView.findViewById(R.id.button_exp_change_side);
         mMoveRight = (ImageButton) rootView.findViewById(R.id.button_exp_move_right);
         mMoveLeft = (ImageButton) rootView.findViewById(R.id.button_exp_move_left);
-        mDelete = (ImageButton) rootView.findViewById(R.id.button_exp_delete);
         mAssociate = (ImageButton) rootView.findViewById(R.id.button_exp_associate);
         mDisassociate = (ImageButton) rootView.findViewById(R.id.button_exp_disassociate);
         mOperate = (ImageButton) rootView.findViewById(R.id.button_exp_operate);
@@ -55,7 +52,6 @@ public class ActionButtons implements View.OnLongClickListener {
         mChangeSide.setOnLongClickListener(this);
         mMoveRight.setOnLongClickListener(this);
         mMoveLeft.setOnLongClickListener(this);
-        mDelete.setOnLongClickListener(this);
         mAssociate.setOnLongClickListener(this);
         mDisassociate.setOnLongClickListener(this);
         mOperate.setOnLongClickListener(this);
@@ -67,7 +63,6 @@ public class ActionButtons implements View.OnLongClickListener {
         mChangeSide.setOnClickListener(listener);
         mMoveRight.setOnClickListener(listener);
         mMoveLeft.setOnClickListener(listener);
-        mDelete.setOnClickListener(listener);
         mAssociate.setOnClickListener(listener);
         mDisassociate.setOnClickListener(listener);
         mOperate.setOnClickListener(listener);
@@ -90,9 +85,6 @@ public class ActionButtons implements View.OnLongClickListener {
 
             case R.id.button_exp_move_left:
                 return CASAdapter.Actions.MOVE_LEFT;
-
-            case R.id.button_exp_delete:
-                return CASAdapter.Actions.DELETE;
 
             case R.id.button_exp_associate:
                 return CASAdapter.Actions.ASSOCIATE;
@@ -144,9 +136,6 @@ public class ActionButtons implements View.OnLongClickListener {
 
             case R.id.button_exp_move_left:
                 return mMoveLeft;
-
-            case R.id.button_exp_delete:
-                return mDelete;
 
             case R.id.button_exp_associate:
                 return mAssociate;
