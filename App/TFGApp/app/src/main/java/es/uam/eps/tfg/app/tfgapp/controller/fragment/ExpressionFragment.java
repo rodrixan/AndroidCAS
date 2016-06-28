@@ -293,7 +293,7 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
             return false;
         }
         final String oldCASExp = mCAS.getCurrentExpression().toString();
-
+        CASAdapter.Actions actionToSave = action;
         try {
             switch (action) {
                 case ASSOCIATE:
@@ -309,9 +309,11 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
                     if (firstIndex != -1) {
                         final int secondIndex = (firstIndex == 0) ? 1 : 0;
                         mCAS.distribute(mMultipleSelectionExpressions.get(firstIndex), mMultipleSelectionExpressions.get(secondIndex));
+                        actionToSave = CASAdapter.Actions.DISTRIBUTE;
                     } else {
 
                         mCAS.commonFactor(mMultipleSelectionExpressions);
+                        actionToSave = CASAdapter.Actions.COMMON_FACTOR;
                     }
 
                     break;
@@ -319,14 +321,14 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
                     return false;
             }
         } catch (final Exception e) {
-            Log.e(Utils.LOG_TAG, "Error on action: " + action.toString() + ". Cause: " + e.getMessage(), e);
+            Log.e(Utils.LOG_TAG, "Error on action: " + actionToSave.toString() + ". Cause: " + e.getMessage());
             Toast.makeText(getActivity(), R.string.operation_failure, Toast.LENGTH_SHORT).show();
             onCancelledSelectedExpression();
             mCAS.initCAS(oldCASExp);
             updateExpressionView();
             return false;
         }
-        addRecordToHistory(oldCASExp, mMultipleSelectionExpressions, action);
+        addRecordToHistory(oldCASExp, mMultipleSelectionExpressions, actionToSave);
         updateExpressionView();
         return true;
     }
