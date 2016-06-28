@@ -189,7 +189,7 @@ public final class CASUtils {
     }
 
     public static String createShortSampleExpression() {
-        return "#[3.6663]";
+        return "=[*[+[$[x],#[5]],#[3]],*[#[3],#[7]]]";
     }
 
     public static String createMediumSampleExpression() {
@@ -198,9 +198,9 @@ public final class CASUtils {
 
     public static String createUltraLongSampleExpression() {
 
-        //return "=[*[$[a],$[x],+[#[9],#[3],@INV[+[#[2],#[4],#[34]]]]],@INV[+[$[x],-[#[5]]]]]";
+
         return "=[+[#[3],#[3],*[#[3],#[7],#[8]],#[4],*[#[3],#[2],#[4]]],$[x]]";
-        //return "=[+[#[3],&MONE[],*[#[3],#[2]]],$[x]]";
+
     }
 
     /**
