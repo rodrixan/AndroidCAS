@@ -250,8 +250,12 @@ public class CASImplementation implements CASAdapter {
         if (res == null) {
             throw new NotApplicableReductionException("Null on operation");
         }
-
-        final float numberRes = res.getArg(0).getArgNumber();
+        final float numberRes;
+        if (res.getOperId().equals(AlgebraicEngine.Opers.MINUS.toString())) {
+            numberRes = res.getArg(0).getArg(0).getArgNumber();
+        } else {
+            numberRes = res.getArg(0).getArgNumber();
+        }
 
         if (numberRes == 0) {
             res = new Operation(AlgebraicEngine.Opers.ZERO.toString());
@@ -291,14 +295,8 @@ public class CASImplementation implements CASAdapter {
         }
 
         if (allArgsAreNumbers(oper)) {
-            return calculate(oper);
-        } else {
-            //associate variables and numbers
-            Operation commutedOper = oper;
-            for (final Integer varIndex : variableIndexes) {
-                commutedOper = mCAS.commute(commutedOper, varIndex, 0);
-            }
-            //TODO fix this
+            final Operation aux1 = calculate(oper);
+            return aux1;
         }
 
         return null;
@@ -322,7 +320,8 @@ public class CASImplementation implements CASAdapter {
         final List<Operation> args = oper.getArgs();
 
         if (CASUtils.isInverseOperation(oper) || CASUtils.isInverseOperation(oper) || args.size() == 2) {
-            return calculateRes(oper);
+            final Operation aux = calculateRes(oper);
+            return aux;
         }
 
         Operation pivot;
@@ -482,7 +481,7 @@ public class CASImplementation implements CASAdapter {
         return applyCommonFactor(commonElements);
     }
 
-    private Operation canApplyCommonFactor(final List<Operation> commonElements) {
+    private Operation canApplyCommonFactor(final List<Operation> commonElements) throws NotApplicableReductionException {
         if (!allElementsAreTheSame(commonElements)) {
             return null;
         }
@@ -493,8 +492,21 @@ public class CASImplementation implements CASAdapter {
             final Operation parent = mCAS.getOperById(op.getParentID());
             final String parentOperId = parent.getOperId();
             if (parentOperId.equals("PROD")) {
-                final Operation currentGrandpa = mCAS.getOperById(parent.getParentID());
+                Operation currentGrandpa = mCAS.getOperById(parent.getParentID());
+                if (currentGrandpa.getOperId().equals(AlgebraicEngine.Opers.MINUS.toString())) {
+                    final Operation greatGrandParent = mCAS.getOperById(currentGrandpa.getParentID());
+                    if (!greatGrandParent.getOperId().equals("SUM")) {
+                        return null;
+                    }
+                    final Integer indexGrandParent = greatGrandParent.getIndexOfArg(currentGrandpa);
+                    Operation negMult = mCAS.reduction46(currentGrandpa);
+                    if (parent.getNumberArgs() > 1) {
+                        negMult = mCAS.disociate(negMult, 1);
+                    }
+                    greatGrandParent.setArg(indexGrandParent, negMult);
+                    currentGrandpa = mCAS.getOperById(mCAS.getOperById(negMult.getId()).getParentID());
 
+                }
                 if (!currentGrandpa.getOperId().equals("SUM")) {
                     return null;
                 }
@@ -580,7 +592,7 @@ public class CASImplementation implements CASAdapter {
         //insert the new element in grandpa
         grandParent = mCAS.commute(grandParent, grandParent.getIndexOfArg(pivot), 0);
         greatGranParent.setArg(indexGrandParent, grandParent);
-
+        boolean associate = false;
         for (int i = 1; i < commonElements.size(); i++) {
 
             Operation nextElement = mCAS.getOperById(commonElements.get(i).getParentID());
@@ -602,16 +614,26 @@ public class CASImplementation implements CASAdapter {
             grandParent = mCAS.commute(grandParent, grandParent.getIndexOfArg(nextElement), 1);
             greatGranParent.setArg(indexGrandParent, grandParent);
 
-            grandParent = mCAS.associate(grandParent, 0, 1);
-            greatGranParent.setArg(indexGrandParent, grandParent);
-            //reduction19 => commonfactor
-            pivot = mCAS.reduction19(grandParent.getArg(0));
-            grandParent.setArg(0, pivot);
+            if (grandParent.getNumberArgs() > 2 && !grandParent.getOperId().equals(AlgebraicEngine.Opers.EQU.toString())) {
+                grandParent = mCAS.associate(grandParent, 0, 1);
+                greatGranParent.setArg(indexGrandParent, grandParent);
+                associate = true;
+            }
+            if (associate) {
+                //reduction19 => commonfactor
+                pivot = mCAS.reduction19(grandParent.getArg(0));
+                grandParent.setArg(0, pivot);
+            } else {
+                pivot = mCAS.reduction19(greatGranParent.getArg(indexGrandParent));
+                greatGranParent.setArg(indexGrandParent, pivot);
+            }
         }
 
-        grandParent.setArg(0, pivot);
-        greatGranParent.setArg(indexGrandParent, grandParent);
-
+        //grandParent.setArg(0, pivot);
+        //greatGranParent.setArg(indexGrandParent, grandParent);
+        if (associate) {
+            greatGranParent.setArg(indexGrandParent, grandParent);
+        }
         return mCAS.getOperEq();
     }
 
@@ -620,7 +642,10 @@ public class CASImplementation implements CASAdapter {
         if (!canChangeSide(selection)) {
             throw new NotApplicableReductionException("Can't change side of the equation");
         }
-        return changeSideOfEquation(selection);
+        final Operation changedEq = changeSideOfEquation(selection);
+
+
+        return changedEq;
     }
 
     private boolean canChangeSide(final Operation op) {
@@ -746,6 +771,7 @@ public class CASImplementation implements CASAdapter {
         }
         return false;
     }
+
 
     @Override
     public Operation distribute(final Operation elemToDistribute, final Operation sumOperation) throws NotApplicableReductionException {

@@ -199,7 +199,7 @@ public final class CASUtils {
     public static String createUltraLongSampleExpression() {
 
 
-        return "=[+[#[3],#[3],*[#[3],#[7],#[8]],#[4],*[#[3],#[2],#[4]]],$[x]]";
+        return "=[+[#[3],#[3],*[#[3],#[7],#[8]],#[4],*[#[3],#[2],#[4]]],+[$[x],*[#[3],$[x]]]]";
 
     }
 
