@@ -238,16 +238,27 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
                     return false;
             }
         } catch (final Exception e) {
-            Log.e(Utils.LOG_TAG, "Error on action: " + action.toString() + ". Cause: " + e.getMessage());
-            Toast.makeText(getActivity(), R.string.operation_failure, Toast.LENGTH_SHORT).show();
-            onCancelledSelectedExpression();
-            mCAS.initCAS(oldCASExp);
-            updateExpressionView();
+            errorOnAction(action, oldCASExp, e);
             return false;
         }
         addRecordToHistory(oldCASExp, Arrays.asList(new Operation[]{cloneSelection}), action);
         updateExpressionView();
         return true;
+    }
+
+    /**
+     * Cancels an action due to an error
+     *
+     * @param action    action performed
+     * @param oldCASExp old expression for going back
+     * @param e         exception that caused the error
+     */
+    private void errorOnAction(final CASAdapter.Actions action, final String oldCASExp, final Exception e) {
+        Log.e(Utils.LOG_TAG, "Error on action: " + action.toString() + ". Cause: " + e.getMessage());
+        Toast.makeText(getActivity(), R.string.operation_failure, Toast.LENGTH_SHORT).show();
+        onCancelledSelectedExpression();
+        mCAS.initCAS(oldCASExp);
+        updateExpressionView();
     }
 
     /**
@@ -260,7 +271,6 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
     private void addRecordToHistory(final String oldExpression, final List<Operation> operations, final CASAdapter.Actions action) {
         final String infixExpressionFromOldExp = CASUtils.getInfixExpressionOf(oldExpression);
         final String selection1 = CASUtils.getInfixExpressionOf(operations.get(0));
-
 
         if (operations.size() == 1) {
             mHistory.addRecord(action, infixExpressionFromOldExp, oldExpression, selection1);
@@ -321,11 +331,7 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
                     return false;
             }
         } catch (final Exception e) {
-            Log.e(Utils.LOG_TAG, "Error on action: " + actionToSave.toString() + ". Cause: " + e.getMessage());
-            Toast.makeText(getActivity(), R.string.operation_failure, Toast.LENGTH_SHORT).show();
-            onCancelledSelectedExpression();
-            mCAS.initCAS(oldCASExp);
-            updateExpressionView();
+            errorOnAction(actionToSave, oldCASExp, e);
             return false;
         }
         addRecordToHistory(oldCASExp, mMultipleSelectionExpressions, actionToSave);
@@ -333,21 +339,9 @@ public class ExpressionFragment extends BaseFragment implements OnExpressionActi
         return true;
     }
 
-    private CASAdapter.Actions distributeOrCommonFactor() {
-        if (mMultipleSelectionExpressions == null || mMultipleSelectionExpressions.size() < 2) {
-            return null;
-        }
-        if (mMultipleSelectionExpressions.size() == 2) {
-            if (isDistributiveForm() != -1) {
-                return CASAdapter.Actions.DISTRIBUTE;
-            } else {
-                return CASAdapter.Actions.COMMON_FACTOR;
-            }
-        } else {
-            return CASAdapter.Actions.COMMON_FACTOR;
-        }
-    }
-
+    /**
+     * @return true if multiple selection refers to distributive property
+     */
     private int isDistributiveForm() {
         final Operation op1 = mMultipleSelectionExpressions.get(0);
         final Operation op2 = mMultipleSelectionExpressions.get(1);
