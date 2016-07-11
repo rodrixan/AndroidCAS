@@ -671,47 +671,31 @@ public class CASImplementation implements CASAdapter {
         final int indexGrandParent = greatGranParent.getIndexOfArg(grandParent);
         final int indexOfCommonElement0 = pivot.getIndexOfArg(commonElements.get(0));
 
-        if (indexOfCommonElement0 != pivot.getNumberArgs() - 1) {
-            //move to the end
-            pivot = mCAS.commute(pivot, indexOfCommonElement0, pivot.getNumberArgs() - 1);
-            grandParent.setArg(indexParent, pivot);
-        }
-        if (pivot.getNumberArgs() > 2) {
-            //associate
-            pivot = mCAS.associate(pivot, 0, pivot.getNumberArgs() - 2);
-            grandParent.setArg(indexParent, pivot);
-        }
+        pivot = movePivotToEnd(pivot, grandParent, indexParent, indexOfCommonElement0);
+        pivot = associatePivot(pivot, grandParent, indexParent);
 
         //insert the new element in grandpa
         grandParent = mCAS.commute(grandParent, grandParent.getIndexOfArg(pivot), 0);
         greatGranParent.setArg(indexGrandParent, grandParent);
+
         boolean associate = false;
         for (int i = 1; i < commonElements.size(); i++) {
 
-            Operation nextElement = mCAS.getOperById(commonElements.get(i).getParentID());
-            final int indexOfNextCommonElement = nextElement.getIndexOfArg(commonElements.get(i));
-            if (indexOfNextCommonElement != nextElement.getNumberArgs() - 1) {
-                final int indexOfNextCommonOper = grandParent.getIndexOfArg(nextElement);
-                //move to the end
-                nextElement = mCAS.commute(nextElement, indexOfNextCommonElement, nextElement.getNumberArgs() - 1);
-                grandParent.setArg(indexOfNextCommonOper, nextElement);
-            }
-            if (nextElement.getNumberArgs() > 2) {
-                final int indexOfNextCommonOper = grandParent.getIndexOfArg(nextElement);
-                //associate
-                nextElement = mCAS.associate(nextElement, 0, nextElement.getNumberArgs() - 2);
-                grandParent.setArg(indexOfNextCommonOper, nextElement);
-            }
+            Operation nextElement = nextEndElement(commonElements, grandParent, i);
+            nextElement = associateNextElement(grandParent, nextElement);
 
             //insert the new element in grandpa and associate
             grandParent = mCAS.commute(grandParent, grandParent.getIndexOfArg(nextElement), 1);
             greatGranParent.setArg(indexGrandParent, grandParent);
 
+            //checkIf we have to associate
             if (grandParent.getNumberArgs() > 2 && !grandParent.getOperId().equals(AlgebraicEngine.Opers.EQU.toString())) {
                 grandParent = mCAS.associate(grandParent, 0, 1);
                 greatGranParent.setArg(indexGrandParent, grandParent);
                 associate = true;
             }
+
+            // decide where to insert the common factor result
             if (associate) {
                 //reduction19 => commonfactor
                 pivot = mCAS.reduction19(grandParent.getArg(0));
@@ -722,12 +706,52 @@ public class CASImplementation implements CASAdapter {
             }
         }
 
-        //grandParent.setArg(0, pivot);
-        //greatGranParent.setArg(indexGrandParent, grandParent);
+        //if asscoiated, set the argument of the main expression
         if (associate) {
             greatGranParent.setArg(indexGrandParent, grandParent);
         }
+
         return mCAS.getOperEq();
+    }
+
+    private Operation associateNextElement(final Operation grandParent, Operation nextElement) throws NotApplicableReductionException {
+        if (nextElement.getNumberArgs() > 2) {
+            final int indexOfNextCommonOper = grandParent.getIndexOfArg(nextElement);
+            //associate
+            nextElement = mCAS.associate(nextElement, 0, nextElement.getNumberArgs() - 2);
+            grandParent.setArg(indexOfNextCommonOper, nextElement);
+        }
+        return nextElement;
+    }
+
+    private Operation nextEndElement(final List<Operation> commonElements, final Operation grandParent, final int i) throws NotApplicableReductionException {
+        Operation nextElement = mCAS.getOperById(commonElements.get(i).getParentID());
+        final int indexOfNextCommonElement = nextElement.getIndexOfArg(commonElements.get(i));
+        if (indexOfNextCommonElement != nextElement.getNumberArgs() - 1) {
+            final int indexOfNextCommonOper = grandParent.getIndexOfArg(nextElement);
+            //move to the end
+            nextElement = mCAS.commute(nextElement, indexOfNextCommonElement, nextElement.getNumberArgs() - 1);
+            grandParent.setArg(indexOfNextCommonOper, nextElement);
+        }
+        return nextElement;
+    }
+
+    private Operation associatePivot(Operation pivot, final Operation grandParent, final int indexParent) throws NotApplicableReductionException {
+        if (pivot.getNumberArgs() > 2) {
+            //associate
+            pivot = mCAS.associate(pivot, 0, pivot.getNumberArgs() - 2);
+            grandParent.setArg(indexParent, pivot);
+        }
+        return pivot;
+    }
+
+    private Operation movePivotToEnd(Operation pivot, final Operation grandParent, final int indexParent, final int indexOfCommonElement0) throws NotApplicableReductionException {
+        if (indexOfCommonElement0 != pivot.getNumberArgs() - 1) {
+            //move to the end
+            pivot = mCAS.commute(pivot, indexOfCommonElement0, pivot.getNumberArgs() - 1);
+            grandParent.setArg(indexParent, pivot);
+        }
+        return pivot;
     }
 
     @Override
