@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape android:shape="oval"
-       xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/colorAccent"/>
-    <size
-        android:width="@dimen/exp_button_size"
-        android:height="@dimen/exp_button_size"/>
-</shape>
