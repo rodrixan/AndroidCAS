@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Chalkpy</string>
+    <string name="app_name" translatable="false">Chalkpy</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -78,8 +78,6 @@
     <string name="action_distribute">Distribute</string>
 
     <string name="no_exp_selected">Must do a selection</string>
-
-
 
 
 </resources>
