@@ -1,4 +1,4 @@
-# AndroidCAS
+# Chalkpy 2.0
 Android Application for mathematical expressions manipulation. It uses an external CAS done by Laura Salcedo Valderrama
 
 This is Rodrigo de Blas' Bachelor Thesis
